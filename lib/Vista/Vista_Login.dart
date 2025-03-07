@@ -1,4 +1,7 @@
+import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
+
+import '../Controlador/Controlador_Login.dart';
 
 class VistaLogin extends StatefulWidget {
   @override
@@ -6,6 +9,11 @@ class VistaLogin extends StatefulWidget {
 }
 
 class _VistaLoginState extends State<VistaLogin> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final controlador = ControladorLogin();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,9 +24,26 @@ class _VistaLoginState extends State<VistaLogin> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               // Logo
-              CircleAvatar(
-                radius: 60,
-                backgroundImage: AssetImage('assets/logo.png'),
+              Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.brown,
+                    width: 4,
+                  ),
+                ),
+                child: ClipOval(
+                  child: SizedBox(
+                    width: double.infinity, // Ocupará todo el espacio disponible
+                    height: double.infinity,
+                    child: Image.asset(
+                      'lib/Recursos/logo.png',
+                      fit: BoxFit.cover, // Ajusta la imagen al contenedor sin deformarla
+                    ),
+                  ),
+                ),
               ),
               SizedBox(height: 20),
               // Formulario de login
@@ -40,6 +65,7 @@ class _VistaLoginState extends State<VistaLogin> {
                   children: <Widget>[
                     // Campo de usuario
                     TextField(
+                      controller: _usernameController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
                         labelText: 'Username',
@@ -54,6 +80,7 @@ class _VistaLoginState extends State<VistaLogin> {
                     SizedBox(height: 16.0),
                     // Campo de contraseña
                     TextField(
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock),
                         labelText: 'Password',
@@ -77,7 +104,27 @@ class _VistaLoginState extends State<VistaLogin> {
                         ),
                       ),
                       onPressed: () {
-                        // Agrega la lógica del login aquí
+                        if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Error'),
+                                content: Text('Debe llenar las credenciales.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          controlador.login(_usernameController.text, _passwordController.text, context);
+                        }
                       },
                       child: Text(
                         'LOGIN',

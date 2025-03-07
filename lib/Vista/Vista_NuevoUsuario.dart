@@ -1,5 +1,6 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_NuevoUsuario.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Importar para manejar fechas
 
 import '../Modelo/Usuario.dart';
 
@@ -17,7 +18,11 @@ class _CrearUsuarioState extends State<CrearUsuario> {
   final _direccionController = TextEditingController();
   final _nombreUsuarioController = TextEditingController();
   final _contrasenaController = TextEditingController();
-  String _tipoUsuario = 'Cliente';
+  final _fechaNacimientoController = TextEditingController();
+  final _numeroIdentificacionController = TextEditingController();
+  final _puestoTrabajoController = TextEditingController();
+
+  String? _tipoUsuario;
 
   final controlador = ControladorNuevousuario();
 
@@ -104,10 +109,44 @@ class _CrearUsuarioState extends State<CrearUsuario> {
                   return null;
                 },
               ),
+              TextFormField(
+                controller: _fechaNacimientoController,
+                decoration: InputDecoration(labelText: 'Fecha de Nacimiento'),
+                readOnly: true,
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2100),
+                  );
+                  if (pickedDate != null) {
+                    setState(() {
+                      _fechaNacimientoController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+                    });
+                  }
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese la fecha de nacimiento';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _numeroIdentificacionController,
+                decoration: InputDecoration(labelText: 'Número de Identificación'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese el número de identificación';
+                  }
+                  return null;
+                },
+              ),
               DropdownButtonFormField<String>(
                 value: _tipoUsuario,
                 decoration: InputDecoration(labelText: 'Tipo de Usuario'),
-                items: ['Cliente', 'Administrador']
+                items: ['Administrador', 'Cajero']
                     .map((tipo) => DropdownMenuItem(
                           value: tipo,
                           child: Text(tipo),
@@ -131,7 +170,10 @@ class _CrearUsuarioState extends State<CrearUsuario> {
                       direccion: _direccionController.text,
                       nombreUsuario: _nombreUsuarioController.text,
                       contrasena: _contrasenaController.text,
-                      tipoUsuario: _tipoUsuario,
+                      fechaNacimiento: DateTime.parse(_fechaNacimientoController.text),
+                      numeroIdentificacion: _numeroIdentificacionController.text,
+                      puestoTrabajo: _tipoUsuario ?? 'Cajero',
+                     
                     );
                     controlador.agregarUsuario(nuevoUsuario);
                     cleanText();
@@ -158,6 +200,9 @@ class _CrearUsuarioState extends State<CrearUsuario> {
     _direccionController.dispose();
     _nombreUsuarioController.dispose();
     _contrasenaController.dispose();
+    _fechaNacimientoController.dispose();
+    _numeroIdentificacionController.dispose();
+    _puestoTrabajoController.dispose();
     super.dispose();
   }
 
@@ -169,6 +214,9 @@ class _CrearUsuarioState extends State<CrearUsuario> {
     _direccionController.clear();
     _nombreUsuarioController.clear();
     _contrasenaController.clear();
+    _fechaNacimientoController.clear();
+    _numeroIdentificacionController.clear();
+    _puestoTrabajoController.clear();
   }
 }
 

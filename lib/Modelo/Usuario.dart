@@ -6,7 +6,9 @@ class Usuario {
   String direccion;
   String nombreUsuario;
   String contrasena;
-  String tipoUsuario; // Nuevo campo agregado
+  DateTime fechaNacimiento; 
+  String numeroIdentificacion; 
+  String puestoTrabajo; 
 
   Usuario({
     required this.nombre,
@@ -16,16 +18,20 @@ class Usuario {
     required this.direccion,
     required this.nombreUsuario,
     required this.contrasena,
-    required this.tipoUsuario, // Nuevo campo agregado
+    required this.fechaNacimiento, 
+    required this.numeroIdentificacion, 
+    required this.puestoTrabajo, 
   });
 
-  // Método para mostrar la información del usuario
+  
   void mostrarInformacion() {
     print('Nombre: $nombre $apellido');
     print('Correo Electrónico: $correoElectronico');
     print('Número de Teléfono: $numeroTelefono');
     print('Dirección: $direccion');
     print('Nombre de Usuario: $nombreUsuario');
-    print('Tipo de Usuario: $tipoUsuario'); // Mostrar el nuevo campo
+    print('Fecha de Nacimiento: ${fechaNacimiento.toLocal()}'.split(' ')[0]); 
+    print('Número de Identificación: $numeroIdentificacion'); 
+    print('Puesto de Trabajo: $puestoTrabajo'); 
   }
 }

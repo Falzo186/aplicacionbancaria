@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             TextButton(
                              onPressed: () => mainController.confirmLogout(context),
                               child: Text(
-                                "Cerrar Sesión 1",
+                                "Cerrar Sesión",
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),

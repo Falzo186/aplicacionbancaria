@@ -1,5 +1,3 @@
-
-import 'package:aplicacionbancaria/Vista/Vista_Consultas2.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Login.dart';

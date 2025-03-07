@@ -2,16 +2,24 @@ import 'package:flutter/material.dart';
 
 import '../Modelo/Usuario.dart';
 
-
-class EscritorioView extends StatefulWidget {
+class AdministradorView extends StatefulWidget {
   final Usuario usuario;
-  const EscritorioView({super.key, required this.usuario});
+
+  const AdministradorView({super.key, required this.usuario});
 
   @override
-  _EscritorioViewState createState() => _EscritorioViewState();
+  _AdministradorViewState createState() => _AdministradorViewState();
 }
 
-class _EscritorioViewState extends State<EscritorioView> {
+class _AdministradorViewState extends State<AdministradorView> {
+  bool _showMenu = false;
+
+  void _toggleMenu() {
+    setState(() {
+      _showMenu = !_showMenu;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +34,7 @@ class _EscritorioViewState extends State<EscritorioView> {
           ),
           child: Column(
             children: [
+              // Encabezado
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: const BoxDecoration(
@@ -42,48 +51,49 @@ class _EscritorioViewState extends State<EscritorioView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Escritorio",
+                          "Gerente de piso",
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         Text(
-                          "Matricula: 102937456",
+                          "Matrícula: 10284827",
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ],
                     ),
                     Text(
-                       "Sesion: ${widget.usuario.nombre} ${widget.usuario.apellido}",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      "Sesión: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                     IconButton(
                       icon: const Icon(Icons.menu, color: Colors.white),
-                      onPressed: () {},
+                      onPressed: _toggleMenu,
                     ),
                   ],
                 ),
               ),
+
+              // Contenido principal
               Expanded(
                 child: Row(
                   children: [
+                    // Imagen
                     Expanded(
                       flex: 2,
-                      child: Center(
-                        child: Image.asset(
-                              'lib/Recursos/logo.png',
-                              width: 1000,
-                              ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 175, 156, 156),
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
+                        color: const Color(0xFFE0E0E0),
+                        child: Center(
+                          child: Image.asset(
+                            'lib/Recursos/logo.png',
+                            width: 450,
                           ),
                         ),
+                      ),
+                    ),
+                    // Botones
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -91,7 +101,7 @@ class _EscritorioViewState extends State<EscritorioView> {
                             _buildButton("Inversiones"),
                             _buildButton("Prestaciones"),
                             _buildButton("Seguros"),
-                            _buildButton("Alta Clientes"),
+                            _buildButton("Gestión de actividades"),
                           ],
                         ),
                       ),
@@ -108,11 +118,11 @@ class _EscritorioViewState extends State<EscritorioView> {
 
   Widget _buildButton(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFFC4A454),
-          minimumSize: const Size(200, 40),
+          backgroundColor: const Color(0xFFC4A454),
+          minimumSize: const Size(250, 50),
         ),
         onPressed: () {},
         child: Text(text, style: const TextStyle(color: Colors.black)),
@@ -120,3 +130,4 @@ class _EscritorioViewState extends State<EscritorioView> {
     );
   }
 }
+
