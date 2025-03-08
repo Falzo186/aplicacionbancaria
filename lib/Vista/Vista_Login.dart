@@ -1,4 +1,3 @@
-import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
 
 import '../Controlador/Controlador_Login.dart';
@@ -17,7 +16,7 @@ class _VistaLoginState extends State<VistaLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.brown[900],
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -25,23 +24,19 @@ class _VistaLoginState extends State<VistaLogin> {
             children: <Widget>[
               // Logo
               Container(
-                width: 200,
-                height: 200,
+                width: 150,
+                height: 150,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.brown,
+                    color: Colors.brown[700]!,
                     width: 4,
                   ),
                 ),
                 child: ClipOval(
-                  child: SizedBox(
-                    width: double.infinity, // Ocupará todo el espacio disponible
-                    height: double.infinity,
-                    child: Image.asset(
-                      'lib/Recursos/logo.png',
-                      fit: BoxFit.cover, // Ajusta la imagen al contenedor sin deformarla
-                    ),
+                  child: Image.asset(
+                    'lib/Recursos/logo.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -49,15 +44,15 @@ class _VistaLoginState extends State<VistaLogin> {
               // Formulario de login
               Container(
                 padding: EdgeInsets.all(20),
-                margin: EdgeInsets.symmetric(horizontal: 30),
+                margin: EdgeInsets.symmetric(horizontal: 40),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Colors.grey[800],
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
+                      color: Colors.black45,
+                      blurRadius: 15,
+                      offset: Offset(0, 10),
                     ),
                   ],
                 ),
@@ -66,11 +61,13 @@ class _VistaLoginState extends State<VistaLogin> {
                     // Campo de usuario
                     TextField(
                       controller: _usernameController,
+                      style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
+                        prefixIcon: Icon(Icons.person, color: Colors.white70),
                         labelText: 'Username',
+                        labelStyle: TextStyle(color: Colors.white70),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Colors.grey[700],
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
@@ -81,11 +78,13 @@ class _VistaLoginState extends State<VistaLogin> {
                     // Campo de contraseña
                     TextField(
                       controller: _passwordController,
+                      style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: Icon(Icons.lock, color: Colors.white70),
                         labelText: 'Password',
+                        labelStyle: TextStyle(color: Colors.white70),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Colors.grey[700],
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
@@ -97,7 +96,7 @@ class _VistaLoginState extends State<VistaLogin> {
                     // Botón de login
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.brown,
+                        backgroundColor: Colors.brown[700],
                         padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -109,11 +108,12 @@ class _VistaLoginState extends State<VistaLogin> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Error'),
-                                content: Text('Debe llenar las credenciales.'),
+                                backgroundColor: Colors.grey[800],
+                                title: Text('Error', style: TextStyle(color: Colors.white)),
+                                content: Text('Debe llenar las credenciales.', style: TextStyle(color: Colors.white70)),
                                 actions: <Widget>[
                                   TextButton(
-                                    child: Text('OK'),
+                                    child: Text('OK', style: TextStyle(color: Colors.brown[400])),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },

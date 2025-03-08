@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../Modelo/Usuario.dart';
-
+import 'Vista_BuscarCliente.dart';
+import 'Vista_FormularioCliente.dart';
 
 class EscritorioView extends StatefulWidget {
   final Usuario usuario;
@@ -16,6 +17,7 @@ class _EscritorioViewState extends State<EscritorioView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black54,
+      endDrawer: _buildDrawer(), // Cambiado a endDrawer
       body: Center(
         child: Container(
           width: MediaQuery.of(context).size.width,
@@ -52,12 +54,16 @@ class _EscritorioViewState extends State<EscritorioView> {
                       ],
                     ),
                     Text(
-                       "Sesion: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+                      "Sesion: ${widget.usuario.nombre} ${widget.usuario.apellido}",
                       style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white),
-                      onPressed: () {},
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.white),
+                        onPressed: () {
+                          Scaffold.of(context).openEndDrawer(); // Cambiado a openEndDrawer
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -69,9 +75,9 @@ class _EscritorioViewState extends State<EscritorioView> {
                       flex: 2,
                       child: Center(
                         child: Image.asset(
-                              'lib/Recursos/logo.png',
-                              width: 1000,
-                              ),
+                          'lib/Recursos/logo.png',
+                          width: 1000,
+                        ),
                       ),
                     ),
                     Expanded(
@@ -87,11 +93,11 @@ class _EscritorioViewState extends State<EscritorioView> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _buildButton("Consultas Clientes"),
-                            _buildButton("Inversiones"),
-                            _buildButton("Prestaciones"),
-                            _buildButton("Seguros"),
-                            _buildButton("Alta Clientes"),
+                            _buildButton("Consultas Clientes", _onConsultasClientesPressed),
+                            _buildButton("Inversiones", _onInversionesPressed),
+                            _buildButton("Prestaciones", _onPrestacionesPressed),
+                            _buildButton("Seguros", _onSegurosPressed),
+                            _buildButton("Alta Clientes", _onAltaClientesPressed),
                           ],
                         ),
                       ),
@@ -106,7 +112,47 @@ class _EscritorioViewState extends State<EscritorioView> {
     );
   }
 
-  Widget _buildButton(String text) {
+  Widget _buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Color(0xFF5B3B32),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Menu',
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                Text(
+                  'Matricula: 102937456',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            title: Text('Cerrar Sesión'),
+            onTap: () {
+              Navigator.pop(context); // Cierra el drawer
+              Navigator.pop(context); // Regresa a la ventana anterior
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(String text, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ElevatedButton(
@@ -114,9 +160,29 @@ class _EscritorioViewState extends State<EscritorioView> {
           backgroundColor: Color(0xFFC4A454),
           minimumSize: const Size(200, 40),
         ),
-        onPressed: () {},
+        onPressed: onPressed,
         child: Text(text, style: const TextStyle(color: Colors.black)),
       ),
     );
+  }
+
+  void _onConsultasClientesPressed() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaBuscarCliente(usuario: widget.usuario)));
+  }
+
+  void _onInversionesPressed() {
+    print('Botón presionado: Inversiones');
+  }
+
+  void _onPrestacionesPressed() {
+    print('Botón presionado: Prestaciones');
+  }
+
+  void _onSegurosPressed() {
+    print('Botón presionado: Seguros');
+  }
+
+  void _onAltaClientesPressed() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaFormularioCliente()));
   }
 }
