@@ -1,6 +1,5 @@
 
 import 'package:aplicacionbancaria/Vista/Vista_Escritorio.dart';
-import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Ventanilla.dart';
 import 'package:flutter/material.dart';
 
