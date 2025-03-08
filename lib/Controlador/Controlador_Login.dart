@@ -1,5 +1,7 @@
 
 import 'package:aplicacionbancaria/Vista/Vista_Escritorio.dart';
+import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
+import 'package:aplicacionbancaria/Vista/Vista_Ventanilla.dart';
 import 'package:flutter/material.dart';
 
 import '../Modelo/Usuario.dart';
@@ -19,15 +21,21 @@ class ControladorLogin {
             builder: (context) => AdministradorView(usuario: usuario),
           ),
         );
-      } else if (usuario.puestoTrabajo == 'Cajero') {
+      } else if (usuario.puestoTrabajo == 'Escritorio') {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => EscritorioView(usuario: usuario),
           ),
         );
-      } else {
-        // Manejar otros tipos de usuarios si es necesario
+      } else if (usuario.puestoTrabajo == 'Cajero') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VistaVentanilla(usuario: usuario),
+          ),
+        );
+        
       }
     } else {
       // Mostrar mensaje de error si las credenciales son incorrectas
@@ -70,7 +78,7 @@ class ControladorLogin {
       contrasena: 'password456',
       fechaNacimiento: DateTime(1995, 8, 20),
       numeroIdentificacion: 'ID789012',
-      puestoTrabajo: 'Cajero',
+      puestoTrabajo: 'Escritorio',
     ),
     Usuario(
       nombre: 'Carlos',
@@ -82,7 +90,8 @@ class ControladorLogin {
       contrasena: 'password789',
       fechaNacimiento: DateTime(1988, 12, 15),
       numeroIdentificacion: 'ID345678',
-      puestoTrabajo: 'Usuario Normal',
+      puestoTrabajo: 'Cajero',
     ),
   ];
+  // escritorio es el que se encarga de los prestamos señor de oficina 
 }

@@ -146,7 +146,7 @@ class _CrearUsuarioState extends State<CrearUsuario> {
               DropdownButtonFormField<String>(
                 value: _tipoUsuario,
                 decoration: InputDecoration(labelText: 'Tipo de Usuario'),
-                items: ['Administrador', 'Cajero']
+                items: ['Administrador', 'Cajero', 'Escritorio']
                     .map((tipo) => DropdownMenuItem(
                           value: tipo,
                           child: Text(tipo),
