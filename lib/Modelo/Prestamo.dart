@@ -3,6 +3,7 @@ class Prestamo {
   String? numeroPrestamo;
   double monto;
   int meses;
+  int pagosRealizados;
   double tasaInteres;
   DateTime fechaInicio;
   String tipoPrestamo;
@@ -17,6 +18,7 @@ class Prestamo {
     required this.numeroPrestamo,
     required this.monto,
     required this.meses,
+    required this.pagosRealizados,
     required this.tasaInteres,
     required this.fechaInicio,
     required this.tipoPrestamo,

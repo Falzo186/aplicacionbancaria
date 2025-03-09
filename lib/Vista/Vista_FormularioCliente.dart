@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -9,7 +10,7 @@ class VistaFormularioCliente extends StatefulWidget {
 class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _fechaNacimientoController = TextEditingController();
-  final TextEditingController _numeroCuentaController = TextEditingController();
+  final TextEditingController _numeroCuentaController = TextEditingController(text: _generarNumeroCuenta());
   final TextEditingController _nombreCompletoController = TextEditingController();
   final TextEditingController _generoController = TextEditingController();
   final TextEditingController _identificacionOficialController = TextEditingController();
@@ -25,6 +26,11 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   final TextEditingController _telefonoEmpresaController = TextEditingController();
   final TextEditingController _ingresosMensualesController = TextEditingController();
   final TextEditingController _fuenteIngresosController = TextEditingController();
+
+  static String _generarNumeroCuenta() {
+    Random random = Random();
+    return List.generate(11, (_) => random.nextInt(10).toString()).join();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +65,8 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                 ),
               ),
             ),
-            ListTile(
-              title: Text('Item 1'),
-              onTap: () {},
-            ),
-            ListTile(
-              title: Text('Item 2'),
-              onTap: () {},
-            ),
+            ListTile(title: Text('Item 1'), onTap: () {}),
+            ListTile(title: Text('Item 2'), onTap: () {}),
           ],
         ),
       ),
@@ -87,7 +87,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                       children: [
-                        _buildTextField('Número de Cuenta', _numeroCuentaController),
+                        _buildTextField('Número de Cuenta', _numeroCuentaController, readOnly: true),
                         _buildTextField('Nombre Completo', _nombreCompletoController),
                         _buildTextField('Género', _generoController),
                         _buildDatePicker('Fecha de Nacimiento'),
@@ -131,7 +131,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool readOnly = false}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -142,42 +142,20 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
+      readOnly: readOnly,
       validator: (value) => value!.isEmpty ? 'Campo $label es requerido' : null,
     );
   }
 
   Widget _buildDatePicker(String label) {
-    return TextFormField(
-      controller: _fechaNacimientoController,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
-      readOnly: true,
-      onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-        );
-        if (pickedDate != null) {
-          String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-          _fechaNacimientoController.text = formattedDate;
-        }
-      },
-      validator: (value) => value!.isEmpty ? 'Campo $label es requerido' : null,
-    );
+    return _buildTextField(label, _fechaNacimientoController, readOnly: true);
   }
 
   void _agregarCliente() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cliente agregado correctamente.')));
+      String tieneCredito = "No";
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cliente agregado correctamente. Crédito: $tieneCredito')));
     }
   }
 

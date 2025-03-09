@@ -1,3 +1,4 @@
+
 class Cliente {
   // Información Personal
   String numeroCuenta;
@@ -20,9 +21,11 @@ class Cliente {
   double ingresosMensuales;
   String fuenteIngresos;
 
+  // Información Financiera
+  bool tieneCredito; // Indica si el cliente tiene crédito o no
 
   Cliente({
-    required this.numeroCuenta,  
+    required this.numeroCuenta,
     required this.nombreCompleto,
     required this.genero,
     required this.fechaNacimiento,
@@ -39,6 +42,6 @@ class Cliente {
     required this.telefonoEmpresa,
     required this.ingresosMensuales,
     required this.fuenteIngresos,
+    required this.tieneCredito,
   });
-
 }

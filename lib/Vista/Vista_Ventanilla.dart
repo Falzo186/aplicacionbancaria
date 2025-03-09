@@ -1,6 +1,8 @@
 import 'package:aplicacionbancaria/Vista/Vista_DatosCliente.dart';
+import 'package:aplicacionbancaria/Vista/Vista_Ventanilla2.dart';
 import 'package:flutter/material.dart';
 
+import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Ventanilla.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Usuario.dart';
@@ -18,13 +20,14 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   double _menuWidth = 0;
   TextEditingController _searchController = TextEditingController();
   final controlador = ControladorVentanilla();
+  final controladorCliente = ControladorDatoscliente();
   List<Cliente> clientes = [];
   List<Cliente> filteredClientes = [];
 
   @override
   void initState() {
     super.initState();
-    clientes = controlador.obtenerClientes();
+    clientes = controladorCliente.obtenerClientes();
     filteredClientes = clientes;
   }
 
@@ -176,7 +179,12 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
       margin: EdgeInsets.all(10),
       child: InkWell(
         onTap: () {
-          controlador.mostrarOpcionesDialog(cliente, context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>  VistaVentanilla2(cliente: cliente),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(10.0),
