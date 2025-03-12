@@ -7,7 +7,7 @@ class Prestamo {
   double tasaInteres;
   DateTime fechaInicio;
   String tipoPrestamo;
-  String estado;  // Pendiente, Pagado, Atrasado
+  String estado;  // Pendiente, Pagado, Atrasado  .
   double? pagoMinimo;
   DateTime fechaCorte;
   DateTime fechapago;

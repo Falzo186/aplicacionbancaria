@@ -1,7 +1,5 @@
-import 'package:aplicacionbancaria/Vista/Vista_DatosCliente.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Ventanilla2.dart';
 import 'package:flutter/material.dart';
-
 import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Ventanilla.dart';
 import '../Modelo/Cliente.dart';
@@ -32,13 +30,15 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   }
 
   void _filterClientes(String query) {
-    final filtered = clientes.where((cliente) {
-      final nombreLower = cliente.nombreCompleto.toLowerCase();
-      final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
-      final searchLower = query.toLowerCase();
+    final filtered =
+        clientes.where((cliente) {
+          final nombreLower = cliente.nombreCompleto.toLowerCase();
+          final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
+          final searchLower = query.toLowerCase();
 
-      return nombreLower.contains(searchLower) || numeroCuentaLower.contains(searchLower);
-    }).toList();
+          return nombreLower.contains(searchLower) ||
+              numeroCuentaLower.contains(searchLower);
+        }).toList();
 
     setState(() {
       filteredClientes = filtered;
@@ -50,29 +50,11 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        backgroundColor: Colors.brown,
+        backgroundColor: Color(0xFF472F2F),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Ventanilla no. 4"),
-            Text("Matrícula: 102346501", style: TextStyle(fontSize: 14)),
-          ],
+          children: [Text('Ventanilla')],
         ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Center(child: Text("Sesión: ${widget.usuario.nombre} ${widget.usuario.apellido}")),
-          ),
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              setState(() {
-                _showMenu = !_showMenu;
-                _menuWidth = _showMenu ? 200 : 0;
-              });
-            },
-          ),
-        ],
       ),
       body: Stack(
         children: [
@@ -80,34 +62,14 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: "Ingrese el nombre o numero de cuenta del cliente",
-                          border: OutlineInputBorder(),
-                          fillColor: Colors.white,
-                          filled: true,
-                        ),
-                        onChanged: _filterClientes,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.brown),
-                      onPressed: () {
-                        _filterClientes(_searchController.text);
-                      },
-                      child: Icon(Icons.search),
-                    ),
-                  ],
-                ),
                 SizedBox(height: 10),
                 Expanded(
                   child: Container(
-                    color: Colors.grey[600],
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+
+                      color: Color(0xFF676464),
+                    ),
                     child: ListView.builder(
                       itemCount: filteredClientes.length,
                       itemBuilder: (context, index) {
@@ -118,7 +80,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                   ),
                 ),
                 SizedBox(height: 10),
-                // Aquí se pueden agregar más widgets 
+                // Aquí se pueden agregar más widgets
               ],
             ),
           ),
@@ -129,43 +91,63 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
               width: _menuWidth,
               height: MediaQuery.of(context).size.height,
               color: Color.fromARGB(255, 82, 59, 59),
-              child: _showMenu
-                  ? Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Menú",
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                          Divider(),
-                          // Información del usuario
-                          Text(
-                            "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                          Text(
-                            "Correo: ${widget.usuario.correoElectronico}",
-                            style: TextStyle(fontSize: 14, color: Colors.white70),
-                          ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 160, 129, 129),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+              child:
+                  _showMenu
+                      ? Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 10,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Menú",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
                               ),
                             ),
-                            onPressed: () => onSelected(context, 1),
-                            child: Text(
-                              "Cerrar Sesión",
-                              style: TextStyle(color: const Color.fromARGB(255, 17, 16, 16)),
+                            Divider(),
+                            // Información del usuario
+                            Text(
+                              "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : SizedBox(),
+                            Text(
+                              "Correo: ${widget.usuario.correoElectronico}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(
+                                  255,
+                                  160,
+                                  129,
+                                  129,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () => onSelected(context, 1),
+                              child: Text(
+                                "Cerrar Sesión",
+                                style: TextStyle(
+                                  color: const Color.fromARGB(255, 17, 16, 16),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                      : SizedBox(),
             ),
           ),
         ],
@@ -182,7 +164,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>  VistaVentanilla2(cliente: cliente),
+              builder: (context) => VistaVentanilla2(cliente: cliente),
             ),
           );
         },
@@ -191,8 +173,14 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(cliente.nombreCompleto, 
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                cliente.nombreCompleto,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(height: 5),
               Row(
                 children: [
@@ -202,12 +190,18 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Cuenta: ${cliente.numeroCuenta}", 
-                            style: TextStyle(color: Colors.white, fontSize: 16)),
-                        Text("Tel: ${cliente.telefono}", 
-                            style: TextStyle(color: Colors.white70, fontSize: 14)),
-                        Text("Email: ${cliente.correoElectronico}", 
-                            style: TextStyle(color: Colors.white70, fontSize: 14)),
+                        Text(
+                          "Cuenta: ${cliente.numeroCuenta}",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        Text(
+                          "Tel: ${cliente.telefono}",
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                        Text(
+                          "Email: ${cliente.correoElectronico}",
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
                       ],
                     ),
                   ),
@@ -225,24 +219,25 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
       case 0:
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Datos del Usuario'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Nombre: ${widget.usuario.nombre}'),
-                Text('Apellido: ${widget.usuario.apellido}'),
-                Text('Email: ${widget.usuario.correoElectronico}'),
-                // Añade más datos del usuario si es necesario
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Cerrar'),
+          builder:
+              (context) => AlertDialog(
+                title: Text('Datos del Usuario'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Nombre: ${widget.usuario.nombre}'),
+                    Text('Apellido: ${widget.usuario.apellido}'),
+                    Text('Email: ${widget.usuario.correoElectronico}'),
+                    // Añade más datos del usuario si es necesario
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Cerrar'),
+                  ),
+                ],
               ),
-            ],
-          ),
         );
         break;
       case 1:

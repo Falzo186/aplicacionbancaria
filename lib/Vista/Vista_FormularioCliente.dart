@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class VistaFormularioCliente extends StatefulWidget {
   @override
@@ -9,23 +8,34 @@ class VistaFormularioCliente extends StatefulWidget {
 
 class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _fechaNacimientoController = TextEditingController();
-  final TextEditingController _numeroCuentaController = TextEditingController(text: _generarNumeroCuenta());
-  final TextEditingController _nombreCompletoController = TextEditingController();
+  final TextEditingController _fechaNacimientoController =
+      TextEditingController();
+  final TextEditingController _numeroCuentaController = TextEditingController(
+    text: _generarNumeroCuenta(),
+  );
+  final TextEditingController _nombreCompletoController =
+      TextEditingController();
   final TextEditingController _generoController = TextEditingController();
-  final TextEditingController _identificacionOficialController = TextEditingController();
+  final TextEditingController _identificacionOficialController =
+      TextEditingController();
   final TextEditingController _rfcController = TextEditingController();
   final TextEditingController _estadoCivilController = TextEditingController();
   final TextEditingController _nacionalidadController = TextEditingController();
-  final TextEditingController _direccionCompletaController = TextEditingController();
+  final TextEditingController _direccionCompletaController =
+      TextEditingController();
   final TextEditingController _telefonoController = TextEditingController();
-  final TextEditingController _correoElectronicoController = TextEditingController();
+  final TextEditingController _correoElectronicoController =
+      TextEditingController();
   final TextEditingController _ocupacionController = TextEditingController();
   final TextEditingController _empresaController = TextEditingController();
-  final TextEditingController _direccionEmpresaController = TextEditingController();
-  final TextEditingController _telefonoEmpresaController = TextEditingController();
-  final TextEditingController _ingresosMensualesController = TextEditingController();
-  final TextEditingController _fuenteIngresosController = TextEditingController();
+  final TextEditingController _direccionEmpresaController =
+      TextEditingController();
+  final TextEditingController _telefonoEmpresaController =
+      TextEditingController();
+  final TextEditingController _ingresosMensualesController =
+      TextEditingController();
+  final TextEditingController _fuenteIngresosController =
+      TextEditingController();
 
   static String _generarNumeroCuenta() {
     Random random = Random();
@@ -40,12 +50,13 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
         backgroundColor: Colors.brown,
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+                  },
+                ),
           ),
         ],
       ),
@@ -54,15 +65,10 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.brown,
-              ),
+              decoration: BoxDecoration(color: Colors.brown),
               child: Text(
                 'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             ListTile(title: Text('Item 1'), onTap: () {}),
@@ -87,23 +93,54 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                       children: [
-                        _buildTextField('Número de Cuenta', _numeroCuentaController, readOnly: true),
-                        _buildTextField('Nombre Completo', _nombreCompletoController),
+                        _buildTextField(
+                          'Número de Cuenta',
+                          _numeroCuentaController,
+                          readOnly: true,
+                        ),
+                        _buildTextField(
+                          'Nombre Completo',
+                          _nombreCompletoController,
+                        ),
                         _buildTextField('Género', _generoController),
                         _buildDatePicker('Fecha de Nacimiento'),
-                        _buildTextField('Identificación Oficial', _identificacionOficialController),
+                        _buildTextField(
+                          'Identificación Oficial',
+                          _identificacionOficialController,
+                        ),
                         _buildTextField('RFC (Opcional)', _rfcController),
                         _buildTextField('Estado Civil', _estadoCivilController),
-                        _buildTextField('Nacionalidad', _nacionalidadController),
-                        _buildTextField('Dirección Completa', _direccionCompletaController),
+                        _buildTextField(
+                          'Nacionalidad',
+                          _nacionalidadController,
+                        ),
+                        _buildTextField(
+                          'Dirección Completa',
+                          _direccionCompletaController,
+                        ),
                         _buildTextField('Teléfono', _telefonoController),
-                        _buildTextField('Correo Electrónico', _correoElectronicoController),
+                        _buildTextField(
+                          'Correo Electrónico',
+                          _correoElectronicoController,
+                        ),
                         _buildTextField('Ocupación', _ocupacionController),
                         _buildTextField('Empresa', _empresaController),
-                        _buildTextField('Dirección Empresa', _direccionEmpresaController),
-                        _buildTextField('Teléfono Empresa', _telefonoEmpresaController),
-                        _buildTextField('Ingresos Mensuales', _ingresosMensualesController),
-                        _buildTextField('Fuente de Ingresos', _fuenteIngresosController),
+                        _buildTextField(
+                          'Dirección Empresa',
+                          _direccionEmpresaController,
+                        ),
+                        _buildTextField(
+                          'Teléfono Empresa',
+                          _telefonoEmpresaController,
+                        ),
+                        _buildTextField(
+                          'Ingresos Mensuales',
+                          _ingresosMensualesController,
+                        ),
+                        _buildTextField(
+                          'Fuente de Ingresos',
+                          _fuenteIngresosController,
+                        ),
                       ],
                     ),
                   ),
@@ -116,12 +153,16 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                 ElevatedButton(
                   onPressed: _cancelar,
                   child: Text('CANCELAR'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: _agregarCliente,
                   child: Text('AGREGAR CLIENTE'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
                 ),
               ],
             ),
@@ -131,16 +172,18 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool readOnly = false}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    bool readOnly = false,
+  }) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
       ),
       readOnly: readOnly,
       validator: (value) => value!.isEmpty ? 'Campo $label es requerido' : null,
@@ -155,7 +198,13 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       String tieneCredito = "No";
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cliente agregado correctamente. Crédito: $tieneCredito')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Cliente agregado correctamente. Crédito: $tieneCredito',
+          ),
+        ),
+      );
     }
   }
 

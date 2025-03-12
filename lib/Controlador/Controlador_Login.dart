@@ -1,4 +1,3 @@
-
 import 'package:aplicacionbancaria/Vista/Vista_Escritorio.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Ventanilla.dart';
 import 'package:flutter/material.dart';
@@ -7,49 +6,47 @@ import '../Modelo/Usuario.dart';
 import '../Vista/Vista_Administrador.dart';
 
 class ControladorLogin {
-
   void login(String username, String password, BuildContext context) {
     Usuario? usuario = usuarios.firstWhere(
-      (usuario) => usuario.nombreUsuario == username && usuario.contrasena == password,
-    ); 
-    if (usuario != null) {
-      if (usuario.puestoTrabajo == 'Administrador') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AdministradorView(usuario: usuario),
-          ),
-        );
-      } else if (usuario.puestoTrabajo == 'Escritorio') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EscritorioView(usuario: usuario),
-          ),
-        );
-      } else if (usuario.puestoTrabajo == 'Cajero') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VistaVentanilla(usuario: usuario),
-          ),
-        );
-        
-      }
+      (usuario) =>
+          usuario.nombreUsuario == username && usuario.contrasena == password,
+    );
+    if (usuario.puestoTrabajo == 'Administrador') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AdministradorView(usuario: usuario),
+        ),
+      );
+    } else if (usuario.puestoTrabajo == 'Escritorio') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EscritorioView(usuario: usuario),
+        ),
+      );
+    } else if (usuario.puestoTrabajo == 'Cajero') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VistaVentanilla(usuario: usuario),
+        ),
+      );
     } else {
       // Mostrar mensaje de error si las credenciales son incorrectas
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Usuario o contraseña incorrectos'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('OK'),
+        builder:
+            (context) => AlertDialog(
+              title: Text('Error'),
+              content: Text('Usuario o contraseña incorrectos'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
@@ -92,5 +89,5 @@ class ControladorLogin {
       puestoTrabajo: 'Cajero',
     ),
   ];
-  // escritorio es el que se encarga de los prestamos señor de oficina 
+  // escritorio es el que se encarga de los prestamos señor de oficina
 }
