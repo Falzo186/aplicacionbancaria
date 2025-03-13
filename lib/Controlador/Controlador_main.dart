@@ -98,6 +98,7 @@ class MainController {
           TextButton(
             child: Text("Salir", style: TextStyle(color: Colors.red)),
             onPressed: () {
+              Navigator.pop(context);
               exit(0);
             },
           ),

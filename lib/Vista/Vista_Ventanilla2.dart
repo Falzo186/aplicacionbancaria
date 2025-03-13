@@ -65,6 +65,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                   setState(() {
                     cuentaCliente!.saldo += monto;
                   });
+                  Navigator.pop(context); // Close the deposit dialog
                   showDialog(
                     context: context,
                     builder: (context) {
@@ -75,7 +76,9 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                         ),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () {
+                              Navigator.pop(context); // Close the confirmation dialog
+                            },
                             child: Text("Aceptar"),
                           ),
                         ],
@@ -397,6 +400,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
   }
 
   Future _mostrarPagoCreditoDialog(BuildContext context) async {
+    _montoController.text = prestamo?.pagoMinimo?.toStringAsFixed(2) ?? '';
     return showDialog(
       context: context,
       builder: (context) {
@@ -412,6 +416,10 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                 ],
+                decoration: InputDecoration(
+                  hintText: prestamo?.pagoMinimo?.toStringAsFixed(2),
+                  hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                ),
               ),
             ],
           ),
@@ -419,9 +427,8 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
             TextButton(
               onPressed: () {
                 double monto = double.tryParse(_montoController.text) ?? 0.0;
-                if (monto > 0) {
-                  if (cuentaCredito != null &&
-                      monto <= cuentaCredito!.saldoDeuda) {
+                if (monto >= (prestamo?.pagoMinimo ?? 0.0)) {
+                  if (cuentaCredito != null && monto <= cuentaCredito!.saldoDeuda) {
                     setState(() {
                       cuentaCredito!.saldoDeuda -= monto;
                     });
