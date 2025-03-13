@@ -29,6 +29,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   bool _showMenu = false;
   double _menuWidth = 0;
   TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final controlador = ControladorVentanilla();
   final controladorCliente = ControladorDatoscliente();
   List<Cliente> clientes = [];
@@ -104,22 +105,30 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               children: [
                 SizedBox(height: 10),
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(5),
                       color: colorFondo,
                     ),
-                    child: ListView.builder(
-                      itemCount: filteredClientes.length,
-                      itemBuilder: (context, index) {
-                        final cliente = filteredClientes[index];
-                        return _buildClientCard(cliente);
-                      },
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      thickness: 6,
+                      radius: Radius.circular(20),
+                      trackVisibility: true,
+                      controller: _scrollController,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: filteredClientes.length,
+                        itemBuilder: (context, index) {
+                          final cliente = filteredClientes[index];
+                          return _buildClientCard(cliente);
+                        },
+                      ),
                     ),
                   ),
                 ),
