@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/CuentaCliente.dart';
 import '../Modelo/CuentaCredito.dart';
@@ -38,46 +39,70 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
   }
 
   void _realizarDeposito() {
-    double monto = double.tryParse(_montoController.text) ?? 0.0;
-    if (monto > 0 && cuentaCliente != null) {
-      setState(() {
-        cuentaCliente!.saldo += monto;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Depósito de \$${monto.toStringAsFixed(2)} realizado.'),
-        ),
-      );
-    }
-  }
-
-  void _realizarPagoCredito() {
-    if (prestamo == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('El cliente no tiene préstamo.')),
-      );
-      return;
-    }
-    double pagoMinimo = prestamo!.pagoMinimo ?? 0.0;
-    double monto = double.tryParse(_montoController.text) ?? 0.0;
-    if (monto < pagoMinimo) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'El pago mínimo es de \$${pagoMinimo.toStringAsFixed(2)}.',
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Depósito"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Ingrese el monto a depositar"),
+              TextField(
+                controller: _montoDeposito,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
+              ),
+            ],
           ),
-        ),
-      );
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Pago de \$${monto.toStringAsFixed(2)} realizado.'),
-      ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                double monto = double.tryParse(_montoDeposito.text) ?? 0.0;
+                if (monto > 0 && cuentaCliente != null) {
+                  setState(() {
+                    cuentaCliente!.saldo += monto;
+                  });
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text("Depósito realizado"),
+                        content: Text(
+                          'Depósito de \$${monto.toStringAsFixed(2)} realizado.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text("Aceptar"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Ingrese un monto válido.')),
+                  );
+                }
+              },
+              child: Text("Aceptar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancelar"),
+            ),
+          ],
+        );
+      },
     );
   }
 
   final TextEditingController _montoController = TextEditingController();
+  final TextEditingController _montoDeposito = TextEditingController();
 
   String _formatDate(DateTime date) {
     final DateFormat formatter = DateFormat('dd/MM/yyyy');
@@ -90,161 +115,391 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ventanilla - ${widget.cliente.nombreCompleto}'),
+        title: Text(
+          'Información bancaria',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
         backgroundColor: const Color(0xFF472F2F),
       ),
-      body: Container(
-        color: const Color.fromARGB(255, 185, 166, 141),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Cliente: ${widget.cliente.nombreCompleto}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'Número de Cuenta: ${widget.cliente.numeroCuenta}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'Teléfono: ${widget.cliente.telefono}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Correo: ${widget.cliente.correoElectronico}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Dirección: ${widget.cliente.direccionCompleta}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Fecha de Nacimiento: $formattedDate',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Género: ${widget.cliente.genero}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Tipo de Cuenta: ${cuentaCliente?.tipoCuenta ?? 'N/A'}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Saldo: \$${cuentaCliente?.saldo.toStringAsFixed(2) ?? 'N/A'}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-            if (cuentaCliente != null)
-              Text(
-                'Número de Cuenta: ${cuentaCliente!.numeroCuenta}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            if (cuentaCredito != null) ...[
-              Text(
-                'Límite de Crédito: \$${cuentaCredito!.limiteCredito.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Crédito Disponible: \$${cuentaCredito!.limiteCredito - cuentaCredito!.saldoDeuda}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Saldo Deuda: \$${cuentaCredito!.saldoDeuda.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 16, color: Colors.red),
-              ),
-              Text(
-                'Tasa de Interés: ${cuentaCredito!.tasaInteres}%',
-                style: const TextStyle(fontSize: 16),
-              ),
-            ],
-            if (prestamo != null) ...[
-              Text(
-                'Deuda Pendiente: \$${prestamo!.monto.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 16, color: Colors.red),
-              ),
-              Text(
-                'Meses Restantes: ${prestamo!.meses - prestamo!.pagosRealizados}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Tasa de Interés a meses: ${prestamo!.tasaInteres}%',
-                style: const TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Pago Mínimo: \$${prestamo!.pagoMinimo?.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Fecha de Pago: ${_formatDate(prestamo!.fechapago)}',
-                style: const TextStyle(fontSize: 16),
-              ),
-            ],
-            TextField(
-              controller: _montoController,
-              decoration: const InputDecoration(labelText: 'Monto'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: SingleChildScrollView(
+        child: Container(
+          color: const Color(0xFFB1ACAC),
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: _realizarDeposito,
-                  child: const Text('Depositar'),
-                ),
-                if (prestamo != null)
-                  ElevatedButton(
-                    onPressed: _realizarPagoCredito,
-                    child: const Text('Pagar Crédito'),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
                   ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Cliente: ${widget.cliente.nombreCompleto}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Número de Cuenta: ${widget.cliente.numeroCuenta}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFE0E0E0),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(width: 20),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Teléfono: ${widget.cliente.telefono}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Correo: ${widget.cliente.correoElectronico}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Dirección: ${widget.cliente.direccionCompleta}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Fecha de Nacimiento: $formattedDate',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Género: ${widget.cliente.genero}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Tipo de Cuenta: ${cuentaCliente?.tipoCuenta ?? 'N/A'}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Saldo: \$${cuentaCliente?.saldo.toStringAsFixed(2) ?? 'N/A'}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                if (prestamo != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE0E0E0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (cuentaCredito != null) ...[
+                          Text(
+                            'Información de Crédito',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Divider(),
+                          Text(
+                            'Límite de Crédito: \$${cuentaCredito!.limiteCredito.toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Crédito Disponible: \$${(cuentaCredito!.limiteCredito - cuentaCredito!.saldoDeuda).toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Saldo Deuda: \$${cuentaCredito!.saldoDeuda.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.red,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tasa de Interés: ${cuentaCredito!.tasaInteres}%',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        Text(
+                          'Información de Préstamo',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Divider(),
+                        Text(
+                          'Número de Préstamo: ${prestamo!.numeroPrestamo}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Deuda Pendiente: \$${prestamo!.monto.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.red,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Meses Restantes: ${prestamo!.meses - prestamo!.pagosRealizados}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tasa de Interés: ${prestamo!.tasaInteres}%',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Pago Mínimo: \$${prestamo!.pagoMinimo?.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Fecha de Pago: ${_formatDate(prestamo!.fechapago)}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _realizarDeposito,
+                      icon: Icon(Icons.attach_money, color: Colors.white),
+                      label: Text(
+                        'Depositar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 124, 99, 86),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 15,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    if (prestamo != null)
+                      ElevatedButton.icon(
+                        label: Text(
+                          'Pagar Crédito',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromARGB(255, 71, 53, 26),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () => _mostrarPagoCreditoDialog(context),
+                        icon: Icon(Icons.credit_card, color: Colors.white),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
-}
 
-// Métodos de ejemplo para buscar cuentas (debes implementarlos con tu lógica real)
-CuentaCliente buscarCuentaCliente(String numeroCuenta) {
-  return CuentaCliente(
-    numeroCuenta: numeroCuenta,
-    saldo: 5000.0,
-    tipoCuenta: "Ahorro",
-    fechaApertura: DateTime(2020, 5, 10),
-    estadoCuenta: "Activa",
-  );
-}
+  // Métodos de ejemplo para buscar cuentas (debes implementarlos con tu lógica real)
+  CuentaCliente buscarCuentaCliente(String numeroCuenta) {
+    return CuentaCliente(
+      numeroCuenta: numeroCuenta,
+      saldo: 5000.0,
+      tipoCuenta: "Ahorro",
+      fechaApertura: DateTime(2020, 5, 10),
+      estadoCuenta: "Activa",
+    );
+  }
 
-CuentaCredito? buscarCuentaCredito(String numeroCuenta) {
-  return CuentaCredito(
-    numeroCuenta: numeroCuenta,
-    limiteCredito: 20000.0,
-    saldoDeuda: 5000.0,
-    tasaInteres: 3.5,
-    fechaAprobacion: DateTime(2022, 3, 15),
-    estadoCredito: "Activo",
-  );
-}
+  CuentaCredito? buscarCuentaCredito(String numeroCuenta) {
+    return CuentaCredito(
+      numeroCuenta: numeroCuenta,
+      limiteCredito: 20000.0,
+      saldoDeuda: 5000.0,
+      tasaInteres: 3.5,
+      fechaAprobacion: DateTime(2022, 3, 15),
+      estadoCredito: "Activo",
+    );
+  }
 
-Prestamo? buscarPrestamo(String numeroCuenta) {
-  return Prestamo(
-    numeroCuenta: numeroCuenta,
-    numeroPrestamo: "P12345",
-    monto: 5000.0,
-    meses: 24,
-    pagosRealizados: 12,
-    tasaInteres: 5.0,
-    fechaInicio: DateTime(2023, 6, 1),
-    tipoPrestamo: "Personal",
-    fechapago: DateTime(2024, 6, 10),
-    pagoMinimo: 500.0,
-    diasPago: "10 de cada mes",
-  );
+  Prestamo? buscarPrestamo(String numeroCuenta) {
+    return Prestamo(
+      numeroCuenta: numeroCuenta,
+      numeroPrestamo: "P12345",
+      monto: 5000.0,
+      meses: 24,
+      pagosRealizados: 12,
+      tasaInteres: 5.0,
+      fechaInicio: DateTime(2023, 6, 1),
+      tipoPrestamo: "Personal",
+      fechapago: DateTime(2024, 6, 10),
+      pagoMinimo: 500.0,
+      diasPago: "10 de cada mes",
+    );
+  }
+
+  Future _mostrarPagoCreditoDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Pago de Crédito/Préstamo"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Ingrese el monto a pagar"),
+              TextField(
+                controller: _montoController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                double monto = double.tryParse(_montoController.text) ?? 0.0;
+                if (monto > 0) {
+                  if (cuentaCredito != null &&
+                      monto <= cuentaCredito!.saldoDeuda) {
+                    setState(() {
+                      cuentaCredito!.saldoDeuda -= monto;
+                    });
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Pago realizado"),
+                          content: Text(
+                            "Pago de \$${monto.toStringAsFixed(2)} realizado.",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Aceptar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else if (prestamo != null && monto <= prestamo!.monto) {
+                    setState(() {
+                      prestamo!.monto -= monto;
+                    });
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Pago realizado"),
+                          content: Text(
+                            "Pago de \$${monto.toStringAsFixed(2)} realizado.",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Aceptar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Error"),
+                          content: Text(
+                            "El monto a pagar excede la deuda pendiente.",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Aceptar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                } else {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Ingrese un monto válido.')),
+                  );
+                }
+              },
+              child: Text("Aceptar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancelar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
