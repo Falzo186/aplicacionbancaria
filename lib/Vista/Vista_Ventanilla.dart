@@ -5,6 +5,18 @@ import '../Controlador/Controlador_Ventanilla.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Usuario.dart';
 
+final Color colorAppbar = Color(0xFF472F2F);
+final Color colorBuscador = Color(0xFFD9D9D9);
+final Color colorBackground = Color(0xFFB1ACAC);
+final Color colorMenu = Color(0xFF5C3B3B);
+final Color colorFondo = Color(0xFF676464);
+final Color colorCard = Color(0xFFEDECEC);
+final Color colorBoton = Color(0xFFA08181);
+final Color colorTexto = Color(0xFF140A0A);
+final Color colorTexto2 = Color(0xFFEEEEEE);
+final Color colorIcon = Color(0xFF1F1010);
+final Color colorCircle = Color(0xFF138A43);
+
 class VistaVentanilla extends StatefulWidget {
   const VistaVentanilla({super.key, required this.usuario});
   final Usuario usuario;
@@ -17,6 +29,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   bool _showMenu = false;
   double _menuWidth = 0;
   TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final controlador = ControladorVentanilla();
   final controladorCliente = ControladorDatoscliente();
   List<Cliente> clientes = [];
@@ -48,34 +61,74 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
-      appBar: AppBar(
-        backgroundColor: Color(0xFF472F2F),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text('Ventanilla')],
+      backgroundColor: colorBackground,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80.0),
+        child: Container(
+          color: colorAppbar, // Color de fondo para toda la sección
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText:
+                        "Ingrese el nombre o numero de cuenta del cliente",
+                    hintStyle: TextStyle(color: colorTexto),
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
+                    fillColor: colorBuscador,
+                    filled: true,
+                  ),
+                  onChanged: _filterClientes,
+                ),
+              ),
+              SizedBox(width: 10),
+              IconButton(
+                color: colorIcon,
+                onPressed: () {
+                  setState(() {
+                    _showMenu = !_showMenu;
+                    _menuWidth = _showMenu ? 200 : 0;
+                  });
+                },
+                icon: Icon(Icons.menu),
+              ),
+            ],
+          ),
         ),
       ),
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               children: [
                 SizedBox(height: 10),
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-
-                      color: Color(0xFF676464),
+                      borderRadius: BorderRadius.circular(5),
+                      color: colorFondo,
                     ),
-                    child: ListView.builder(
-                      itemCount: filteredClientes.length,
-                      itemBuilder: (context, index) {
-                        final cliente = filteredClientes[index];
-                        return _buildClientCard(cliente);
-                      },
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      thickness: 6,
+                      radius: Radius.circular(20),
+                      trackVisibility: true,
+                      controller: _scrollController,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: filteredClientes.length,
+                        itemBuilder: (context, index) {
+                          final cliente = filteredClientes[index];
+                          return _buildClientCard(cliente);
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -85,53 +138,54 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
             ),
           ),
           Positioned(
-            right: 0,
+            right: _showMenu ? 0 : -500,
+
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              width: _menuWidth,
+              duration: Duration(milliseconds: 500),
+              width: 220,
               height: MediaQuery.of(context).size.height,
-              color: Color.fromARGB(255, 82, 59, 59),
-              child:
-                  _showMenu
-                      ? Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 10,
+              color: colorMenu,
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: SingleChildScrollView(
+                // HACE QUE EL MENÚ SEA SCROLLABLE
+                child: AnimatedOpacity(
+                  opacity: _showMenu ? 1 : 0,
+                  duration: Duration(milliseconds: 250),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Menú",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Menú",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Divider(),
-                            // Información del usuario
-                            Text(
-                              "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "Correo: ${widget.usuario.correoElectronico}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white70,
-                              ),
-                            ),
-                            TextButton(
+                        Divider(color: colorTexto2),
+                        SizedBox(height: 5),
+                        Text(
+                          "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Correo: ${widget.usuario.correoElectronico}",
+                          style: TextStyle(fontSize: 14, color: Colors.white70),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        SizedBox(height: 20),
+                        Divider(color: colorTexto2),
+                        SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: TextButton(
                               style: TextButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(
-                                  255,
-                                  160,
-                                  129,
-                                  129,
-                                ),
+                                backgroundColor: colorBoton,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -139,15 +193,16 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                               onPressed: () => onSelected(context, 1),
                               child: Text(
                                 "Cerrar Sesión",
-                                style: TextStyle(
-                                  color: const Color.fromARGB(255, 17, 16, 16),
-                                ),
+                                style: TextStyle(color: colorTexto),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      )
-                      : SizedBox(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -157,7 +212,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
 
   Widget _buildClientCard(Cliente cliente) {
     return Card(
-      color: const Color.fromARGB(255, 153, 107, 22),
+      color: colorCard,
       margin: EdgeInsets.all(10),
       child: InkWell(
         onTap: () {
@@ -173,18 +228,27 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                cliente.nombreCompleto,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 10,
+                    backgroundColor:
+                        colorCircle, // Puedes cambiar el color del círculo
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    cliente.nombreCompleto,
+                    style: TextStyle(
+                      color: colorTexto,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 5),
               Row(
                 children: [
-                  CircleAvatar(backgroundColor: Colors.blue),
                   SizedBox(width: 10),
                   Expanded(
                     child: Column(
@@ -192,15 +256,19 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                       children: [
                         Text(
                           "Cuenta: ${cliente.numeroCuenta}",
-                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          style: TextStyle(
+                            color: colorTexto,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         Text(
                           "Tel: ${cliente.telefono}",
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                          style: TextStyle(color: colorTexto, fontSize: 14),
                         ),
                         Text(
                           "Email: ${cliente.correoElectronico}",
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                          style: TextStyle(color: colorTexto),
                         ),
                       ],
                     ),

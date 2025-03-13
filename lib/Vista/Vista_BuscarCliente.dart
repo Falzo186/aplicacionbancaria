@@ -1,3 +1,4 @@
+import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
 import 'package:aplicacionbancaria/Vista/Vista_DatosCliente.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class VistaBuscarCliente extends StatefulWidget {
 
 class _BuscarClienteScreenState extends State<VistaBuscarCliente> {
   bool _showMenu = false;
+  final controlador = ControladorDatoscliente();
   double _menuWidth = 0;
   TextEditingController _searchController = TextEditingController();
   List<Cliente> clientes = [];
@@ -22,6 +24,7 @@ class _BuscarClienteScreenState extends State<VistaBuscarCliente> {
   @override
   void initState() {
     super.initState();
+    clientes = controlador.obtenerClientes();
     filteredClientes = clientes;
     
   }

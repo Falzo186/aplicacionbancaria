@@ -1,6 +1,6 @@
 class Prestamo {
-  String? numeroCuenta;
   String? numeroPrestamo;
+  String? numeroCuenta;
   double monto;
   int meses;
   int pagosRealizados;
@@ -9,7 +9,6 @@ class Prestamo {
   String tipoPrestamo;
   String estado;  // Pendiente, Pagado, Atrasado  .
   double? pagoMinimo;
-  DateTime fechaCorte;
   DateTime fechapago;
   String diasPago;
 
@@ -22,7 +21,6 @@ class Prestamo {
     required this.tasaInteres,
     required this.fechaInicio,
     required this.tipoPrestamo,
-    required this.fechaCorte,
     required this.fechapago,
     this.estado = "Pendiente",
     required this.pagoMinimo,

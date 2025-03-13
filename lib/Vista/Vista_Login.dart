@@ -128,7 +128,7 @@ class VistaLogin extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_usernameController.text.isEmpty ||
                                 _passwordController.text.isEmpty) {
                               showDialog(
@@ -161,11 +161,11 @@ class VistaLogin extends StatelessWidget {
                                 },
                               );
                             } else {
-                              controlador.login(
-                                _usernameController.text,
-                                _passwordController.text,
-                                context,
-                              );
+                                await controlador.login(
+                                  _usernameController.text,
+                                  _passwordController.text,
+                                  context,
+                                );
                             }
                           },
                           child: Text(
