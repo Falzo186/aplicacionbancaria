@@ -1,3 +1,4 @@
+import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Ventanilla2.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
@@ -287,29 +288,30 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
       case 0:
         showDialog(
           context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text('Datos del Usuario'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Nombre: ${widget.usuario.nombre}'),
-                    Text('Apellido: ${widget.usuario.apellido}'),
-                    Text('Email: ${widget.usuario.correoElectronico}'),
-                    // Añade más datos del usuario si es necesario
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text('Cerrar'),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            title: Text('Datos del Usuario'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Nombre: ${widget.usuario.nombre}'),
+                Text('Apellido: ${widget.usuario.apellido}'),
+                Text('Email: ${widget.usuario.correoElectronico}'),
+                // Añade más datos del usuario si es necesario
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cerrar'),
               ),
+            ],
+          ),
         );
         break;
       case 1:
-        Navigator.of(context).pop();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => VistaLogin()),
+        );
         break;
     }
   }

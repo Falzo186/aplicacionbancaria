@@ -18,7 +18,7 @@ void main() async {
   // Configurar ventana si está en escritorio
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle(title);
-    setWindowMinSize(const Size(1300, 900));
+    setWindowMinSize(const Size(1300, 1000));
     setWindowMaxSize(Size.infinite);
     _centerWindow();
   }
