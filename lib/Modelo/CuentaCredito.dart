@@ -13,13 +13,5 @@ class CuentaCredito {
     required this.estadoCredito,
   });
 
-  // Método para realizar un pago
-  void 
-  realizarPago(double monto) {
-    if (monto <= saldoDeuda) {
-      saldoDeuda -= monto;
-    } else {
-      saldoDeuda = 0;
-    }
-  }
+
 }

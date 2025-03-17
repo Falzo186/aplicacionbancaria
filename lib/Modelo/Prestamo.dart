@@ -13,6 +13,8 @@ class Prestamo {
   double interesAtraso = 0.25; // 25% de interés por mes de atraso
   double montoRestante;
 
+ 
+
   Prestamo({
     required this.numeroCuenta,
     required this.numeroPrestamo,

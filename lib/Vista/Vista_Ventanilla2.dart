@@ -328,9 +328,9 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
   double interesAtraso = 0.25; // 25% de interés por mes de atraso
   double interesTotal = 0;
 
-  // Si el pago se ha retrasado más de 8 días, aplicar interés
-  if (diasDiferencia > 8) {
-    int mesesAtraso = ((diasDiferencia - 8) / 30).ceil();
+  // Si el pago se ha retrasado más de x días, aplicar interés
+  if (diasDiferencia > 2) {
+    int mesesAtraso = (diasDiferencia  / 30).ceil();
     interesTotal = prestamo!.pagoMinimo! * interesAtraso * mesesAtraso;
   }
 
@@ -376,13 +376,15 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
                 if (prestamo != null && totalPagar <= prestamo!.monto) {
                   setState(() {
-                    prestamo!.monto -= totalPagar;
+                    prestamo!.montoRestante -= totalPagar;
                     prestamo!.pagosRealizados += 1;
                     prestamo!.fechapago = DateTime(
                       prestamo!.fechapago.year,
                       prestamo!.fechapago.month + 1,
                       prestamo!.fechapago.day,
                     );
+                    controlador.actualizarPrestamo(prestamo!);
+                    cuentaCredito!.saldoDeuda -= prestamo!.montoRestante;
                   });
 
                   Navigator.pop(context);
