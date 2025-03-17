@@ -74,7 +74,17 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          color: const Color(0xFFB1ACAC),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('lib/Recursos/logo.png'), // Ruta de la imagen del logo
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                Colors.white.withOpacity(0.10), // Ajusta la opacidad según sea necesario
+                BlendMode.dstATop,
+              ),
+              scale: 2.0, // Reduce el tamaño del logo en un 25%
+            ),
+          ),
           height: MediaQuery.of(context).size.height,
           width: double.infinity,
           padding: const EdgeInsets.all(15),
@@ -87,7 +97,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       padding: const EdgeInsets.all(10),
@@ -150,7 +160,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE0E0E0),
+                          color: Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         padding: const EdgeInsets.all(10),
@@ -172,6 +182,17 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                             Text(
                               'Crédito Disponible: \$${(cuentaCredito!.limiteCredito - cuentaCredito!.saldoDeuda).toStringAsFixed(2)}',
                               style: const TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Fecha de Aprobación: ${_formatDate(cuentaCredito!.fechaAprobacion)}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Estado de Crédito: ${cuentaCredito!.estadoCredito}',
+                              style: TextStyle(
+                              fontSize: 16,
+                              color: cuentaCredito!.estadoCredito == 'Activo' ? Colors.green : Colors.red,
+                              ),
                             ),
                             Text(
                               'Saldo Deuda: \$${cuentaCredito!.saldoDeuda.toStringAsFixed(2)}',
@@ -196,7 +217,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                         child: Container(
                           padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE0E0E0),
+                            color: Colors.white.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
@@ -252,7 +273,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                         child: Container(
                           padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE0E0E0),
+                            color: Colors.white.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
@@ -275,19 +296,15 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                                 style: const TextStyle(fontSize: 16),
                               ),
                               Text(
+                                'Fecha de Vencimiento: ${_formatDate(seguro!.fechaVencimiento)},Estado: ${seguro!.estado}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Meses Totales: ${seguro!.meses} ,Pagos Realizados: ${seguro!.pagosRealizados}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
                                 'Monto de Cobertura: \$${seguro!.montoCobertura.toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Costo Mensual: \$${seguro!.costo.toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Fecha de Vencimiento: ${_formatDate(seguro!.fechaVencimiento)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Pagos Realizados: ${seguro!.pagosRealizados}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                               Text(
@@ -295,7 +312,11 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                                 style: const TextStyle(fontSize: 16),
                               ),
                               Text(
-                                'Estado: ${seguro!.estado}',
+                                'Fecha de Pago: ${_formatDate(seguro!.fechaPago)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Costo Mensual: \$${seguro!.pagoMensual.toStringAsFixed(2)}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                               const SizedBox(height: 10),
@@ -317,7 +338,6 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
     );
   }
 
-  // Métodos de ejemplo para buscar cuentas (debes implementarlos con tu lógica real)
 
 
   Future _mostrarPagoPrestamoDialog(BuildContext context) async {

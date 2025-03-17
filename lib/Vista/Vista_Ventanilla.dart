@@ -4,6 +4,7 @@ import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Ventanilla.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Usuario.dart';
+import 'Vista_Login.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBuscador = Color(0xFFD9D9D9);
@@ -27,7 +28,7 @@ class VistaVentanilla extends StatefulWidget {
 
 class _VentanillaScreenState extends State<VistaVentanilla> {
   bool _showMenu = false;
-  TextEditingController _searchController = TextEditingController();
+  int _currentTurn = 1;
   final ScrollController _scrollController = ScrollController();
   final controlador = ControladorVentanilla();
   final controladorCliente = ControladorDatoscliente();
@@ -64,47 +65,58 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: colorBackground,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80.0),
-        child: Container(
-          color: colorAppbar, // Color de fondo para toda la sección
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: "Ingrese el nombre o numero de cuenta del cliente",
-                    hintStyle: TextStyle(color: colorTexto),
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide.none,
-                    ),
-                    fillColor: colorBuscador,
-                    filled: true,
-                  ),
-                  onChanged: _filterClientes,
-                ),
-              ),
-              SizedBox(width: 10),
-              IconButton(
-                color: colorIcon,
-                onPressed: () {
-                  setState(() {
-                    _showMenu = !_showMenu;
-                  });
-                },
-                icon: Icon(Icons.menu),
-              ),
-            ],
+     appBar: AppBar(
+  backgroundColor: colorAppbar,
+  title: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text('Ventanilla Número 1'),
+      Row(
+        children: [
+          Text(
+            'TURNO',
+            style: TextStyle(color: colorTexto2),
           ),
-        ),
+          SizedBox(width: 10),
+          Container(
+            width: 50,
+            height: 30,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: colorBuscador,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Text(
+              '$_currentTurn',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colorTexto),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.arrow_forward, color: colorTexto2),
+            onPressed: () {
+              setState(() {
+                _currentTurn++;
+              });
+            },
+          ),
+          SizedBox(width: 10), // Espacio entre la flecha y el menú
+          IconButton(
+            icon: Icon(Icons.menu, color: colorTexto2),
+            onPressed: () {
+              setState(() {
+                _showMenu = !_showMenu;
+              });
+            },
+          ),
+        ],
       ),
+    ],
+  ),
+),
+
       body: Stack(
         children: [
-          
           FutureBuilder(
             future: _initializeClientes(),
             builder: (context, snapshot) {
@@ -201,7 +213,13 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              onPressed: () => onSelected(context, 1),
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => VistaLogin(),
+                                  ),
+                                );
+                              },
                               child: Text(
                                 "Cerrar Sesión",
                                 style: TextStyle(color: colorTexto),
