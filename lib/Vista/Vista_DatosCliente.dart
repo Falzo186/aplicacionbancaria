@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../Controlador/Controlador_DatosCliente.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Prestamo.dart';
 import '../Modelo/Seguro.dart';
@@ -16,96 +17,22 @@ class VistaDatosCliente extends StatefulWidget {
 
 class _VistaDatosClienteState extends State<VistaDatosCliente> {
   String selectedFilter = 'Préstamos'; // Filtro inicial
-
+  final controlador = ControladorDatoscliente();
+  List<Prestamo> prestamos = [];
+  List<Seguro> seguros = [];
   // Controlador de búsqueda
   TextEditingController _searchController = TextEditingController();
 
   List<dynamic> filteredOperaciones = [];
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
+    prestamos = await controlador.obtenerPrestamos();
+    seguros = await controlador.obtenerSeguros();
     _filterOperaciones();
   }
 
-  List<Prestamo> prestamos = [
-    Prestamo(
-      numeroCuenta: "12345678901",
-      monto: 10000.00,
-      meses: 12,
-      pagosRealizados: 1,
-      tasaInteres: 0.10,
-      fechaInicio: DateTime(2023, 10, 15),
-      tipoPrestamo: "Personal",
-      fechapago: DateTime(2023, 11, 10),
-      estado: "Aprobado",
-      numeroPrestamo: "PR001",
-      
-      pagoMinimo: 100.00,
-      diasPago: "10 del mes",
-    ),
-    Prestamo(
-      numeroCuenta: "12345678901",
-      monto: 25000.00,
-      meses: 24,
-      pagosRealizados: 3,
-      tasaInteres: 0.08,
-      fechaInicio: DateTime(2023, 11, 1),
-      tipoPrestamo: "Automóvil",
-      fechapago: DateTime(2023, 12, 15),
-      estado: "Pendiente",
-      numeroPrestamo: "PR002",
-      pagoMinimo: 250.00,
-      diasPago: "15 del mes",
-    ),
-  ];
-
-  List<Seguro> seguros = [
-    Seguro(
-      numeroCuenta: "12345678901",
-      numeroPoliza: "POL001",
-      tipoSeguro: "Automóvil",
-      montoCobertura: 500000.00,
-      fechaInicio: DateTime(2023, 11, 1),
-      fechaVencimiento: DateTime(2024, 11, 1),
-      prima: 12000.00,
-      estado: "Activo",
-      descripcionCobertura: "Cobertura amplia",
-    ),
-    Seguro(
-      numeroCuenta: "12345678901",
-      numeroPoliza: "POL002",
-      tipoSeguro: "Vida",
-      montoCobertura: 1000000.00,
-      fechaInicio: DateTime(2023, 10, 15),
-      fechaVencimiento: DateTime(2028, 10, 15),
-      prima: 8000.00,
-      estado: "Activo",
-      descripcionCobertura: "Cobertura por fallecimiento",
-    ),
-    Seguro(
-      numeroCuenta: "12345678901",
-      numeroPoliza: "POL003",
-      tipoSeguro: "Casa",
-      montoCobertura: 800000.00,
-      fechaInicio: DateTime(2023, 11, 15),
-      fechaVencimiento: DateTime(2024, 11, 15),
-      prima: 9000.00,
-      estado: "Activo",
-      descripcionCobertura: "Cobertura contra incendios y robo",
-    ),
-    Seguro(
-      numeroCuenta: "12345678901",
-      numeroPoliza: "POL004",
-      tipoSeguro: "Negocio",
-      montoCobertura: 1500000.00,
-      fechaInicio: DateTime(2023, 12, 1),
-      fechaVencimiento: DateTime(2024, 12, 1),
-      prima: 20000.00,
-      estado: "Activo",
-      descripcionCobertura: "Cobertura contra daños a terceros",
-    ),
-  ];
 
   List<Transferencia> transferencias = [
     Transferencia(
@@ -250,23 +177,30 @@ class _VistaDatosClienteState extends State<VistaDatosCliente> {
                                       Text('Meses: ${operacion.meses}'),
                                       Text('Tasa de Interés: ${operacion.tasaInteres}'),
                                       Text('Fecha de Inicio: ${operacion.fechaInicio}'),
-                                      Text('Tipo de Préstamo: ${operacion.tipoPrestamo}'),
                                       Text('Fecha de Pago: ${operacion.fechapago}'),
                                       Text('Estado: ${operacion.estado}'),
                                       Text('Número de Préstamo: ${operacion.numeroPrestamo}'),
                                       Text('Número de Cliente: ${operacion.numeroCuenta}'),
                                       Text('Pago Mínimo: ${operacion.pagoMinimo}'),
                                       Text('Días de Pago: ${operacion.diasPago}'),
-                                    ] else if (operacion is Seguro) ...[
-                                      Text('Número de Cliente: ${operacion.numeroCuenta}'),
-                                      Text('Número de Póliza: ${operacion.numeroPoliza}'),
-                                      Text('Tipo de Seguro: ${operacion.tipoSeguro}'),
-                                      Text('Monto de Cobertura: ${operacion.montoCobertura}'),
-                                      Text('Fecha de Inicio: ${operacion.fechaInicio}'),
-                                      Text('Fecha de Vencimiento: ${operacion.fechaVencimiento}'),
-                                      Text('Prima: ${operacion.prima}'),
-                                      Text('Estado: ${operacion.estado}'),
-                                      Text('Descripción de Cobertura: ${operacion.descripcionCobertura}'),
+                                    ]else if (operacion is Seguro) ...[
+                                          Text(
+                                            'Póliza: ${operacion.numeroPoliza} (${operacion.tipoSeguro})',
+                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                          ),
+                                          Divider(),
+                                          Text('Cliente: ${operacion.numeroCuenta}'),
+                                          Text('Monto de Cobertura: \$${operacion.montoCobertura.toStringAsFixed(2)}'),
+                                          Text('Costo Total: \$${operacion.costoTotal.toStringAsFixed(2)}'),
+                                          Text('Pago Mensual: \$${operacion.pagoMensual.toStringAsFixed(2)}'),
+                                          Text('Pagos Realizados: ${operacion.pagosRealizados}/${operacion.meses}'),
+                                          Text('Tasa de Interés: ${(operacion.tasaInteres * 100).toStringAsFixed(2)}%'),
+                                          Text('Estado: ${operacion.estado}', style: TextStyle(color: Colors.blue)),
+                                          Divider(),
+                                          Text('Vigencia: ${operacion.fechaInicio.day}/${operacion.fechaInicio.month}/${operacion.fechaInicio.year} - '
+                                              '${operacion.fechaVencimiento.day}/${operacion.fechaVencimiento.month}/${operacion.fechaVencimiento.year}'),
+                                          if (operacion.descripcionCobertura != null) 
+                                            Text('Cobertura: ${operacion.descripcionCobertura}'),
                                     ] else if (operacion is Transferencia) ...[
                                       Text('Número de Cuenta: ${operacion.numeroCuenta}'),
                                       Text('Número de Transferencia: ${operacion.numeroTransferencia}'),

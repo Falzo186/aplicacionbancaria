@@ -24,7 +24,6 @@ class _BuscarClienteScreenState extends State<VistaBuscarCliente> {
   @override
   void initState() {
     super.initState();
-    clientes = controlador.obtenerClientes();
     filteredClientes = clientes;
     
   }

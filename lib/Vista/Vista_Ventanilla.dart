@@ -1,4 +1,3 @@
-import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Ventanilla2.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
@@ -28,7 +27,6 @@ class VistaVentanilla extends StatefulWidget {
 
 class _VentanillaScreenState extends State<VistaVentanilla> {
   bool _showMenu = false;
-  double _menuWidth = 0;
   TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final controlador = ControladorVentanilla();
@@ -39,20 +37,23 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   @override
   void initState() {
     super.initState();
-    clientes = controladorCliente.obtenerClientes();
+    _initializeClientes();
+  }
+   
+
+  Future<void> _initializeClientes() async {
+    clientes = await controladorCliente.obtenerClientes();
     filteredClientes = clientes;
   }
 
   void _filterClientes(String query) {
-    final filtered =
-        clientes.where((cliente) {
-          final nombreLower = cliente.nombreCompleto.toLowerCase();
-          final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
-          final searchLower = query.toLowerCase();
+    final filtered = clientes.where((cliente) {
+      final nombreLower = cliente.nombreCompleto.toLowerCase();
+      final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
+      final searchLower = query.toLowerCase();
 
-          return nombreLower.contains(searchLower) ||
-              numeroCuentaLower.contains(searchLower);
-        }).toList();
+      return nombreLower.contains(searchLower) || numeroCuentaLower.contains(searchLower);
+    }).toList();
 
     setState(() {
       filteredClientes = filtered;
@@ -74,8 +75,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText:
-                        "Ingrese el nombre o numero de cuenta del cliente",
+                    hintText: "Ingrese el nombre o numero de cuenta del cliente",
                     hintStyle: TextStyle(color: colorTexto),
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(
@@ -94,7 +94,6 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                 onPressed: () {
                   setState(() {
                     _showMenu = !_showMenu;
-                    _menuWidth = _showMenu ? 200 : 0;
                   });
                 },
                 icon: Icon(Icons.menu),
@@ -105,42 +104,53 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
       ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                SizedBox(height: 10),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: colorFondo,
-                    ),
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      thickness: 6,
-                      radius: Radius.circular(20),
-                      trackVisibility: true,
-                      controller: _scrollController,
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: filteredClientes.length,
-                        itemBuilder: (context, index) {
-                          final cliente = filteredClientes[index];
-                          return _buildClientCard(cliente);
-                        },
+          
+          FutureBuilder(
+            future: _initializeClientes(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text("Error al cargar datos"));
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: colorFondo,
+                          ),
+                          child: Scrollbar(
+                            thumbVisibility: true,
+                            thickness: 6,
+                            radius: Radius.circular(20),
+                            trackVisibility: true,
+                            controller: _scrollController,
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              itemCount: filteredClientes.length,
+                              itemBuilder: (context, index) {
+                                final cliente = filteredClientes[index];
+                                return _buildClientCard(cliente);
+                              },
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 10),
+                      // Aquí se pueden agregar más widgets
+                    ],
                   ),
-                ),
-                SizedBox(height: 10),
-                // Aquí se pueden agregar más widgets
-              ],
-            ),
+                );
+              }
+            },
           ),
           Positioned(
             right: _showMenu ? 0 : -500,
-
             child: AnimatedContainer(
               duration: Duration(milliseconds: 500),
               width: 220,
@@ -233,8 +243,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                 children: [
                   CircleAvatar(
                     radius: 10,
-                    backgroundColor:
-                        colorCircle, // Puedes cambiar el color del círculo
+                    backgroundColor: colorCircle, // Puedes cambiar el color del círculo
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -309,9 +318,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
         );
         break;
       case 1:
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => VistaLogin()),
-        );
+        Navigator.of(context).pop();
         break;
     }
   }
