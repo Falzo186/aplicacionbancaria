@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../Modelo/Usuario.dart';
 import 'Vista_BuscarCliente.dart';
 import 'Vista_FormularioCliente.dart';
+import 'Vista_InversionesDisponibles.dart';
+import 'Vista_PrestamosDisponibles.dart';
+import 'Vista_SegurosDisponibles.dart';
 
 class EscritorioView extends StatefulWidget {
   final Usuario usuario;
@@ -82,35 +85,61 @@ class _EscritorioViewState extends State<EscritorioView> {
                     ),
                     Expanded(
                       flex: 3,
-                      child: Container(
+                        child: Container(
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 175, 156, 156),
                           borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
                           ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _buildButton("Consultas Clientes", _onConsultasClientesPressed),
-                            _buildButton("Inversiones", _onInversionesPressed),
-                            _buildButton("Prestaciones", _onPrestacionesPressed),
-                            _buildButton("Seguros", _onSegurosPressed),
-                            _buildButton("Alta Clientes", _onAltaClientesPressed),
+                          _buildButton(
+                            "Consultas Clientes", 
+                            _onConsultasClientesPressed, 
+                            width: 400, 
+                            height: 80
+                          ),
+                          _buildButton(
+                            "Inversiones", 
+                            _onInversionesPressed, 
+                            width: 400, 
+                            height: 80
+                          ),
+                          _buildButton(
+                            "Prestaciones", 
+                            _onPrestacionesPressed, 
+                            width: 400, 
+                            height: 80
+                          ),
+                          _buildButton(
+                            "Seguros", 
+                            _onSegurosPressed, 
+                            width: 400, 
+                            height: 80
+                          ),
+                          _buildButton(
+                            "Alta Clientes", 
+                            _onAltaClientesPressed, 
+                            width: 400, 
+                            height: 80
+                          ),
                           ],
                         ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
+  
 
   Widget _buildDrawer() {
     return Drawer(
@@ -152,13 +181,13 @@ class _EscritorioViewState extends State<EscritorioView> {
     );
   }
 
-  Widget _buildButton(String text, VoidCallback onPressed) {
+  Widget _buildButton(String text, VoidCallback onPressed, {double width = 200, double height = 40}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFFC4A454),
-          minimumSize: const Size(200, 40),
+          minimumSize: Size(width, height),
         ),
         onPressed: onPressed,
         child: Text(text, style: const TextStyle(color: Colors.black)),
@@ -171,15 +200,15 @@ class _EscritorioViewState extends State<EscritorioView> {
   }
 
   void _onInversionesPressed() {
-    print('Botón presionado: Inversiones');
+    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaInversionesDisponibles(usuario: widget.usuario)));
   }
 
   void _onPrestacionesPressed() {
-    print('Botón presionado: Prestaciones');
+    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaPrestamosDisponibles(usuario: widget.usuario)));
   }
 
   void _onSegurosPressed() {
-    print('Botón presionado: Seguros');
+   Navigator.push(context, MaterialPageRoute(builder: (context) => VistaSegurosDisponibles(usuario: widget.usuario)));
   }
 
   void _onAltaClientesPressed() {

@@ -134,5 +134,9 @@ class ControladorDatoscliente {
     }
   }
 
+  obtenerTransferencias() {
+    
+  }
+
 
 }
