@@ -1,3 +1,4 @@
+import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:flutter/material.dart';
 
 import '../Modelo/Usuario.dart';
@@ -13,6 +14,8 @@ class AdministradorView extends StatefulWidget {
 }
 
 class _EscritorioViewState extends State<AdministradorView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,17 +56,15 @@ class _EscritorioViewState extends State<AdministradorView> {
                         ),
                       ],
                     ),
-                    Text(
-                      "Sesion: ${widget.usuario.nombre} ${widget.usuario.apellido}",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
+
                     Builder(
-                      builder: (context) => IconButton(
-                        icon: const Icon(Icons.menu, color: Colors.white),
-                        onPressed: () {
-                          Scaffold.of(context).openEndDrawer(); // Cambiado a openEndDrawer
-                        },
-                      ),
+                      builder:
+                          (context) => IconButton(
+                            icon: const Icon(Icons.menu, color: Colors.white),
+                            onPressed: () {
+                              _scaffoldKey.currentState?.openEndDrawer();
+                            },
+                          ),
                     ),
                   ],
                 ),
@@ -74,9 +75,12 @@ class _EscritorioViewState extends State<AdministradorView> {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: Image.asset(
-                          'lib/Recursos/logo.png',
-                          width: 1000,
+                        child: Opacity(
+                          opacity: 10.0,
+                          child: Image.asset(
+                            'lib/Recursos/logo.png',
+                            width: 1000,
+                          ),
                         ),
                       ),
                     ),
@@ -93,11 +97,20 @@ class _EscritorioViewState extends State<AdministradorView> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _buildButton("Consultas Clientes", _onConsultasClientesPressed),
+                            _buildButton(
+                              "Consultas Clientes",
+                              _onConsultasClientesPressed,
+                            ),
                             _buildButton("Inversiones", _onInversionesPressed),
-                            _buildButton("Prestaciones", _onPrestacionesPressed),
+                            _buildButton(
+                              "Prestaciones",
+                              _onPrestacionesPressed,
+                            ),
                             _buildButton("Seguros", _onSegurosPressed),
-                            _buildButton("Gestion de Actividades", _onAltaClientesPressed),
+                            _buildButton(
+                              "Gestion de Actividades",
+                              _onAltaClientesPressed,
+                            ),
                           ],
                         ),
                       ),
@@ -118,9 +131,7 @@ class _EscritorioViewState extends State<AdministradorView> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(
-              color: Color(0xFF5B3B32),
-            ),
+            decoration: BoxDecoration(color: Color(0xFF5B3B32)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -143,8 +154,10 @@ class _EscritorioViewState extends State<AdministradorView> {
           ListTile(
             title: Text('Cerrar Sesión'),
             onTap: () {
-              Navigator.pop(context); // Cierra el drawer
-              Navigator.pop(context); // Regresa a la ventana anterior
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => VistaLogin()),
+              );
             },
           ),
         ],
@@ -167,7 +180,12 @@ class _EscritorioViewState extends State<AdministradorView> {
   }
 
   void _onConsultasClientesPressed() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaBuscarCliente(usuario: widget.usuario)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
+      ),
+    );
   }
 
   void _onInversionesPressed() {
@@ -183,7 +201,9 @@ class _EscritorioViewState extends State<AdministradorView> {
   }
 
   void _onAltaClientesPressed() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaFormularioCliente()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => VistaFormularioCliente()),
+    );
   }
 }
-

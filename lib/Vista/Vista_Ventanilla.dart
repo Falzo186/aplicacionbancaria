@@ -40,7 +40,6 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
     super.initState();
     _initializeClientes();
   }
-   
 
   Future<void> _initializeClientes() async {
     clientes = await controladorCliente.obtenerClientes();
@@ -48,13 +47,15 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   }
 
   void _filterClientes(String query) {
-    final filtered = clientes.where((cliente) {
-      final nombreLower = cliente.nombreCompleto.toLowerCase();
-      final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
-      final searchLower = query.toLowerCase();
+    final filtered =
+        clientes.where((cliente) {
+          final nombreLower = cliente.nombreCompleto.toLowerCase();
+          final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
+          final searchLower = query.toLowerCase();
 
-      return nombreLower.contains(searchLower) || numeroCuentaLower.contains(searchLower);
-    }).toList();
+          return nombreLower.contains(searchLower) ||
+              numeroCuentaLower.contains(searchLower);
+        }).toList();
 
     setState(() {
       filteredClientes = filtered;
@@ -65,56 +66,70 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: colorBackground,
-     appBar: AppBar(
-  backgroundColor: colorAppbar,
-  title: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text('Ventanilla Número 1'),
-      Row(
-        children: [
-          Text(
-            'TURNO',
-            style: TextStyle(color: colorTexto2),
-          ),
-          SizedBox(width: 10),
-          Container(
-            width: 50,
-            height: 30,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: colorBuscador,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Text(
-              '$_currentTurn',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colorTexto),
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.arrow_forward, color: colorTexto2),
-            onPressed: () {
-              setState(() {
-                _currentTurn++;
-              });
-            },
-          ),
-          SizedBox(width: 10), // Espacio entre la flecha y el menú
-          IconButton(
-            icon: Icon(Icons.menu, color: colorTexto2),
-            onPressed: () {
-              setState(() {
-                _showMenu = !_showMenu;
-              });
-            },
-          ),
-        ],
-      ),
-    ],
-  ),
-),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80),
+        child: Container(
+          color: colorAppbar,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.search, color: Colors.white),
+                  onPressed: () {},
+                ),
+                Text(
+                  "Ventanilla No. 1",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text('TURNO', style: TextStyle(color: colorTexto2)),
+                    SizedBox(width: 10),
+                    Container(
+                      width: 50,
+                      height: 30,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: colorBuscador,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        '$_currentTurn',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: colorTexto),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward, color: colorTexto2),
+                      onPressed: () {
+                        setState(() {
+                          _currentTurn++;
+                        });
+                      },
+                    ),
+                    SizedBox(width: 15),
 
+                    IconButton(
+                      icon: Icon(Icons.menu, color: Colors.white),
+                      onPressed: () {
+                        setState(() {
+                          _showMenu = !_showMenu;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           FutureBuilder(
@@ -261,7 +276,8 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                 children: [
                   CircleAvatar(
                     radius: 10,
-                    backgroundColor: colorCircle, // Puedes cambiar el color del círculo
+                    backgroundColor:
+                        colorCircle, // Puedes cambiar el color del círculo
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -315,24 +331,25 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
       case 0:
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Datos del Usuario'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Nombre: ${widget.usuario.nombre}'),
-                Text('Apellido: ${widget.usuario.apellido}'),
-                Text('Email: ${widget.usuario.correoElectronico}'),
-                // Añade más datos del usuario si es necesario
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Cerrar'),
+          builder:
+              (context) => AlertDialog(
+                title: Text('Datos del Usuario'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Nombre: ${widget.usuario.nombre}'),
+                    Text('Apellido: ${widget.usuario.apellido}'),
+                    Text('Email: ${widget.usuario.correoElectronico}'),
+                    // Añade más datos del usuario si es necesario
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Cerrar'),
+                  ),
+                ],
               ),
-            ],
-          ),
         );
         break;
       case 1:

@@ -46,52 +46,33 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nuevo Cliente'),
-        backgroundColor: Colors.brown,
-        actions: [
-          Builder(
-            builder:
-                (context) => IconButton(
-                  icon: Icon(Icons.menu),
-                  onPressed: () {
-                    Scaffold.of(context).openEndDrawer();
-                  },
-                ),
-          ),
-        ],
-      ),
-      endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.brown),
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-            ListTile(title: Text('Item 1'), onTap: () {}),
-            ListTile(title: Text('Item 2'), onTap: () {}),
-          ],
+        title: Text(
+          'Nuevo Cliente',
+          style: TextStyle(color: Colors.white, fontSize: 24),
         ),
+        backgroundColor: Colors.brown,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(5.0),
                 child: Container(
                   color: Colors.brown[100],
                   child: Form(
                     key: _formKey,
                     child: GridView.count(
                       crossAxisCount: 3,
-                      childAspectRatio: 3.5,
-                      crossAxisSpacing: 10,
+                      childAspectRatio: 4.5,
+                      crossAxisSpacing: 15,
                       mainAxisSpacing: 10,
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        left: 10,
+                        right: 10,
+                      ),
                       children: [
                         _buildTextField(
                           'Número de Cuenta',
@@ -141,30 +122,37 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                           'Fuente de Ingresos',
                           _fuenteIngresosController,
                         ),
+                        SizedBox(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: _cancelar,
+                              child: Text('CANCELAR'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: _agregarCliente,
+                              child: Text('AGREGAR CLIENTE'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: _cancelar,
-                  child: Text('CANCELAR'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: _agregarCliente,
-                  child: Text('AGREGAR CLIENTE'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -191,7 +179,43 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   }
 
   Widget _buildDatePicker(String label) {
-    return _buildTextField(label, _fechaNacimientoController, readOnly: true);
+    return GestureDetector(
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+          builder: (context, child) {
+            return Theme(
+              data: ThemeData.light().copyWith(
+                primaryColor: Colors.brown,
+                buttonTheme: ButtonThemeData(
+                  textTheme: ButtonTextTheme.primary,
+                ),
+                colorScheme: ColorScheme.light(
+                  primary: Colors.brown,
+                ).copyWith(secondary: Colors.brown),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (pickedDate != null) {
+          setState(() {
+            _fechaNacimientoController.text =
+                "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+          });
+        }
+      },
+      child: AbsorbPointer(
+        child: _buildTextField(
+          label,
+          _fechaNacimientoController,
+          readOnly: true,
+        ),
+      ),
+    );
   }
 
   void _agregarCliente() {

@@ -12,7 +12,8 @@ void main() async {
   // Inicializar Supabase
   await Supabase.initialize(
     url: 'https://jwykvwaepozxztlrohvx.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWt2d2FlcG96eHp0bHJvaHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI5NDY0ODAsImV4cCI6MjA0ODUyMjQ4MH0.YQKyKg7NIJ14oKSgUuIonDq_rqTc__7tGem50-CLqZM',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWt2d2FlcG96eHp0bHJvaHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI5NDY0ODAsImV4cCI6MjA0ODUyMjQ4MH0.YQKyKg7NIJ14oKSgUuIonDq_rqTc__7tGem50-CLqZM',
   );
 
   // Configurar ventana si está en escritorio

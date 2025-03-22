@@ -56,17 +56,16 @@ class _EscritorioViewState extends State<EscritorioView> {
                         ),
                       ],
                     ),
-                    Text(
-                      "Sesion: ${widget.usuario.nombre} ${widget.usuario.apellido}",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
                     Builder(
-                      builder: (context) => IconButton(
-                        icon: const Icon(Icons.menu, color: Colors.white),
-                        onPressed: () {
-                          Scaffold.of(context).openEndDrawer(); // Cambiado a openEndDrawer
-                        },
-                      ),
+                      builder:
+                          (context) => IconButton(
+                            icon: const Icon(Icons.menu, color: Colors.white),
+                            onPressed: () {
+                              Scaffold.of(
+                                context,
+                              ).openEndDrawer(); // Cambiado a openEndDrawer
+                            },
+                          ),
                     ),
                   ],
                 ),
@@ -77,69 +76,72 @@ class _EscritorioViewState extends State<EscritorioView> {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: Image.asset(
-                          'lib/Recursos/logo.png',
-                          width: 1000,
+                        child: Opacity(
+                          opacity:
+                              0.5, // Ajusta la opacidad según sea necesario
+                          child: Image.asset(
+                            'lib/Recursos/logo.png',
+                            width: 1000,
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
                       flex: 3,
-                        child: Container(
+                      child: Container(
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 175, 156, 156),
                           borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
                           ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                          _buildButton(
-                            "Consultas Clientes", 
-                            _onConsultasClientesPressed, 
-                            width: 400, 
-                            height: 80
-                          ),
-                          _buildButton(
-                            "Inversiones", 
-                            _onInversionesPressed, 
-                            width: 400, 
-                            height: 80
-                          ),
-                          _buildButton(
-                            "Prestaciones", 
-                            _onPrestacionesPressed, 
-                            width: 400, 
-                            height: 80
-                          ),
-                          _buildButton(
-                            "Seguros", 
-                            _onSegurosPressed, 
-                            width: 400, 
-                            height: 80
-                          ),
-                          _buildButton(
-                            "Alta Clientes", 
-                            _onAltaClientesPressed, 
-                            width: 400, 
-                            height: 80
-                          ),
+                            _buildButton(
+                              "Consultas Clientes",
+                              _onConsultasClientesPressed,
+                              width: 400,
+                              height: 80,
+                            ),
+                            _buildButton(
+                              "Inversiones",
+                              _onInversionesPressed,
+                              width: 400,
+                              height: 80,
+                            ),
+                            _buildButton(
+                              "Prestaciones",
+                              _onPrestacionesPressed,
+                              width: 400,
+                              height: 80,
+                            ),
+                            _buildButton(
+                              "Seguros",
+                              _onSegurosPressed,
+                              width: 400,
+                              height: 80,
+                            ),
+                            _buildButton(
+                              "Alta Clientes",
+                              _onAltaClientesPressed,
+                              width: 400,
+                              height: 80,
+                            ),
                           ],
                         ),
-                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
-    }
-  
+      ),
+    );
+  }
 
   Widget _buildDrawer() {
     return Drawer(
@@ -147,9 +149,7 @@ class _EscritorioViewState extends State<EscritorioView> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(
-              color: Color(0xFF5B3B32),
-            ),
+            decoration: BoxDecoration(color: Color(0xFF5B3B32)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -181,7 +181,12 @@ class _EscritorioViewState extends State<EscritorioView> {
     );
   }
 
-  Widget _buildButton(String text, VoidCallback onPressed, {double width = 200, double height = 40}) {
+  Widget _buildButton(
+    String text,
+    VoidCallback onPressed, {
+    double width = 200,
+    double height = 40,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ElevatedButton(
@@ -196,22 +201,47 @@ class _EscritorioViewState extends State<EscritorioView> {
   }
 
   void _onConsultasClientesPressed() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaBuscarCliente(usuario: widget.usuario)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
+      ),
+    );
   }
 
   void _onInversionesPressed() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaInversionesDisponibles(usuario: widget.usuario)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => VistaInversionesDisponibles(usuario: widget.usuario),
+      ),
+    );
   }
 
   void _onPrestacionesPressed() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaPrestamosDisponibles(usuario: widget.usuario)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => VistaPrestamosDisponibles(usuario: widget.usuario),
+      ),
+    );
   }
 
   void _onSegurosPressed() {
-   Navigator.push(context, MaterialPageRoute(builder: (context) => VistaSegurosDisponibles(usuario: widget.usuario)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaSegurosDisponibles(usuario: widget.usuario),
+      ),
+    );
   }
 
   void _onAltaClientesPressed() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => VistaFormularioCliente()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => VistaFormularioCliente()),
+    );
   }
 }
