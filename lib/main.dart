@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:window_size/window_size.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+//se modifico
 final String title = 'Cooperativa Bancaria';
 
 void main() async {
