@@ -1,3 +1,4 @@
+import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Ventanilla2.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
@@ -5,18 +6,6 @@ import '../Controlador/Controlador_Ventanilla.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Usuario.dart';
 import 'Vista_Login.dart';
-
-final Color colorAppbar = Color(0xFF472F2F);
-final Color colorBuscador = Color(0xFFD9D9D9);
-final Color colorBackground = Color(0xFFB1ACAC);
-final Color colorMenu = Color(0xFF5C3B3B);
-final Color colorFondo = Color(0xFF676464);
-final Color colorCard = Color(0xFFEDECEC);
-final Color colorBoton = Color(0xFFA08181);
-final Color colorTexto = Color(0xFF140A0A);
-final Color colorTexto2 = Color(0xFFEEEEEE);
-final Color colorIcon = Color(0xFF1F1010);
-final Color colorCircle = Color(0xFF138A43);
 
 class VistaVentanilla extends StatefulWidget {
   const VistaVentanilla({super.key, required this.usuario});
@@ -29,6 +18,7 @@ class VistaVentanilla extends StatefulWidget {
 class _VentanillaScreenState extends State<VistaVentanilla> {
   bool _showMenu = false;
   int _currentTurn = 1;
+  VentanaModelo colorsv = VentanaModelo();
   final ScrollController _scrollController = ScrollController();
   final controlador = ControladorVentanilla();
   final controladorCliente = ControladorDatoscliente();
@@ -65,11 +55,11 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: colorBackground,
+      backgroundColor: colorsv.colorBackground,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(80),
         child: Container(
-          color: colorAppbar,
+          color: colorsv.colorAppbar,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
@@ -89,24 +79,27 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                 ),
                 Row(
                   children: [
-                    Text('TURNO', style: TextStyle(color: colorTexto2)),
+                    Text('TURNO', style: TextStyle(color: colorsv.colorTexto2)),
                     SizedBox(width: 10),
                     Container(
                       width: 50,
                       height: 30,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: colorBuscador,
+                        color: colorsv.colorBuscador,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
                         '$_currentTurn',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: colorTexto),
+                        style: TextStyle(color: colorsv.colorTexto),
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.arrow_forward, color: colorTexto2),
+                      icon: Icon(
+                        Icons.arrow_forward,
+                        color: colorsv.colorTexto2,
+                      ),
                       onPressed: () {
                         setState(() {
                           _currentTurn++;
@@ -149,7 +142,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
-                            color: colorFondo,
+                            color: colorsv.colorFondo,
                           ),
                           child: Scrollbar(
                             thumbVisibility: true,
@@ -182,7 +175,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
               duration: Duration(milliseconds: 500),
               width: 220,
               height: MediaQuery.of(context).size.height,
-              color: colorMenu,
+              color: colorsv.colorMenu,
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: SingleChildScrollView(
                 // HACE QUE EL MENÚ SEA SCROLLABLE
@@ -199,7 +192,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                           "Menú",
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
-                        Divider(color: colorTexto2),
+                        Divider(color: colorsv.colorTexto2),
                         SizedBox(height: 5),
                         Text(
                           "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
@@ -215,7 +208,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                           maxLines: 1,
                         ),
                         SizedBox(height: 20),
-                        Divider(color: colorTexto2),
+                        Divider(color: colorsv.colorTexto2),
                         SizedBox(height: 20),
                         Align(
                           alignment: Alignment.bottomCenter,
@@ -223,7 +216,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                             width: double.infinity,
                             child: TextButton(
                               style: TextButton.styleFrom(
-                                backgroundColor: colorBoton,
+                                backgroundColor: colorsv.colorBoton,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -237,7 +230,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                               },
                               child: Text(
                                 "Cerrar Sesión",
-                                style: TextStyle(color: colorTexto),
+                                style: TextStyle(color: colorsv.colorTexto),
                               ),
                             ),
                           ),
@@ -256,7 +249,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
 
   Widget _buildClientCard(Cliente cliente) {
     return Card(
-      color: colorCard,
+      color: colorsv.colorCard,
       margin: EdgeInsets.all(10),
       child: InkWell(
         onTap: () {
@@ -277,13 +270,14 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                   CircleAvatar(
                     radius: 10,
                     backgroundColor:
-                        colorCircle, // Puedes cambiar el color del círculo
+                        colorsv
+                            .colorCircle, // Puedes cambiar el color del círculo
                   ),
                   SizedBox(width: 10),
                   Text(
                     cliente.nombreCompleto,
                     style: TextStyle(
-                      color: colorTexto,
+                      color: colorsv.colorTexto,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -301,18 +295,21 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                         Text(
                           "Cuenta: ${cliente.numeroCuenta}",
                           style: TextStyle(
-                            color: colorTexto,
+                            color: colorsv.colorTexto,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
                           "Tel: ${cliente.telefono}",
-                          style: TextStyle(color: colorTexto, fontSize: 14),
+                          style: TextStyle(
+                            color: colorsv.colorTexto,
+                            fontSize: 14,
+                          ),
                         ),
                         Text(
                           "Email: ${cliente.correoElectronico}",
-                          style: TextStyle(color: colorTexto),
+                          style: TextStyle(color: colorsv.colorTexto),
                         ),
                       ],
                     ),

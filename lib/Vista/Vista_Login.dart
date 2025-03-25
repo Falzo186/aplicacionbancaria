@@ -1,56 +1,57 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Login.dart';
+import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
 
 class VistaLogin extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   final controlador = ControladorLogin();
+  VentanaModelo colorsv = VentanaModelo();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2D1E1E), // Marrón oscuro
+      backgroundColor: colorsv.colorFondo2Login,
       body: Stack(
         children: [
-          // Fondo marrón oscuro con forma curva
           Positioned.fill(
             child: Column(
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: ClipPath(
                     clipper: CurvedBackgroundClipper(),
-                    child: Container(
-                      color: Colors.white, // Fondo blanco
-                    ),
+                    child: Container(color: colorsv.colorFondo1Login),
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Container(
-                    color: Color(0xFF5C3B3B), // Marrón más claro
+                    decoration: BoxDecoration(
+                      color: colorsv.colorFondo3Login,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(900),
+                        topRight: Radius.circular(900),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-
-          // Contenido de Login
           Center(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo
                   Container(
                     width: 150,
                     height: 150,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFF472F2F),
+                      color: colorsv.colorFondo3Login,
                       border: Border.all(
-                        color: const Color(0xFF472F2F),
+                        color: colorsv.colorFondo2Login,
                         width: 4,
                       ),
                     ),
@@ -68,11 +69,11 @@ class VistaLogin extends StatelessWidget {
                     padding: EdgeInsets.all(20),
                     margin: EdgeInsets.symmetric(horizontal: 40),
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: colorsv.colorSpaceLogin,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black26,
+                          color: colorsv.colorShadowSplogin,
                           blurRadius: 10,
                           offset: Offset(0, 5),
                         ),
@@ -86,11 +87,11 @@ class VistaLogin extends StatelessWidget {
                           decoration: InputDecoration(
                             prefixIcon: Icon(
                               Icons.person,
-                              color: Colors.black54,
+                              color: colorsv.colorIcons,
                             ),
                             labelText: 'Username',
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: colorsv.colorTexto2,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide.none,
@@ -104,10 +105,13 @@ class VistaLogin extends StatelessWidget {
                           controller: _passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock, color: Colors.black54),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: colorsv.colorIcons,
+                            ),
                             labelText: 'Password',
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: colorsv.colorTexto2,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide.none,
@@ -119,7 +123,7 @@ class VistaLogin extends StatelessWidget {
                         // Botón de login
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.brown[700],
+                            backgroundColor: colorsv.colorBotonLogin,
                             padding: EdgeInsets.symmetric(
                               horizontal: 50,
                               vertical: 15,
@@ -135,21 +139,34 @@ class VistaLogin extends StatelessWidget {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    backgroundColor: Colors.grey[800],
-                                    title: Text(
-                                      'Error',
-                                      style: TextStyle(color: Colors.white),
+                                    backgroundColor: colorsv.denegado,
+                                    title: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.warning,
+                                          color: colorsv.colorTexto2,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'Error',
+                                          style: TextStyle(
+                                            color: colorsv.colorTexto2,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     content: Text(
                                       'Debe llenar las credenciales.',
-                                      style: TextStyle(color: Colors.white70),
+                                      style: TextStyle(
+                                        color: colorsv.colorTexto2,
+                                      ),
                                     ),
                                     actions: <Widget>[
                                       TextButton(
                                         child: Text(
                                           'OK',
                                           style: TextStyle(
-                                            color: Colors.brown[400],
+                                            color: colorsv.colorTexto2,
                                           ),
                                         ),
                                         onPressed: () {
@@ -161,16 +178,19 @@ class VistaLogin extends StatelessWidget {
                                 },
                               );
                             } else {
-                                await controlador.login(
-                                  _usernameController.text,
-                                  _passwordController.text,
-                                  context,
-                                );
+                              await controlador.login(
+                                _usernameController.text,
+                                _passwordController.text,
+                                context,
+                              );
                             }
                           },
                           child: Text(
                             'LOGIN',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
+                            style: TextStyle(
+                              color: colorsv.colorTexto2,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
                       ],
@@ -186,18 +206,17 @@ class VistaLogin extends StatelessWidget {
   }
 }
 
-// Clipper para el fondo curvo superior
+// Clipper para el fondo curvo superior¿
 class CurvedBackgroundClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height - 80);
+    path.lineTo(0, size.height - 30);
     path.quadraticBezierTo(
       size.width / 2,
-      size.height -
-          250, // Ajusta este valor para que la curva se hunda hacia adentro
+      size.height - 300, // Hace que la curva se alinee con la siguiente sección
       size.width,
-      size.height - 80,
+      size.height - 30,
     );
     path.lineTo(size.width, 0);
     path.close();

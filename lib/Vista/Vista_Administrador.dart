@@ -1,3 +1,4 @@
+import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class AdministradorView extends StatefulWidget {
 
 class _EscritorioViewState extends State<AdministradorView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  VentanaModelo colorsv = VentanaModelo();
 
   @override
   Widget build(BuildContext context) {
