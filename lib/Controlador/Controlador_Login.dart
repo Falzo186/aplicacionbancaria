@@ -122,7 +122,7 @@ Future<void> insertarUsuarios() async {
       'numero_identificacion': 'GHI789',
       'puesto_trabajo': 'cajero'
     },
-  ]; // hola
+  ]; // hola ---
 
   for (var usuario in usuarios) {
     await supabase.from('usuarios').insert(usuario);

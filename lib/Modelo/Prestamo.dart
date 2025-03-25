@@ -61,15 +61,15 @@ class Prestamo {
   
   Map<String, dynamic> toMap() {
     return {
-      'numeroCuenta': numeroCuenta,
-      'numeroPrestamo': numeroPrestamo,
+      'numerocuenta': numeroCuenta,
+      'numeroprestamo': numeroPrestamo,
       'monto': monto,
       'meses': meses,
-      'pagosRealizados': pagosRealizados,
-      'tasaInteres': tasaInteres,
-      'fechaInicio': fechaInicio.toIso8601String(),
+      'pagosrealizados': pagosRealizados,
+      'tasainteres': tasaInteres,
+      'fechainicio': fechaInicio.toIso8601String(),
       'fechapago': fechapago.toIso8601String(),
-      'diasPago': diasPago,
+      'diaspago': diasPago,
       'estado': estado,
     };
   }

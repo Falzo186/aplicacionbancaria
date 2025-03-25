@@ -6,6 +6,7 @@ import '../Modelo/Usuario.dart';
 import 'Vista_BuscarCliente.dart';
 import 'Vista_FormularioCliente.dart';
 import 'Vista_InversionesDisponibles.dart';
+import 'Vista_Login.dart';
 import 'Vista_PrestamosDisponibles.dart';
 import 'Vista_SegurosDisponibles.dart';
 
@@ -87,9 +88,11 @@ class _EscritorioViewState extends State<EscritorioView> {
               ),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white, size: 30),
-            onPressed: () => Scaffold.of(context).openEndDrawer(),
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white, size: 30),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
           ),
         ],
       ),
@@ -172,7 +175,11 @@ class _EscritorioViewState extends State<EscritorioView> {
           ListTile(
             leading: Icon(Icons.logout, color: Colors.redAccent),
             title: Text('Cerrar Sesión', style: TextStyle(fontSize: 18)),
-            onTap: () => Navigator.pop(context),
+           onTap: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => VistaLogin()),
+              );
+            },
           ),
         ],
       ),

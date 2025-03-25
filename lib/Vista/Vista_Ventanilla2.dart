@@ -399,12 +399,16 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                     prestamo!.montoRestante -= totalPagar;
                     prestamo!.pagosRealizados += 1;
                     prestamo!.fechapago = DateTime(
-                      prestamo!.fechapago.year,
-                      prestamo!.fechapago.month + 1,
+                      DateTime.now().year,
+                      DateTime.now().month + 1,
                       prestamo!.fechapago.day,
                     );
                     controlador.actualizarPrestamo(prestamo!);
                     cuentaCredito!.saldoDeuda -= prestamo!.montoRestante;
+                    if (cuentaCredito!.saldoDeuda <= 0) {
+                      cuentaCredito!.saldoDeuda = 0;
+                      cuentaCredito!.estadoCredito = 'Activo';
+                    }
                   });
 
                   Navigator.pop(context);

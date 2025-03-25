@@ -124,15 +124,16 @@ class ControladorDatoscliente {
   }
 
   Future<void> actualizarPrestamo(Prestamo prestamo) async {
-    final response = await supabase
+  try {
+    await supabase
         .from('prestamos')
         .update(prestamo.toMap())
-        .eq('numeroCuenta', prestamo.numeroCuenta);
-
-    if (response.error != null) {
-      throw Exception('Error al actualizar el préstamo: ${response.error!.message}');
-    }
+        .eq('numerocuenta', prestamo.numeroCuenta);
+  } catch (e) {
+    throw Exception('Error al actualizar el préstamo: $e');
   }
+}
+
 
   obtenerTransferencias() {
     

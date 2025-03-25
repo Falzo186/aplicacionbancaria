@@ -107,14 +107,13 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                       },
                     ),
                     SizedBox(width: 15),
-
-                    IconButton(
-                      icon: Icon(Icons.menu, color: Colors.white),
-                      onPressed: () {
-                        setState(() {
-                          _showMenu = !_showMenu;
-                        });
-                      },
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: Icon(Icons.menu, color: Colors.white),
+                        onPressed: () {
+                          Scaffold.of(context).openEndDrawer();
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -123,126 +122,89 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          FutureBuilder(
-            future: _initializeClientes(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text("Error al cargar datos"));
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 10),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: colorsv.colorFondo,
-                          ),
-                          child: Scrollbar(
-                            thumbVisibility: true,
-                            thickness: 6,
-                            radius: Radius.circular(20),
-                            trackVisibility: true,
-                            controller: _scrollController,
-                            child: ListView.builder(
-                              controller: _scrollController,
-                              itemCount: filteredClientes.length,
-                              itemBuilder: (context, index) {
-                                final cliente = filteredClientes[index];
-                                return _buildClientCard(cliente);
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      // Aquí se pueden agregar más widgets
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-          Positioned(
-            right: _showMenu ? 0 : -500,
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 500),
-              width: 220,
-              height: MediaQuery.of(context).size.height,
-              color: colorsv.colorMenu,
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              child: SingleChildScrollView(
-                // HACE QUE EL MENÚ SEA SCROLLABLE
-                child: AnimatedOpacity(
-                  opacity: _showMenu ? 1 : 0,
-                  duration: Duration(milliseconds: 250),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Menú",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                        Divider(color: colorsv.colorTexto2),
-                        SizedBox(height: 5),
-                        Text(
-                          "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "Correo: ${widget.usuario.correoElectronico}",
-                          style: TextStyle(fontSize: 14, color: Colors.white70),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        SizedBox(height: 20),
-                        Divider(color: colorsv.colorTexto2),
-                        SizedBox(height: 20),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor: colorsv.colorBoton,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (context) => VistaLogin(),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                "Cerrar Sesión",
-                                style: TextStyle(color: colorsv.colorTexto),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: colorsv.colorAppbar),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Menú',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  Text(
+                    'Correo: ${widget.usuario.correoElectronico}',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            ListTile(
+              leading: Icon(Icons.logout, color: Colors.redAccent),
+              title: Text('Cerrar Sesión', style: TextStyle(fontSize: 18)),
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => VistaLogin()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      body: FutureBuilder(
+        future: _initializeClientes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error al cargar datos"));
+          } else {
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: colorsv.colorFondo,
+                      ),
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        thickness: 6,
+                        radius: Radius.circular(20),
+                        trackVisibility: true,
+                        controller: _scrollController,
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          itemCount: filteredClientes.length,
+                          itemBuilder: (context, index) {
+                            final cliente = filteredClientes[index];
+                            return _buildClientCard(cliente);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
+            );
+          }
+        },
       ),
     );
   }
