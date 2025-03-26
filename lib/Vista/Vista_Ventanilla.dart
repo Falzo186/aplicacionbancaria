@@ -5,11 +5,14 @@ import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Ventanilla.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Usuario.dart';
+import '../Modelo/Appbar_perso.dart';
 import 'Vista_Login.dart';
 
 class VistaVentanilla extends StatefulWidget {
-  const VistaVentanilla({super.key, required this.usuario});
   final Usuario usuario;
+  //final CustomAppBar appBar;
+  //VistaVentanilla({super.key, required this.usuario, required this.appBar})
+  VistaVentanilla({Key? key, required this.usuario});
 
   @override
   _VentanillaScreenState createState() => _VentanillaScreenState();
@@ -33,7 +36,9 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
 
   Future<void> _initializeClientes() async {
     clientes = await controladorCliente.obtenerClientes();
-    filteredClientes = clientes;
+    setState(() {
+      filteredClientes = clientes;
+    });
   }
 
   void _filterClientes(String query) {
@@ -54,74 +59,58 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
 
   @override
   Widget build(BuildContext context) {
+    if (filteredClientes.isEmpty && clientes.isNotEmpty) {
+      filteredClientes = clientes;
+    }
     return Scaffold(
       backgroundColor: colorsv.colorBackground,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80),
-        child: Container(
-          color: colorsv.colorAppbar,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.search, color: Colors.white),
-                  onPressed: () {},
-                ),
-                Text(
-                  "Ventanilla No. 1",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+      appBar: CustomAppBar(
+        title: Row(
+          children: [
+            AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              width: _showMenu ? 500 : 0,
+              curve: Curves.easeInOut,
+              child: TextField(
+                onChanged: _filterClientes,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Buscar...',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  filled: true,
+                  fillColor: Colors.white24,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
                   ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
                 ),
-                Row(
-                  children: [
-                    Text('TURNO', style: TextStyle(color: colorsv.colorTexto2)),
-                    SizedBox(width: 10),
-                    Container(
-                      width: 50,
-                      height: 30,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: colorsv.colorBuscador,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        '$_currentTurn',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: colorsv.colorTexto),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.arrow_forward,
-                        color: colorsv.colorTexto2,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _currentTurn++;
-                        });
-                      },
-                    ),
-                    SizedBox(width: 15),
-                    Builder(
-                      builder: (context) => IconButton(
-                        icon: Icon(Icons.menu, color: Colors.white),
-                        onPressed: () {
-                          Scaffold.of(context).openEndDrawer();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
+            IconButton(
+              icon: Icon(
+                _showMenu ? Icons.close : Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  _showMenu = !_showMenu;
+                });
+              },
+            ),
+            SizedBox(width: 40),
+            Text(
+              "Ventanilla No. 1",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
+      //widget.appBar, //se necesita un appbar personalizado y ver la forma de enviar cosas y solo se implemente aqui, al menos en consultas
       endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -163,48 +152,37 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
           ],
         ),
       ),
-      body: FutureBuilder(
-        future: _initializeClientes(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error al cargar datos"));
-          } else {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: colorsv.colorFondo,
-                      ),
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        thickness: 6,
-                        radius: Radius.circular(20),
-                        trackVisibility: true,
-                        controller: _scrollController,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          itemCount: filteredClientes.length,
-                          itemBuilder: (context, index) {
-                            final cliente = filteredClientes[index];
-                            return _buildClientCard(cliente);
-                          },
-                        ),
-                      ),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: colorsv.colorFondo,
+                ),
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  thickness: 6,
+                  radius: Radius.circular(20),
+                  trackVisibility: true,
+                  controller: _scrollController,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: filteredClientes.length,
+                    itemBuilder: (context, index) {
+                      final cliente = filteredClientes[index];
+                      return _buildClientCard(cliente);
+                    },
                   ),
-                  SizedBox(height: 10),
-                ],
+                ),
               ),
-            );
-          }
-        },
+            ),
+            SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }

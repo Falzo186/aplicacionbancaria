@@ -1,5 +1,6 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Login.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
+import 'package:aplicacionbancaria/Modelo/WarningModel.dart';
 import 'package:flutter/material.dart';
 
 class VistaLogin extends StatelessWidget {
@@ -84,6 +85,12 @@ class VistaLogin extends StatelessWidget {
                         // Campo de usuario
                         TextField(
                           controller: _usernameController,
+                          onSubmitted:
+                              (_) => validUser(
+                                _usernameController,
+                                _passwordController,
+                                context,
+                              ),
                           decoration: InputDecoration(
                             prefixIcon: Icon(
                               Icons.person,
@@ -104,6 +111,12 @@ class VistaLogin extends StatelessWidget {
                         TextField(
                           controller: _passwordController,
                           obscureText: true,
+                          onSubmitted:
+                              (_) => validUser(
+                                _usernameController,
+                                _passwordController,
+                                context,
+                              ),
                           decoration: InputDecoration(
                             prefixIcon: Icon(
                               Icons.lock,
@@ -132,59 +145,12 @@ class VistaLogin extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: () async {
-                            if (_usernameController.text.isEmpty ||
-                                _passwordController.text.isEmpty) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    backgroundColor: colorsv.denegado,
-                                    title: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.warning,
-                                          color: colorsv.colorTexto2,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Error',
-                                          style: TextStyle(
-                                            color: colorsv.colorTexto2,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    content: Text(
-                                      'Debe llenar las credenciales.',
-                                      style: TextStyle(
-                                        color: colorsv.colorTexto2,
-                                      ),
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: Text(
-                                          'OK',
-                                          style: TextStyle(
-                                            color: colorsv.colorTexto2,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            } else {
-                              await controlador.login(
-                                _usernameController.text,
-                                _passwordController.text,
+                          onPressed:
+                              () => validUser(
+                                _usernameController,
+                                _passwordController,
                                 context,
-                              );
-                            }
-                          },
+                              ),
                           child: Text(
                             'LOGIN',
                             style: TextStyle(
@@ -203,6 +169,22 @@ class VistaLogin extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  //validar campos
+  void validUser(_usernameController, _passwordController, context) async {
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+      ErrorDialog(
+        context: context,
+        mensaje: 'Por favor, llene todos los campos',
+      ).mostrar();
+    } else {
+      await controlador.login(
+        _usernameController.text,
+        _passwordController.text,
+        context,
+      );
+    }
   }
 }
 

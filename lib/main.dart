@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:window_size/window_size.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 //se modifico bd por supabase  AAA
 final String title = 'Cooperativa Bancaria';
 
@@ -19,9 +20,10 @@ void main() async {
   // Configurar ventana si está en escritorio
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle(title);
-    setWindowMinSize(const Size(1600, 900));
-    setWindowMaxSize(Size.infinite);
-    _centerWindow();
+    final screen = await getCurrentScreen();
+    if (screen != null) {
+      setWindowFrame(screen.frame); // Set the window to fullscreen
+    }
   }
 
   runApp(MyApp());
