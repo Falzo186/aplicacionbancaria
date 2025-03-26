@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class VistaFormularioCliente extends StatefulWidget {
   @override
@@ -218,17 +219,53 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     );
   }
 
-  void _agregarCliente() {
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  void _agregarCliente() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      String tieneCredito = "No";
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Cliente agregado correctamente. Crédito: $tieneCredito',
-          ),
-        ),
-      );
+
+      try {
+        final cliente = {
+          'numerocuenta': _numeroCuentaController.text,
+          'nombrecompleto': _nombreCompletoController.text,
+          'genero': _generoController.text,
+          'fechanacimiento': _fechaNacimientoController.text,
+          'identificacionoficial': _identificacionOficialController.text,
+          'rfc': _rfcController.text.isEmpty ? null : _rfcController.text,
+          'estadocivil': _estadoCivilController.text,
+          'nacionalidad': _nacionalidadController.text,
+          'direccioncompleta': _direccionCompletaController.text,
+          'telefono': _telefonoController.text,
+          'correoelectronico': _correoElectronicoController.text,
+          'ocupacion': _ocupacionController.text,
+          'empresa': _empresaController.text,
+          'direccionempresa': _direccionEmpresaController.text,
+          'telefonoempresa': _telefonoEmpresaController.text,
+          'ingresosmensuales':
+              double.tryParse(_ingresosMensualesController.text) ?? 0.0,
+          'fuenteingresos': _fuenteIngresosController.text,
+          'tienecredito': false,
+          'tieneseguro': false,
+          'tieneprestamo': false,
+        };
+
+        // Inserción en Supabase
+        final response = await supabase.from('clientes').insert(cliente);
+
+        if (response.error == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Cliente agregado correctamente.')),
+          );
+        } else {
+          throw response.error!;
+        }
+      } catch (e) {
+        print('Error al agregar cliente: $e');
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al agregar cliente: $e')));
+      }
     }
   }
 

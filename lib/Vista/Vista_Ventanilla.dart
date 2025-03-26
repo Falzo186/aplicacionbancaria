@@ -65,6 +65,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
     return Scaffold(
       backgroundColor: colorsv.colorBackground,
       appBar: CustomAppBar(
+        backgroundColor: colorsv.colorAppbar,
         title: Row(
           children: [
             AnimatedContainer(
