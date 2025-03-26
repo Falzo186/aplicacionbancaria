@@ -36,7 +36,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
     print(widget.cliente.tieneCredito);
     // Si el cliente tiene crédito, buscar la cuenta de crédito
     if (widget.cliente.tieneCredito) {
-      cuentaCredito = controlador.buscarCuentaCredito(widget.cliente.numeroCuenta);
+      cuentaCredito = await controlador.buscarCuentaCredito(widget.cliente.numeroCuenta);
     }
     if (widget.cliente.tienePrestamo) {
       prestamo = await controlador.buscarPrestamo(widget.cliente.numeroCuenta);

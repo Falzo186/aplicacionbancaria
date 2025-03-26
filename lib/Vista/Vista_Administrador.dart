@@ -1,4 +1,5 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
+import 'package:aplicacionbancaria/Vista/Vista_AltaInversion.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:flutter/material.dart';
 
@@ -77,13 +78,12 @@ class _EscritorioViewState extends State<AdministradorView> {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: Opacity(
-                          opacity: 10.0,
+                        
                           child: Image.asset(
                             'lib/Recursos/logo.png',
                             width: 1000,
                           ),
-                        ),
+                        
                       ),
                     ),
                     Expanded(
@@ -191,7 +191,12 @@ class _EscritorioViewState extends State<AdministradorView> {
   }
 
   void _onInversionesPressed() {
-    print('Botón presionado: Inversiones');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaAltaInversion(numeroCuenta: "1"),
+      ),
+    );
   }
 
   void _onPrestacionesPressed() {

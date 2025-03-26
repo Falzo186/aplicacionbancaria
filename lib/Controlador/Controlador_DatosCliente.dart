@@ -54,14 +54,18 @@ class ControladorDatoscliente {
     );
   }
 
-  CuentaCredito? buscarCuentaCredito(String numeroCuenta) {
-    return CuentaCredito(
-      numeroCuenta: numeroCuenta,
-      limiteCredito: 20000.0,
-      saldoDeuda: 5000.0,
-      fechaAprobacion: DateTime(2022, 3, 15),
-      estadoCredito: "Activo",
-    );
+  Future<CuentaCredito?> buscarCuentaCredito(String numeroCuenta) async {
+    final response = await supabase
+        .from('cuentacredito')
+        .select()
+        .eq('numerocuenta', numeroCuenta)
+        .single();
+
+    if (response == null) {
+      return null;
+    }
+
+    return CuentaCredito.fromMap(response);
   }
 
   Future<Prestamo?> buscarPrestamo(String numeroCuenta) async {
