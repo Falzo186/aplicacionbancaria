@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
+import 'package:aplicacionbancaria/Modelo/Cliente.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,12 +18,12 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   );
   final TextEditingController _nombreCompletoController =
       TextEditingController();
-  final TextEditingController _generoController = TextEditingController();
+  String _generoSeleccionado = 'Hombre';
+  String _nacionalidadSeleccionada = 'Mexicana';
+  String _estadoCivilSeleccionado = 'Soltero';
   final TextEditingController _identificacionOficialController =
       TextEditingController();
   final TextEditingController _rfcController = TextEditingController();
-  final TextEditingController _estadoCivilController = TextEditingController();
-  final TextEditingController _nacionalidadController = TextEditingController();
   final TextEditingController _direccionCompletaController =
       TextEditingController();
   final TextEditingController _telefonoController = TextEditingController();
@@ -38,6 +40,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   final TextEditingController _fuenteIngresosController =
       TextEditingController();
 
+  final controlador = ControladorDatoscliente();
   static String _generarNumeroCuenta() {
     Random random = Random();
     return List.generate(11, (_) => random.nextInt(10).toString()).join();
@@ -84,17 +87,41 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                           'Nombre Completo',
                           _nombreCompletoController,
                         ),
-                        _buildTextField('Género', _generoController),
+                        _buildDropdown(
+                          'Género',
+                          ['Hombre', 'Mujer'],
+                          _generoSeleccionado,
+                          (nuevoValor) {
+                            setState(() {
+                              _generoSeleccionado = nuevoValor!;
+                            });
+                          },
+                        ),
                         _buildDatePicker('Fecha de Nacimiento'),
                         _buildTextField(
                           'Identificación Oficial',
                           _identificacionOficialController,
                         ),
                         _buildTextField('RFC (Opcional)', _rfcController),
-                        _buildTextField('Estado Civil', _estadoCivilController),
-                        _buildTextField(
+                        _buildDropdown(
+                          'Estado Civil',
+                          ['Soltero', 'Casado', 'Viudo'],
+                          _estadoCivilSeleccionado,
+                          (nuevoValor) {
+                            setState(() {
+                              _estadoCivilSeleccionado = nuevoValor!;
+                            });
+                          },
+                        ),
+                        _buildDropdown(
                           'Nacionalidad',
-                          _nacionalidadController,
+                          ['Mexicana', 'Estadounidense', 'Canadiense', 'Otra'],
+                          _nacionalidadSeleccionada,
+                          (nuevoValor) {
+                            setState(() {
+                              _nacionalidadSeleccionada = nuevoValor!;
+                            });
+                          },
                         ),
                         _buildTextField(
                           'Dirección Completa',
@@ -179,6 +206,32 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     );
   }
 
+  Widget _buildDropdown(
+    String label,
+    List<String> opciones,
+    String valorSeleccionado,
+    ValueChanged<String?> onChanged,
+  ) {
+    return DropdownButtonFormField<String>(
+      value: valorSeleccionado,
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+      ),
+      items: opciones
+          .map((opcion) => DropdownMenuItem(
+                value: opcion,
+                child: Text(opcion),
+              ))
+          .toList(),
+      onChanged: onChanged,
+      validator: (value) =>
+          value == null || value.isEmpty ? 'Campo $label es requerido' : null,
+    );
+  }
+
   Widget _buildDatePicker(String label) {
     return GestureDetector(
       onTap: () async {
@@ -219,47 +272,39 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     );
   }
 
-  final SupabaseClient supabase = Supabase.instance.client;
-
   void _agregarCliente() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      final cliente = Cliente(
+        numeroCuenta: _numeroCuentaController.text,
+        nombreCompleto: _nombreCompletoController.text,
+        genero: _generoSeleccionado,
+        fechaNacimiento: DateTime.parse(_fechaNacimientoController.text.split('/').reversed.join('-')),
+        identificacionOficial: _identificacionOficialController.text,
+        rfc: _rfcController.text.isEmpty ? null : _rfcController.text,
+        estadoCivil: _estadoCivilSeleccionado,
+        nacionalidad: _nacionalidadSeleccionada,
+        direccionCompleta: _direccionCompletaController.text,
+        telefono: _telefonoController.text,
+        correoElectronico: _correoElectronicoController.text,
+        ocupacion: _ocupacionController.text,
+        empresa: _empresaController.text,
+        direccionEmpresa: _direccionEmpresaController.text,
+        telefonoEmpresa: _telefonoEmpresaController.text,
+        ingresosMensuales:
+            double.tryParse(_ingresosMensualesController.text) ?? 0.0,
+        fuenteIngresos: _fuenteIngresosController.text,
+        tieneCredito: false,
+        tieneSeguro: false,
+        tienePrestamo: false,
+      );
+
       try {
-        final cliente = {
-          'numerocuenta': _numeroCuentaController.text,
-          'nombrecompleto': _nombreCompletoController.text,
-          'genero': _generoController.text,
-          'fechanacimiento': _fechaNacimientoController.text,
-          'identificacionoficial': _identificacionOficialController.text,
-          'rfc': _rfcController.text.isEmpty ? null : _rfcController.text,
-          'estadocivil': _estadoCivilController.text,
-          'nacionalidad': _nacionalidadController.text,
-          'direccioncompleta': _direccionCompletaController.text,
-          'telefono': _telefonoController.text,
-          'correoelectronico': _correoElectronicoController.text,
-          'ocupacion': _ocupacionController.text,
-          'empresa': _empresaController.text,
-          'direccionempresa': _direccionEmpresaController.text,
-          'telefonoempresa': _telefonoEmpresaController.text,
-          'ingresosmensuales':
-              double.tryParse(_ingresosMensualesController.text) ?? 0.0,
-          'fuenteingresos': _fuenteIngresosController.text,
-          'tienecredito': false,
-          'tieneseguro': false,
-          'tieneprestamo': false,
-        };
-
-        // Inserción en Supabase
-        final response = await supabase.from('clientes').insert(cliente);
-
-        if (response.error == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Cliente agregado correctamente.')),
-          );
-        } else {
-          throw response.error!;
-        }
+        await controlador.CrearCliente(cliente);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cliente agregado correctamente.')),
+        );
       } catch (e) {
         print('Error al agregar cliente: $e');
         ScaffoldMessenger.of(

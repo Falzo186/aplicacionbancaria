@@ -1,4 +1,5 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Seguros.dart';
+import 'package:aplicacionbancaria/Vista/Vista_SolicitudSeguro.dart';
 import 'package:flutter/material.dart';
 import '../Modelo/Seguro.dart';
 import '../Modelo/Usuario.dart';
@@ -123,72 +124,14 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
       margin: EdgeInsets.all(10),
       child: InkWell(
         onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(
-                  "Detalles del Seguro",
-                  style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Número de Póliza: ${seguro.numeroPoliza}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Tipo de Seguro: ${seguro.tipoSeguro}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Monto de Cobertura: ${seguro.montoCobertura}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Costo Total: ${seguro.costoTotal}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Pago Mensual: ${seguro.pagoMensual}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Estado: ${seguro.estado}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      "Cerrar",
-                      style: TextStyle(color: colorTexto),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      // Acción para aceptar el seguro
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      "Aceptar",
-                      style: TextStyle(color: colorCircle),
-                    ),
-                  ),
-                ],
-              );
-            },
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VistaSolicitudSeguro(
+                usuario: widget.usuario,
+                seguro: seguro,
+              ),
+            ),
           );
         },
         child: Padding(

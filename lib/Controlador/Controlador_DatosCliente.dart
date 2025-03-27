@@ -11,7 +11,30 @@ class ControladorDatoscliente {
 
   final SupabaseClient supabase = Supabase.instance.client;
 
- 
+ Future<Cliente?> buscarCliente(String numeroIdentificacion) async {
+    final response = await supabase
+        .from('clientes')
+        .select()
+        .eq('numeroidentificacion', numeroIdentificacion)
+        .single();
+
+    if (response == null) {
+      return null;
+    }
+
+    return Cliente.fromMap(response);
+  }
+
+
+ Future<void> CrearCliente(Cliente cliente) async {
+    try {
+      await supabase.from('clientes').upsert(cliente.toMap());
+    } catch (e) {
+      throw Exception('Error al crear el cliente: $e');
+    }
+  }
+
+
  
 
  Future<List<Cliente>> obtenerClientes() async {

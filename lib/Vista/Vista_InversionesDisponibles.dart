@@ -1,4 +1,5 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Inversiones.dart';
+import 'package:aplicacionbancaria/Vista/Vista_SolicitudInversion.dart';
 import 'package:flutter/material.dart';
 import '../Modelo/Inversion.dart';
 import '../Modelo/Usuario.dart';
@@ -137,69 +138,13 @@ class _VistaInversionesDisponiblesState extends State<VistaInversionesDisponible
       margin: EdgeInsets.all(10),
       child: InkWell(
         onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(
-                  "Detalles de la Inversión",
-                  style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Número de Inversión: ${inversion.numeroInversion}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Monto: ${inversion.monto}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Plazo: ${inversion.tiempoMeses} meses",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Tasa de Interés: ${inversion.tasaInteres}%",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Interés Ganado: ${(inversion.monto * (inversion.tasaInteres / 100)).toStringAsFixed(2)}",
-                      style: TextStyle(color: colorTexto, fontSize: 16),
-                    ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      "Cerrar",
-                      style: TextStyle(color: colorTexto),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      // Acción para aceptar la inversión
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      "Aceptar",
-                      style: TextStyle(color: colorCircle),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
-        },
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VistaSolicitudInversion(inversion: inversion),
+          ),
+        );
+        },  
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(

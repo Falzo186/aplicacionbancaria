@@ -84,6 +84,32 @@ class Cliente {
     return 'Cliente{numeroCuenta: $numeroCuenta, nombreCompleto: $nombreCompleto, genero: $genero, fechaNacimiento: $fechaNacimiento, identificacionOficial: $identificacionOficial, rfc: $rfc, estadoCivil: $estadoCivil, nacionalidad: $nacionalidad, direccionCompleta: $direccionCompleta, telefono: $telefono, correoElectronico: $correoElectronico, ocupacion: $ocupacion, empresa: $empresa, direccionEmpresa: $direccionEmpresa, telefonoEmpresa: $telefonoEmpresa, ingresosMensuales: $ingresosMensuales, fuenteIngresos: $fuenteIngresos, tieneCredito: $tieneCredito, tieneSeguro: $tieneSeguro, tienePrestamo: $tienePrestamo}';
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'numerocuenta': numeroCuenta,
+      'nombrecompleto': nombreCompleto,
+      'genero': genero,
+      'fechanacimiento': fechaNacimiento.toIso8601String(),
+      'identificacionoficial': identificacionOficial,
+      'rfc': rfc,
+      'estadocivil': estadoCivil,
+      'nacionalidad': nacionalidad,
+      'direccioncompleta': direccionCompleta,
+      'telefono': telefono,
+      'correoelectronico': correoElectronico,
+      'ocupacion': ocupacion,
+      'empresa': empresa,
+      'direccionempresa': direccionEmpresa,
+      'telefonoempresa': telefonoEmpresa,
+      'ingresosmensuales': ingresosMensuales,
+      'fuenteingresos': fuenteIngresos,
+      'tienecredito': tieneCredito,
+      'tieneseguro': tieneSeguro,
+      'tieneprestamo': tienePrestamo,
+    };
+  }
+
+
   /*static List<Cliente> filterClientes(List<Cliente> clientes, String query) {
     return clientes.where((cliente) {
       final nombreLower = cliente.nombreCompleto.toLowerCase();

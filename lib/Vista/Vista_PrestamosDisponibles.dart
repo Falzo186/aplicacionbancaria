@@ -2,6 +2,7 @@ import 'package:aplicacionbancaria/Controlador/Controlador_Prestamos.dart';
 import 'package:flutter/material.dart';
 import '../Modelo/Prestamo.dart';
 import '../Modelo/Usuario.dart';
+import 'Vista_SolicitudPrestamo.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBuscador = Color(0xFFD9D9D9);
@@ -128,67 +129,12 @@ class _VistaPrestamosDisponiblesState extends State<VistaPrestamosDisponibles> {
       margin: EdgeInsets.all(10),
       child: InkWell(
         onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-          title: Text(
-            "Detalles del Préstamo",
-            style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Número de Préstamo: ${prestamo.numeroPrestamo}",
-                style: TextStyle(color: colorTexto, fontSize: 16),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Monto: ${prestamo.monto}",
-                style: TextStyle(color: colorTexto, fontSize: 16),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Meses: ${prestamo.meses}",
-                style: TextStyle(color: colorTexto, fontSize: 16),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Tasa de Interés: ${prestamo.tasaInteres}",
-                style: TextStyle(color: colorTexto, fontSize: 16),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Cuota Mensual: ${(prestamo.monto * (1 + (prestamo.tasaInteres / 100)) / prestamo.meses).toStringAsFixed(2)}",
-                style: TextStyle(color: colorTexto, fontSize: 16),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Cerrar",
-                style: TextStyle(color: colorTexto),
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VistaSolicitudPrestamo(prestamo: prestamo, usuario: widget.usuario
               ),
             ),
-            TextButton(
-              onPressed: () {
-                // Acción para aceptar el préstamo
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Aceptar",
-                style: TextStyle(color: colorCircle),
-              ),
-            ),
-          ],
-              );
-            },
           );
         
         },
