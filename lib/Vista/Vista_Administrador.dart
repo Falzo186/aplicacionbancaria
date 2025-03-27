@@ -8,7 +8,11 @@ import 'Vista_FormularioCliente.dart';
 
 class AdministradorView extends StatefulWidget {
   final Usuario usuario;
-  const AdministradorView({super.key, required this.usuario});
+  const AdministradorView({
+    super.key,
+    required this.usuario,
+    required bool mostrarMenu,
+  });
 
   @override
   _EscritorioViewState createState() => _EscritorioViewState();

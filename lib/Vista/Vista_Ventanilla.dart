@@ -12,7 +12,7 @@ class VistaVentanilla extends StatefulWidget {
   final Usuario usuario;
   //final CustomAppBar appBar;
   //VistaVentanilla({super.key, required this.usuario, required this.appBar})
-  VistaVentanilla({Key? key, required this.usuario});
+  VistaVentanilla({Key? key, required this.usuario, required bool mostrarMenu});
 
   @override
   _VentanillaScreenState createState() => _VentanillaScreenState();

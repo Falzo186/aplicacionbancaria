@@ -1,4 +1,3 @@
-
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Modelo/WarningModel.dart';
 import 'package:flutter/material.dart';
@@ -59,14 +58,18 @@ class ControladorLogin {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => AdministradorView(usuario: usuario),
+            builder:
+                (context) =>
+                    AdministradorView(usuario: usuario, mostrarMenu: false),
           ),
         );
       } else if (usuario.puestoTrabajo == 'escritorio') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => EscritorioView(usuario: usuario),
+            builder:
+                (context) =>
+                    EscritorioView(usuario: usuario, mostrarMenu: false),
           ),
         );
       } else if (usuario.puestoTrabajo == 'cajero') {
@@ -74,13 +77,8 @@ class ControladorLogin {
           context,
           MaterialPageRoute(
             builder:
-                (context) => VistaVentanilla(
-                  usuario: usuario,
-                  //appBar: CustomAppBar(
-                  //backgroundColor: colorsv.colorAppbar,
-                  //actions: [],
-                  //),
-                ),
+                (context) =>
+                    VistaVentanilla(usuario: usuario, mostrarMenu: true),
           ),
         );
       }

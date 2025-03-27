@@ -12,7 +12,7 @@ import 'Vista_SegurosDisponibles.dart';
 
 class EscritorioView extends StatefulWidget {
   final Usuario usuario;
-  EscritorioView({super.key, required this.usuario});
+  EscritorioView({super.key, required this.usuario, required bool mostrarMenu});
 
   @override
   _EscritorioViewState createState() => _EscritorioViewState();
@@ -57,9 +57,8 @@ class _EscritorioViewState extends State<EscritorioView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.brown.shade700, Colors.brown.shade500],
+          colors: [Colors.brown.shade700, colorsv.colorAppbar],
         ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
         boxShadow: [
           BoxShadow(
             color: Colors.black38,
@@ -89,10 +88,11 @@ class _EscritorioViewState extends State<EscritorioView> {
             ],
           ),
           Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white, size: 30),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 30),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
           ),
         ],
       ),
@@ -119,7 +119,10 @@ class _EscritorioViewState extends State<EscritorioView> {
         padding: EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15),
+            bottomLeft: Radius.circular(15),
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black26,
@@ -175,7 +178,7 @@ class _EscritorioViewState extends State<EscritorioView> {
           ListTile(
             leading: Icon(Icons.logout, color: Colors.redAccent),
             title: Text('Cerrar Sesión', style: TextStyle(fontSize: 18)),
-           onTap: () {
+            onTap: () {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => VistaLogin()),
               );
@@ -192,7 +195,7 @@ class _EscritorioViewState extends State<EscritorioView> {
       child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber.shade700,
-              minimumSize: Size(double.infinity, 60),
+              minimumSize: Size(double.infinity, 75),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
