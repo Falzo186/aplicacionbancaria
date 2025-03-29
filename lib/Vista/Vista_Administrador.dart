@@ -1,5 +1,6 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
+import 'package:aplicacionbancaria/Vista/Vista_Prestamos.dart';
 import 'package:flutter/material.dart';
 
 import '../Modelo/Usuario.dart';
@@ -81,13 +82,13 @@ class _EscritorioViewState extends State<AdministradorView> {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: Opacity(
-                          opacity: 10.0,
+                        
+                          
                           child: Image.asset(
                             'lib/Recursos/logo.png',
                             width: 1000,
                           ),
-                        ),
+                        
                       ),
                     ),
                     Expanded(
@@ -199,7 +200,12 @@ class _EscritorioViewState extends State<AdministradorView> {
   }
 
   void _onPrestacionesPressed() {
-    print('Botón presionado: Prestaciones');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaPrestamos(usuario: widget.usuario),
+      ),
+    );
   }
 
   void _onSegurosPressed() {
