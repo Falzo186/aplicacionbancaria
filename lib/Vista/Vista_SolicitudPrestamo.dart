@@ -3,6 +3,7 @@ import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Prestamo.dart';
+import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBackground = Color(0xFFB1ACAC);
@@ -30,6 +31,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
   List<Cliente> filteredClientes = [];
   Cliente? selectedCliente;
   final controlador = ControladorDatoscliente();
+  final ControladorNotificacion = ControladorNotificaciones();
 
   @override
   void initState() {
@@ -310,6 +312,10 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                                             TextButton(
                                               onPressed: () {
                                                 // Aquí puedes manejar la lógica para guardar la solicitud
+                                                ControladorNotificacion.enviarNotificacion('2d0c779e-b9f0-4cc5-9316-d74ea14a43cb', '28dc2001-518f-4cc0-9190-0ecd3f1c0ead', 'Nuevo mensaje recibido');
+                                                 
+                                                 
+
                                                 Navigator.of(context).pop();
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   SnackBar(
