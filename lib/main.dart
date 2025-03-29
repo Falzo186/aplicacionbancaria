@@ -27,7 +27,7 @@ void main() async {
       setWindowFrame(screen.frame); // Set the window to fullscreen
     }
   }
-   inicializarNotificaciones();
+   
   runApp(MyApp());
 }
 
@@ -42,6 +42,8 @@ Future<void> _centerWindow() async {
     final top = (screenFrame.height - height) / 2;
     setWindowFrame(Rect.fromLTWH(left, top, width, height));
   }
+
+  inicializarNotificaciones();
 }
 
 class MyApp extends StatelessWidget {
