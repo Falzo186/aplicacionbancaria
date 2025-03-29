@@ -9,6 +9,7 @@ import 'Vista_BuscarCliente.dart';
 import 'Vista_FormularioCliente.dart';
 import 'Vista_InversionesDisponibles.dart';
 import 'Vista_Login.dart';
+import 'Vista_Prestamos.dart';
 import 'Vista_PrestamosDisponibles.dart';
 import 'Vista_SegurosDisponibles.dart';
 
@@ -19,9 +20,17 @@ class AdministradorView extends StatefulWidget {
   @override
   _AdministradorViewState createState() => _AdministradorViewState();
 }
+  
 
 class _AdministradorViewState extends State<AdministradorView> {
   VentanaModelo colorsv = VentanaModelo();
+
+@override
+  void initState() {
+    super.initState();
+    
+    escucharNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +229,7 @@ class _AdministradorViewState extends State<AdministradorView> {
   }
 
   void _onConsultasClientesPressed() {
-    Navigator.push(
+     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
@@ -229,48 +238,31 @@ class _AdministradorViewState extends State<AdministradorView> {
   }
 
   void _onInversionesPressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => VistaInversionesDisponibles(usuario: widget.usuario),
-      ),
-    );
+   
   }
 
   void _onPrestacionesPressed() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => VistaPrestamosDisponibles(usuario: widget.usuario),
+        builder: (context) => VistaPrestamos(usuario: widget.usuario),
       ),
     );
   }
 
   void _onSegurosPressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VistaSegurosDisponibles(usuario: widget.usuario),
-      ),
-    );
+    
   }
 
   void _onAltaClientesPressed() {
-    Navigator.push(
+   Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => VistaFormularioCliente()),
     );
   }
   
 
-  @override
-  void initState() {
-    super.initState();
-    // Replace 'admin_id_value' with the actual admin ID
-    escucharNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
-  }
+
    final supabase = Supabase.instance.client;
 
 

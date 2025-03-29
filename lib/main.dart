@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:aplicacionbancaria/SistemaNotificaciones/notificaciones.dart';
 import 'package:flutter/material.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:window_size/window_size.dart';
@@ -8,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final String title = 'Cooperativa Bancaria';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicializar Supabase
@@ -25,7 +27,7 @@ void main() async {
       setWindowFrame(screen.frame); // Set the window to fullscreen
     }
   }
-
+   inicializarNotificaciones();
   runApp(MyApp());
 }
 
