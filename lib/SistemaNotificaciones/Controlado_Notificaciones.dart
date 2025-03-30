@@ -10,8 +10,8 @@ Future<void> enviarNotificacion(String usuarioId, String adminId, String mensaje
     'mensaje': mensaje,
   });
 
-  if (response.error != null) {
-    print('Error al enviar la notificación: ${response.error!.message}');
+  if (response == null || response.error != null) {
+    print('Error al enviar la notificación: ${response?.error?.message ?? 'Respuesta nula del servidor'}');
   }
 }
 }

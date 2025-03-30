@@ -1,5 +1,4 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
-import 'package:aplicacionbancaria/SistemaNotificaciones/notificaciones.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -7,11 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../Modelo/Usuario.dart';
 import 'Vista_BuscarCliente.dart';
 import 'Vista_FormularioCliente.dart';
-import 'Vista_InversionesDisponibles.dart';
 import 'Vista_Login.dart';
 import 'Vista_Prestamos.dart';
-import 'Vista_PrestamosDisponibles.dart';
-import 'Vista_SegurosDisponibles.dart';
 
 class AdministradorView extends StatefulWidget {
   final Usuario usuario;
@@ -20,16 +16,65 @@ class AdministradorView extends StatefulWidget {
   @override
   _AdministradorViewState createState() => _AdministradorViewState();
 }
-  
 
 class _AdministradorViewState extends State<AdministradorView> {
   VentanaModelo colorsv = VentanaModelo();
+  final supabase = Supabase.instance.client;
+  List<Map<String, dynamic>> notificaciones = [];
 
-@override
+  @override
   void initState() {
     super.initState();
-    
+    // cargarNotificacionesAnteriores("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
     escucharNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
+  }
+//   void cargarNotificacionesAnteriores(String adminId) async {
+//   final response = await supabase
+//       .from('notificaciones')
+//       .select()
+//       .eq('admin_id', adminId)
+//       .order('fecha', ascending: true); // Replace 'fecha_creacion' with the correct column name if different
+
+//   setState(() {
+//     notificaciones = List<Map<String, dynamic>>.from(response as List);
+//   });
+//   for (var notificacion in notificaciones) {
+//     mostrarNotificacionEnApp(notificacion['mensaje']);
+//   }
+// }
+
+void escucharNotificaciones(String adminId) {
+  final stream = supabase
+      .from('notificaciones')
+      .stream(primaryKey: ['id'])
+      .eq('admin_id', adminId);
+
+  stream.listen((List<Map<String, dynamic>> data) {
+    if (data.isNotEmpty) {
+      final nuevaNotificacion = data.last;
+      
+      // Verificamos si ya existe para evitar duplicados
+      if (!notificaciones.any((n) => n['id'] == nuevaNotificacion['id'])) {
+        setState(() {
+          notificaciones.add(nuevaNotificacion);
+        });
+
+        print('Nueva notificación: ${nuevaNotificacion['mensaje']}');
+        mostrarNotificacionEnApp(nuevaNotificacion['mensaje']);
+      }
+    }
+  });
+}
+
+
+  void mostrarNotificacionEnApp(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensaje),
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.brown.shade700,
+      ),
+    );
   }
 
   @override
@@ -260,24 +305,9 @@ class _AdministradorViewState extends State<AdministradorView> {
       MaterialPageRoute(builder: (context) => VistaFormularioCliente()),
     );
   }
-  
 
 
-   final supabase = Supabase.instance.client;
 
-
-  void escucharNotificaciones(String adminId) {
-    supabase
-        .from('notificaciones')
-        .stream(primaryKey: ['id'])
-        .eq('admin_id', adminId)
-        .listen((List<Map<String, dynamic>> data) {
-      if (data.isNotEmpty) {
-        print('Nueva notificación: ${data.last['mensaje']}');
-        mostrarNotificacionEnApp(data.last['mensaje']);
-      }
-    });
-  }
 
 
 
