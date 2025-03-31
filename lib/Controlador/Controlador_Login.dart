@@ -143,4 +143,43 @@ class ControladorLogin {
 
     print('Usuarios insertados correctamente');
   }
+
+  Future<List<Usuario>> obtenerUsuariosEscritorio() async {
+    try {
+      final response = await supabase
+          .from('usuarios')
+          .select()
+          .eq('puesto_trabajo', 'escritorio');
+
+      if (response == null || response.isEmpty) {
+        return [];
+      }
+
+      return (response as List).map((data) {
+        return Usuario(
+          nombre: data['nombre'],
+          apellido: data['apellido'],
+          correoElectronico: data['correo_electronico'],
+          numeroTelefono: data['numero_telefono'],
+          direccion: data['direccion'],
+          nombreUsuario: data['nombre_usuario'],
+          contrasena: data['contrasena'],
+          fechaNacimiento: DateTime.parse(data['fecha_nacimiento']),
+          numeroIdentificacion: data['numero_identificacion'],
+          puestoTrabajo: data['puesto_trabajo'],
+        );
+      }).toList();
+    } catch (e) {
+      print('Error al obtener usuarios tipo escritorio: ${e.toString()}');
+      return [];
+    }
+  }
+  
+
+
+
+
+
+
+
 }

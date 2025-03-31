@@ -11,19 +11,22 @@ class ControladorDatoscliente {
 
   final SupabaseClient supabase = Supabase.instance.client;
 
- Future<Cliente?> buscarCliente(String numeroIdentificacion) async {
-    final response = await supabase
-        .from('clientes')
-        .select()
-        .eq('numeroidentificacion', numeroIdentificacion)
-        .single();
+Future<Cliente?> buscarCliente(String numeroCuenta) async {
+  final response = await supabase
+    .from('clientes')
+    .select()
+    .eq('numerocuenta', numeroCuenta)
+    .single();
 
-    if (response == null) {
-      return null;
-    }
-
-    return Cliente.fromMap(response);
+  if (response == null) {
+    return null;
   }
+
+  return Cliente.fromMap(response);
+  }
+
+
+
 
 
  Future<void> CrearCliente(Cliente cliente) async {
@@ -34,8 +37,6 @@ class ControladorDatoscliente {
     }
   }
 
-
- 
 
  Future<List<Cliente>> obtenerClientes() async {
   final response = await supabase.from('clientes').select();

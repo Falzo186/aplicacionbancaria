@@ -21,4 +21,22 @@ Future<List<Prestamo>> obtenerPrestamos() async {
   return data.map((prestamo) => Prestamo.fromMap(prestamo)).toList();
 }
 
+Future<Prestamo?> obtenerPrestamo(String numeroPrestamo) async {
+  final Map<String, dynamic>? data = await supabase
+      .from('prestamos')
+      .select()
+      .eq('numeroprestamo', numeroPrestamo)
+      .single();
+
+  if (data == null) {
+    print("No se encontró el préstamo con número: $numeroPrestamo");
+    return null;
+  } else {
+    print("Préstamo encontrado: $data");
+    return Prestamo.fromMap(data);
+  }
+}
+
+
+
 }

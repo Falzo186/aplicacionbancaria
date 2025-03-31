@@ -1,11 +1,12 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
+import 'package:aplicacionbancaria/Vista/Vista_GestionUsuarios.dart';
+import 'package:aplicacionbancaria/Vista/Vista_ReportePrestamo.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../Modelo/Usuario.dart';
 import 'Vista_BuscarCliente.dart';
-import 'Vista_FormularioCliente.dart';
 import 'Vista_Login.dart';
 import 'Vista_Prestamos.dart';
 
@@ -43,39 +44,7 @@ class _AdministradorViewState extends State<AdministradorView> {
 //   }
 // }
 
-void escucharNotificaciones(String adminId) {
-  final stream = supabase
-      .from('notificaciones')
-      .stream(primaryKey: ['id'])
-      .eq('admin_id', adminId);
 
-  stream.listen((List<Map<String, dynamic>> data) {
-    if (data.isNotEmpty) {
-      final nuevaNotificacion = data.last;
-      
-      // Verificamos si ya existe para evitar duplicados
-      if (!notificaciones.any((n) => n['id'] == nuevaNotificacion['id'])) {
-        setState(() {
-          notificaciones.add(nuevaNotificacion);
-        });
-
-        print('Nueva notificación: ${nuevaNotificacion['mensaje']}');
-        mostrarNotificacionEnApp(nuevaNotificacion['mensaje']);
-      }
-    }
-  });
-}
-
-
-  void mostrarNotificacionEnApp(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(mensaje),
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.brown.shade700,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +163,7 @@ void escucharNotificaciones(String adminId) {
             _buildButton("💰 Inversiones", _onInversionesPressed),
             _buildButton("📄 Prestaciones", _onPrestacionesPressed),
             _buildButton("🛡️ Seguros", _onSegurosPressed),
-            _buildButton("⚙️ Gestion de Actividades", _onAltaClientesPressed),
+            _buildButton("⚙️ Gestion de Actividades", _onGestionActividades),
           ],
         ),
       ),
@@ -297,12 +266,102 @@ void escucharNotificaciones(String adminId) {
 
   void _onSegurosPressed() {
     
+
   }
 
-  void _onAltaClientesPressed() {
-   Navigator.push(
+  void _onGestionActividades() {
+   _mostrarDialogoSolicitudes();
+  }
+
+  void _mostrarDialogoSolicitudes() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.brown.shade100,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Text(
+            "Gestión de Solicitudes",
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.brown.shade800,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildDialogButton("Solicitudes de Préstamos", _onSolicitudesPrestamosPressed),
+              _buildDialogButton("Solicitudes de Seguros", _onSolicitudesSegurosPressed),
+              _buildDialogButton("Solicitudes de Inversiones", _onSolicitudesInversionesPressed),
+              _buildDialogButton("Gestión de Empleados", _onGestionEmpleadosPressed),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                "Cerrar",
+                style: TextStyle(color: Colors.brown.shade800),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDialogButton(String text, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.amber.shade700,
+          minimumSize: Size(double.infinity, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onSolicitudesPrestamosPressed() {
+    // Acción para solicitudes de préstamos
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VistaFormularioCliente()),
+      MaterialPageRoute(
+        builder: (context) => VistaReportePrestamos()
+      ),
+    );
+  }
+
+  void _onSolicitudesSegurosPressed() {
+    // Acción para solicitudes de seguros
+  }
+
+  void _onSolicitudesInversionesPressed() {
+    // Acción para solicitudes de inversiones
+  }
+
+  void _onGestionEmpleadosPressed() {
+    // Acción para gestión de empleados
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaReporteUsuarios(),
+      ),
     );
   }
 
@@ -310,5 +369,67 @@ void escucharNotificaciones(String adminId) {
 
 
 
+void mostrarNotificacionEnTop(BuildContext context, String mensaje) {
+  OverlayState overlayState = Overlay.of(context);
+  OverlayEntry overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      top: 100, // Ajusta según tu diseño
+      right: 50, // Ajusta según tu diseño
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.brown.shade700,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text(
+            mensaje,
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlayState.insert(overlayEntry);
+
+  // Remover la notificación después de unos segundos
+  Future.delayed(Duration(seconds: 5), () {
+    overlayEntry.remove();
+  });
+}
+
+void escucharNotificaciones(String adminId) {
+  final stream = supabase
+      .from('notificaciones')
+      .stream(primaryKey: ['id'])
+      .eq('admin_id', adminId);
+
+  stream.listen((List<Map<String, dynamic>> data) {
+    if (data.isNotEmpty) {
+      final nuevaNotificacion = data.last;
+      
+      // Verificamos si ya existe para evitar duplicados
+      if (!notificaciones.any((n) => n['id'] == nuevaNotificacion['id'])) {
+        setState(() {
+          notificaciones.add(nuevaNotificacion);
+        });
+
+        print('Nueva notificación: ${nuevaNotificacion['mensaje']}');
+        mostrarNotificacionEnTop(context, nuevaNotificacion['mensaje']);
+      }
+    }
+  });
+}
+
+  
 
 }

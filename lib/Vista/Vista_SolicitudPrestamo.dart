@@ -1,9 +1,14 @@
-import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
-import 'package:aplicacionbancaria/Modelo/Usuario.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
-import '../Modelo/Cliente.dart';
-import '../Modelo/Prestamo.dart';
+import 'package:aplicacionbancaria/Modelo/Cliente.dart';
+import 'package:aplicacionbancaria/Modelo/Prestamo.dart';
+import 'package:aplicacionbancaria/Modelo/ReporteSolicitud.dart';
+import 'package:intl/intl.dart';
+import '../Controlador/Controlador_DatosCliente.dart';
+import '../Controlador/Controlador_Reportes.dart';
+import '../Modelo/Usuario.dart';
 import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
+import '../Modelo/Ventanas.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBackground = Color(0xFFB1ACAC);
@@ -13,12 +18,15 @@ final Color colorTexto = Color(0xFF140A0A);
 final Color colorBoton = Color(0xFFA08181);
 final Color colorCircle = Color(0xFF138A43);
 
+
 class VistaSolicitudPrestamo extends StatefulWidget {
   final Prestamo prestamo;
+  final Usuario usuario;
 
   const VistaSolicitudPrestamo({
     super.key,
-    required this.prestamo, required Usuario usuario,
+    required this.prestamo,
+    required this.usuario,
   });
 
   @override
@@ -32,6 +40,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
   Cliente? selectedCliente;
   final controlador = ControladorDatoscliente();
   final ControladorNotificacion = ControladorNotificaciones();
+  final ControladorReporte = ControladorReportes();
 
   @override
   void initState() {
@@ -58,6 +67,8 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
       }).toList();
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,8 +133,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                             "Estado: ${widget.prestamo.estado}",
                             style: TextStyle(fontSize: 16),
                           ),
-                          const SizedBox(height: 16),
-                          Text(
+                           Text(
                             "🏦 Informacion Detallada",
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -169,7 +179,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                           ),
                           const Divider(),
                           Text(
-                            "Al adquirir este préstamo, recibirás un monto de \$${widget.prestamo.monto.toStringAsFixed(2)}, que podrás pagar en ${widget.prestamo.meses} meses. La tasa de interés es del ${widget.prestamo.tasaInteres * 100}% mensual, y los pagos se realizan cada día ${widget.prestamo.diasPago} de mes.",
+                            "Al adquirir este préstamo, recibirás un monto de \$${widget.prestamo.monto.toStringAsFixed(2)}, que podrás pagar en ${widget.prestamo.meses} meses. La tasa de interés es del ${widget.prestamo.tasaInteres}% mensual, y los pagos se realizan cada día ${widget.prestamo.diasPago} de mes.",
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
@@ -252,24 +262,8 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                                               children: [
                                                 Text("Nombre Completo: ${selectedCliente!.nombreCompleto}"),
                                                 Text("Número de Cuenta: ${selectedCliente!.numeroCuenta}"),
-                                                Text("Género: ${selectedCliente!.genero}"),
-                                                Text("Fecha de Nacimiento: ${selectedCliente!.fechaNacimiento.day}/${selectedCliente!.fechaNacimiento.month}/${selectedCliente!.fechaNacimiento.year}"),
-                                                Text("Identificación Oficial: ${selectedCliente!.identificacionOficial}"),
-                                                if (selectedCliente!.rfc != null) Text("RFC: ${selectedCliente!.rfc}"),
-                                                Text("Estado Civil: ${selectedCliente!.estadoCivil}"),
-                                                Text("Nacionalidad: ${selectedCliente!.nacionalidad}"),
-                                                Text("Dirección: ${selectedCliente!.direccionCompleta}"),
                                                 Text("Teléfono: ${selectedCliente!.telefono}"),
                                                 Text("Correo Electrónico: ${selectedCliente!.correoElectronico}"),
-                                                Text("Ocupación: ${selectedCliente!.ocupacion}"),
-                                                Text("Empresa: ${selectedCliente!.empresa}"),
-                                                Text("Dirección de la Empresa: ${selectedCliente!.direccionEmpresa}"),
-                                                Text("Teléfono de la Empresa: ${selectedCliente!.telefonoEmpresa}"),
-                                                Text("Ingresos Mensuales: \$${selectedCliente!.ingresosMensuales.toStringAsFixed(2)}"),
-                                                Text("Fuente de Ingresos: ${selectedCliente!.fuenteIngresos}"),
-                                                Text("¿Tiene Crédito?: ${selectedCliente!.tieneCredito ? 'Sí' : 'No'}"),
-                                                Text("¿Tiene Seguro?: ${selectedCliente!.tieneSeguro ? 'Sí' : 'No'}"),
-                                                Text("¿Tiene Préstamo?: ${selectedCliente!.tienePrestamo ? 'Sí' : 'No'}"),
                                               ],
                                             ),
                                           ),
@@ -284,12 +278,11 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                                         );
                                       },
                                     );
-
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color.fromARGB(141, 255, 174, 0),
                                   ),
-                                  child: Text("Mas Detalles"),
+                                  child: Text("Más Detalles"),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
@@ -311,10 +304,10 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                // Aquí puedes manejar la lógica para guardar la solicitud
-                                                ControladorNotificacion.enviarNotificacion('2d0c779e-b9f0-4cc5-9316-d74ea14a43cb', '28dc2001-518f-4cc0-9190-0ecd3f1c0ead', 'Nuevo mensaje recibido');
-                                                 
-                                                 
+                                                // Crear el reporte de solicitud
+                                                _crearReporteSolicitud();
+                                                // Enviar la notificación de solicitud
+                                                _enviarNotificacionSolicitud();
 
                                                 Navigator.of(context).pop();
                                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -347,4 +340,48 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
             ),
     );
   }
+
+void _crearReporteSolicitud() {
+  if (selectedCliente == null) return;
+
+  final reporte = ReporteSolicitud(
+    idSolicitud: Random().nextInt(100000).toString(), // Generar un ID aleatorio
+    usuarioId: widget.usuario.nombreUsuario,
+    usuarioNombre: widget.usuario.nombre,
+    tipoSolicitud: "Prestamo",
+    clienteId: selectedCliente!.numeroCuenta,
+    clienteNombre: selectedCliente!.nombreCompleto,
+    idsolicitado: widget.prestamo.numeroPrestamo,
+    estado: "Pendiente",
+    fechaSolicitud: DateTime.now(), // Solo guarda la fecha normal
+  );
+
+  ControladorReporte.subirReporte(reporte); // Subir el reporte a la base de datos
+
+  // Mostrar la fecha formateada en la consola
+  print("Reporte de Solicitud:\n${reporte.toString()}");
+}
+
+  
+void _enviarNotificacionSolicitud() {
+  if (selectedCliente == null) return;
+
+  // Formatear la fecha en el formato deseado
+  final DateFormat formato = DateFormat('yyyy-MM-dd hh:mm a'); // 24 horas -> 'HH:mm'
+  final String fechaFormateada = formato.format(DateTime.now());
+
+  final mensaje = "Solicitud de Préstamo de: ${widget.usuario.nombre} "
+      "tipo: Préstamo a ${selectedCliente!.nombreCompleto}\n"
+      "$fechaFormateada";
+
+  ControladorNotificacion.enviarNotificacion(
+    '2d0c779e-b9f0-4cc5-9316-d74ea14a43cb',
+    '28dc2001-518f-4cc0-9190-0ecd3f1c0ead',
+    mensaje,
+  );
+
+  print("Notificación enviada: $mensaje");
+}
+
+
 }

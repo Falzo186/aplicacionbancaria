@@ -10,35 +10,7 @@ class VistaFormularioCliente extends StatefulWidget {
 }
 
 class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _fechaNacimientoController =
-      TextEditingController();
-  final TextEditingController _numeroCuentaController = TextEditingController(
-    text: _generarNumeroCuenta(),
-  );
-  final TextEditingController _nombreCompletoController =
-      TextEditingController();
-  String _generoSeleccionado = 'Hombre';
-  String _nacionalidadSeleccionada = 'Mexicana';
-  String _estadoCivilSeleccionado = 'Soltero';
-  final TextEditingController _identificacionOficialController =
-      TextEditingController();
-  final TextEditingController _rfcController = TextEditingController();
-  final TextEditingController _direccionCompletaController =
-      TextEditingController();
-  final TextEditingController _telefonoController = TextEditingController();
-  final TextEditingController _correoElectronicoController =
-      TextEditingController();
-  final TextEditingController _ocupacionController = TextEditingController();
-  final TextEditingController _empresaController = TextEditingController();
-  final TextEditingController _direccionEmpresaController =
-      TextEditingController();
-  final TextEditingController _telefonoEmpresaController =
-      TextEditingController();
-  final TextEditingController _ingresosMensualesController =
-      TextEditingController();
-  final TextEditingController _fuenteIngresosController =
-      TextEditingController();
+ 
 
   final controlador = ControladorDatoscliente();
   static String _generarNumeroCuenta() {
@@ -47,274 +19,383 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   }
 
   @override
+Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xA8ECE9CF),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: const BorderSide(color: Colors.black, width: 1),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 1),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        ),
+        textTheme: const TextTheme(
+          titleMedium: TextStyle(
+            fontFamily: 'Mali',
+            fontSize: 24,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xAF472F2F)),
+        ),
+      ),
+      home: const NuevoClienteForm(),
+    );
+  }
+}
+
+class NuevoClienteForm extends StatefulWidget {
+  const NuevoClienteForm({super.key});
+
+  @override
+  State<NuevoClienteForm> createState() => _NuevoClienteFormState();
+}
+
+class _NuevoClienteFormState extends State<NuevoClienteForm> {
+  final _formKey = GlobalKey<FormState>();
+  String? _selectedEstadoCivil;
+  String? _selectedNacionalidad;
+  String? _selectedFuenteIngresos;
+
+  // Opciones para los dropdowns
+  final List<String> _estadosCiviles = [
+    'Soltero/a',
+    'Casado/a',
+    'Divorciado/a',
+    'Viudo/a',
+    'Unión Libre'
+  ];
+
+  final List<String> _nacionalidades = [
+    'Mexicana',
+    'Estadounidense',
+    'Canadiense',
+    'Española',
+    'Colombiana',
+    'Argentina',
+    'Otra'
+  ];
+
+  final List<String> _fuentesIngresos = [
+    'Empleo formal',
+    'Negocio propio',
+    'Honorarios profesionales',
+    'Inversiones',
+    'Pensión',
+    'Otro'
+  ];
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Nuevo Cliente',
-          style: TextStyle(color: Colors.white, fontSize: 24),
+          style: TextStyle(
+            fontFamily: 'Lato',
+            fontSize: 24,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w200,
+            color: Colors.white,
+          ),
         ),
-        backgroundColor: Colors.brown,
+        centerTitle: true,
+        backgroundColor: const Color(0xAF472F2F),
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5.0),
-                child: Container(
-                  color: Colors.brown[100],
-                  child: Form(
-                    key: _formKey,
-                    child: GridView.count(
-                      crossAxisCount: 3,
-                      childAspectRatio: 4.5,
-                      crossAxisSpacing: 15,
-                      mainAxisSpacing: 10,
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        left: 10,
-                        right: 10,
-                      ),
-                      children: [
-                        _buildTextField(
-                          'Número de Cuenta',
-                          _numeroCuentaController,
-                          readOnly: true,
-                        ),
-                        _buildTextField(
-                          'Nombre Completo',
-                          _nombreCompletoController,
-                        ),
-                        _buildDropdown(
-                          'Género',
-                          ['Hombre', 'Mujer'],
-                          _generoSeleccionado,
-                          (nuevoValor) {
-                            setState(() {
-                              _generoSeleccionado = nuevoValor!;
-                            });
-                          },
-                        ),
-                        _buildDatePicker('Fecha de Nacimiento'),
-                        _buildTextField(
-                          'Identificación Oficial',
-                          _identificacionOficialController,
-                        ),
-                        _buildTextField('RFC (Opcional)', _rfcController),
-                        _buildDropdown(
-                          'Estado Civil',
-                          ['Soltero', 'Casado', 'Viudo'],
-                          _estadoCivilSeleccionado,
-                          (nuevoValor) {
-                            setState(() {
-                              _estadoCivilSeleccionado = nuevoValor!;
-                            });
-                          },
-                        ),
-                        _buildDropdown(
-                          'Nacionalidad',
-                          ['Mexicana', 'Estadounidense', 'Canadiense', 'Otra'],
-                          _nacionalidadSeleccionada,
-                          (nuevoValor) {
-                            setState(() {
-                              _nacionalidadSeleccionada = nuevoValor!;
-                            });
-                          },
-                        ),
-                        _buildTextField(
-                          'Dirección Completa',
-                          _direccionCompletaController,
-                        ),
-                        _buildTextField('Teléfono', _telefonoController),
-                        _buildTextField(
-                          'Correo Electrónico',
-                          _correoElectronicoController,
-                        ),
-                        _buildTextField('Ocupación', _ocupacionController),
-                        _buildTextField('Empresa', _empresaController),
-                        _buildTextField(
-                          'Dirección Empresa',
-                          _direccionEmpresaController,
-                        ),
-                        _buildTextField(
-                          'Teléfono Empresa',
-                          _telefonoEmpresaController,
-                        ),
-                        _buildTextField(
-                          'Ingresos Mensuales',
-                          _ingresosMensualesController,
-                        ),
-                        _buildTextField(
-                          'Fuente de Ingresos',
-                          _fuenteIngresosController,
-                        ),
-                        SizedBox(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: _cancelar,
-                              child: Text('CANCELAR'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.redAccent,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: _agregarCliente,
-                              child: Text('AGREGAR CLIENTE'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+      body: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(40, 20, 40, 40),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Primera fila
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: _buildLabeledField('Número de cuenta:', 'numCuenta'),
                     ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      flex: 5,
+                      child: _buildLabeledField('Nombre Completo:', 'nombreCompleto'),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      flex: 3,
+                      child: _buildLabeledDropdown(
+                        'Género/Sexo:', 
+                        ['Masculino', 'Femenino', 'Otro'], 
+                        'genero',
+                        iconColor: const Color(0x82A76E46),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 25),
+                
+                // Segunda fila - Ahora con dropdowns mejorados
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _buildLabeledField('Fecha de Nacimiento:', 'fechaNac'),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      child: _buildLabeledDropdown(
+                        'Estado Civil:', 
+                        _estadosCiviles, 
+                        'estadoCivil',
+                        value: _selectedEstadoCivil,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedEstadoCivil = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      child: _buildLabeledDropdown(
+                        'Nacionalidad:', 
+                        _nacionalidades, 
+                        'nacionalidad',
+                        value: _selectedNacionalidad,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedNacionalidad = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 25),
+                
+                // Tercera fila
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _buildLabeledField('Identificación Oficial:', 'identificacion'),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      child: _buildLabeledField('RFC (Opcional):', 'rfc'),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 25),
+                
+                // Campos grandes
+                _buildLabeledField('Dirección Completa:', 'direccion', lines: 2),
+                
+                const SizedBox(height: 25),
+                
+                // Cuarta fila
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _buildLabeledField('Teléfono:', 'telefono'),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      child: _buildLabeledField('Correo electrónico:', 'email'),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 25),
+                
+                // Quinta fila
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _buildLabeledField('Empresa:', 'empresa'),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      child: _buildLabeledField('Ocupación:', 'ocupacion'),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 25),
+                
+                // Sexta fila
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _buildLabeledField('Dirección Empresa:', 'dirEmpresa'),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      child: _buildLabeledField('Telefono Empresa:', 'telEmpresa'),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 25),
+                
+                // Séptima fila - Fuente de ingresos como dropdown
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _buildLabeledField('Ingresos Mensuales:', 'ingresos'),
+                    ),
+                    const SizedBox(width: 30),
+                    Expanded(
+                      child: _buildLabeledDropdown(
+                        'Fuente de ingresos:', 
+                        _fuentesIngresos, 
+                        'fuenteIngresos',
+                        value: _selectedFuenteIngresos,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedFuenteIngresos = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 40),
+                
+                // Botones
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {},
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                          side: const BorderSide(color: Color(0xAF472F2F)),
+                        ),
+                        child: const Text(
+                          'Cancelar',
+                          style: TextStyle(color: Color(0xAF472F2F)),
+                        ),
+                      ),
+                      const SizedBox(width: 30),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        ),
+                        child: const Text('Guardar Cliente'),
+                      ),
+                    ],
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(
-    String label,
-    TextEditingController controller, {
-    bool readOnly = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-      ),
-      readOnly: readOnly,
-      validator: (value) => value!.isEmpty ? 'Campo $label es requerido' : null,
-    );
-  }
-
-  Widget _buildDropdown(
-    String label,
-    List<String> opciones,
-    String valorSeleccionado,
-    ValueChanged<String?> onChanged,
-  ) {
-    return DropdownButtonFormField<String>(
-      value: valorSeleccionado,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-      ),
-      items: opciones
-          .map((opcion) => DropdownMenuItem(
-                value: opcion,
-                child: Text(opcion),
-              ))
-          .toList(),
-      onChanged: onChanged,
-      validator: (value) =>
-          value == null || value.isEmpty ? 'Campo $label es requerido' : null,
-    );
-  }
-
-  Widget _buildDatePicker(String label) {
-    return GestureDetector(
-      onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-          builder: (context, child) {
-            return Theme(
-              data: ThemeData.light().copyWith(
-                primaryColor: Colors.brown,
-                buttonTheme: ButtonThemeData(
-                  textTheme: ButtonTextTheme.primary,
-                ),
-                colorScheme: ColorScheme.light(
-                  primary: Colors.brown,
-                ).copyWith(secondary: Colors.brown),
-              ),
-              child: child!,
-            );
-          },
-        );
-        if (pickedDate != null) {
-          setState(() {
-            _fechaNacimientoController.text =
-                "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-          });
-        }
-      },
-      child: AbsorbPointer(
-        child: _buildTextField(
+  Widget _buildLabeledField(String label, String fieldKey, {int lines = 1}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
           label,
-          _fechaNacimientoController,
-          readOnly: true,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-      ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: lines == 1 ? 56 : null,
+          child: TextFormField(
+            key: Key(fieldKey),
+            maxLines: lines,
+            decoration: InputDecoration(
+              suffixIcon: fieldKey == 'fechaNac' 
+                ? IconButton(
+                    icon: const Icon(Icons.calendar_today, color: Color(0x82A76E46)),
+                    onPressed: () {},
+                  )
+                : null,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  void _agregarCliente() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      final cliente = Cliente(
-        numeroCuenta: _numeroCuentaController.text,
-        nombreCompleto: _nombreCompletoController.text,
-        genero: _generoSeleccionado,
-        fechaNacimiento: DateTime.parse(_fechaNacimientoController.text.split('/').reversed.join('-')),
-        identificacionOficial: _identificacionOficialController.text,
-        rfc: _rfcController.text.isEmpty ? null : _rfcController.text,
-        estadoCivil: _estadoCivilSeleccionado,
-        nacionalidad: _nacionalidadSeleccionada,
-        direccionCompleta: _direccionCompletaController.text,
-        telefono: _telefonoController.text,
-        correoElectronico: _correoElectronicoController.text,
-        ocupacion: _ocupacionController.text,
-        empresa: _empresaController.text,
-        direccionEmpresa: _direccionEmpresaController.text,
-        telefonoEmpresa: _telefonoEmpresaController.text,
-        ingresosMensuales:
-            double.tryParse(_ingresosMensualesController.text) ?? 0.0,
-        fuenteIngresos: _fuenteIngresosController.text,
-        tieneCredito: false,
-        tieneSeguro: false,
-        tienePrestamo: false,
-      );
-
-      try {
-        await controlador.CrearCliente(cliente);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Cliente agregado correctamente.')),
-        );
-      } catch (e) {
-        print('Error al agregar cliente: $e');
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error al agregar cliente: $e')));
-      }
-    }
-  }
-
-  void _cancelar() {
-    Navigator.pop(context);
+  Widget _buildLabeledDropdown(
+    String label, 
+    List<String> options, 
+    String fieldKey, {
+    String? value,
+    ValueChanged<String?>? onChanged,
+    Color iconColor = Colors.black,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 56,
+          child: DropdownButtonFormField<String>(
+            key: Key(fieldKey),
+            decoration: const InputDecoration(),
+            value: value,
+            items: options.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: onChanged ?? (_) {},
+            icon: Icon(Icons.arrow_drop_down, color: iconColor),
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+            ),
+            dropdownColor: const Color(0xA8ECE9CF),
+            borderRadius: BorderRadius.circular(4),
+            elevation: 2,
+            isExpanded: true,
+          ),
+        ),
+      ],
+    );
   }
 }
