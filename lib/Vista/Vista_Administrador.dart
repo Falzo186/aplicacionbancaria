@@ -1,6 +1,7 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_GestionUsuarios.dart';
 import 'package:aplicacionbancaria/Vista/Vista_ReportePrestamo.dart';
+import 'package:aplicacionbancaria/Vista/Vista_ReporteSeguro.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -9,6 +10,8 @@ import '../Modelo/Usuario.dart';
 import 'Vista_BuscarCliente.dart';
 import 'Vista_Login.dart';
 import 'Vista_Prestamos.dart';
+import 'Vista_ReporteInvercion.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class AdministradorView extends StatefulWidget {
   final Usuario usuario;
@@ -26,7 +29,7 @@ class _AdministradorViewState extends State<AdministradorView> {
   @override
   void initState() {
     super.initState();
-    // cargarNotificacionesAnteriores("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
+    cargarNotificacionesAnteriores("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
     escucharNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
   }
 //   void cargarNotificacionesAnteriores(String adminId) async {
@@ -349,10 +352,22 @@ class _AdministradorViewState extends State<AdministradorView> {
 
   void _onSolicitudesSegurosPressed() {
     // Acción para solicitudes de seguros
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaReporteSeguros()
+      ),
+    );
   }
 
   void _onSolicitudesInversionesPressed() {
     // Acción para solicitudes de inversiones
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaReporteInversiones()
+      ),
+    );
   }
 
   void _onGestionEmpleadosPressed() {
@@ -369,42 +384,83 @@ class _AdministradorViewState extends State<AdministradorView> {
 
 
 
-void mostrarNotificacionEnTop(BuildContext context, String mensaje) {
+void mostrarNotificacionesSecuenciales(BuildContext context, List<String> mensajes) async {
+  final player = AudioPlayer();
   OverlayState overlayState = Overlay.of(context);
-  OverlayEntry overlayEntry = OverlayEntry(
-    builder: (context) => Positioned(
-      top: 100, // Ajusta según tu diseño
-      right: 50, // Ajusta según tu diseño
-      child: Material(
-        color: Colors.transparent,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.brown.shade700,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 5,
-                offset: Offset(0, 3),
+
+  for (String mensaje in mensajes) {
+    OverlayEntry overlayEntry;
+    AnimationController controller = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: Navigator.of(context),
+    );
+    Animation<Offset> offsetAnimation = Tween<Offset>(
+      begin: Offset(1.0, 0.0), // Aparece desde la derecha
+      end: Offset(0.0, 0.0),
+    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
+
+    // Reproducir sonido de notificación
+    await player.play(AssetSource('sounds/notification.mp3'));
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 100,
+        right: 50,
+        child: SlideTransition(
+          position: offsetAnimation,
+          child: Material(
+            color: Colors.transparent,
+            child: AnimatedOpacity(
+              opacity: 1.0,
+              duration: Duration(milliseconds: 500),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.brown.shade700,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  mensaje,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
               ),
-            ],
-          ),
-          child: Text(
-            mensaje,
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
 
-  overlayState.insert(overlayEntry);
+    overlayState.insert(overlayEntry);
+    controller.forward();
 
-  // Remover la notificación después de unos segundos
-  Future.delayed(Duration(seconds: 5), () {
-    overlayEntry.remove();
+    await Future.delayed(Duration(seconds: 5));
+
+    controller.reverse().then((_) {
+      overlayEntry.remove();
+    });
+  }
+}
+
+void cargarNotificacionesAnteriores(String adminId) async {
+  final response = await supabase
+      .from('notificaciones')
+      .select()
+      .eq('admin_id', adminId)
+      .order('fecha', ascending: true); // Ordenar por fecha ascendente
+
+  setState(() {
+    notificaciones = List<Map<String, dynamic>>.from(response as List);
   });
+
+  List<String> mensajes = notificaciones.map((n) => n['mensaje'] as String).toList();
+  mostrarNotificacionesSecuenciales(context, mensajes);
 }
 
 void escucharNotificaciones(String adminId) {
@@ -416,7 +472,7 @@ void escucharNotificaciones(String adminId) {
   stream.listen((List<Map<String, dynamic>> data) {
     if (data.isNotEmpty) {
       final nuevaNotificacion = data.last;
-      
+
       // Verificamos si ya existe para evitar duplicados
       if (!notificaciones.any((n) => n['id'] == nuevaNotificacion['id'])) {
         setState(() {
@@ -424,11 +480,12 @@ void escucharNotificaciones(String adminId) {
         });
 
         print('Nueva notificación: ${nuevaNotificacion['mensaje']}');
-        mostrarNotificacionEnTop(context, nuevaNotificacion['mensaje']);
+        mostrarNotificacionesSecuenciales(context, nuevaNotificacion['mensaje']);
       }
     }
   });
 }
+
 
   
 

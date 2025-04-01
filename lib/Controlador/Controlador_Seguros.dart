@@ -19,4 +19,20 @@ class ControladorSeguros {
 
     return data.map((seguro) => Seguro.fromMap(seguro)).toList();
   }
+
+Future<Seguro?> obtenerSeguro(String numeroPoliza) async {
+  final Map<String, dynamic>? data = await supabase
+      .from('seguros')
+      .select()
+      .eq('numeropoliza', numeroPoliza)
+      .single();
+
+  if (data == null) {
+    print("No se encontró un seguro con el número de póliza: $numeroPoliza");
+    return null;
+  }
+
+  return Seguro.fromMap(data);
+}
+
 }

@@ -1,8 +1,14 @@
+import 'dart:math';
+
 import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
 import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../Controlador/Controlador_Reportes.dart';
 import '../Modelo/Cliente.dart';
+import '../Modelo/ReporteSolicitud.dart';
 import '../Modelo/Seguro.dart';
+import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBackground = Color(0xFFB1ACAC);
@@ -14,10 +20,12 @@ final Color colorCircle = Color(0xFF138A43);
 
 class VistaSolicitudSeguro extends StatefulWidget {
   final Seguro seguro;
+  final Usuario usuario;
 
   const VistaSolicitudSeguro({
     super.key,
-    required this.seguro, required Usuario usuario,
+    required this.seguro,
+    required this.usuario,
   });
 
   @override
@@ -30,6 +38,9 @@ class _VistaSolicitudSeguroState extends State<VistaSolicitudSeguro> {
   List<Cliente> filteredClientes = [];
   Cliente? selectedCliente;
   final controlador = ControladorDatoscliente();
+  final ControladorReporte = ControladorReportes();
+  final ControladorNotificacion = ControladorNotificaciones();
+  
 
   @override
   void initState() {
@@ -55,6 +66,47 @@ class _VistaSolicitudSeguroState extends State<VistaSolicitudSeguro> {
         return nombreLower.contains(searchLower) || numeroCuentaLower.contains(searchLower);
       }).toList();
     });
+  }
+
+  void _crearReporteSolicitud() {
+    if (selectedCliente == null) return;
+
+    final reporte = ReporteSolicitud(
+      idSolicitud: Random().nextInt(100000).toString(), // Generar un ID aleatorio
+      usuarioId: widget.usuario.nombreUsuario,
+      usuarioNombre: widget.usuario.nombre,
+      tipoSolicitud: "Seguro",
+      clienteId: selectedCliente!.numeroCuenta,
+      clienteNombre: selectedCliente!.nombreCompleto,
+      idsolicitado: widget.seguro.numeroPoliza,
+      estado: "Pendiente",
+      fechaSolicitud: DateTime.now(), // Solo guarda la fecha normal
+    );
+
+    ControladorReporte.subirReporte(reporte); // Subir el reporte a la base de datos
+
+    // Mostrar la fecha formateada en la consola
+    print("Reporte de Solicitud:\n${reporte.toString()}");
+  }
+
+  void _enviarNotificacionSolicitud() {
+    if (selectedCliente == null) return;
+
+    // Formatear la fecha en el formato deseado
+    final DateFormat formato = DateFormat('yyyy-MM-dd hh:mm a'); // 24 horas -> 'HH:mm'
+    final String fechaFormateada = formato.format(DateTime.now());
+
+    final mensaje = "Solicitud de Seguro de: ${widget.usuario.nombreUsuario} "
+        "tipo: Seguro para ${selectedCliente!.nombreCompleto}\n"
+        "$fechaFormateada";
+
+    ControladorNotificacion.enviarNotificacion(
+      '2d0c779e-b9f0-4cc5-9316-d74ea14a43cb',
+      '28dc2001-518f-4cc0-9190-0ecd3f1c0ead',
+      mensaje,
+    );
+
+    print("Notificación enviada: $mensaje");
   }
 
   @override
@@ -143,7 +195,6 @@ class _VistaSolicitudSeguroState extends State<VistaSolicitudSeguro> {
                           Text("✔ Cobertura de hasta \$${widget.seguro.montoCobertura.toStringAsFixed(2)} en daños."),
                           Text("✔ Pagos flexibles y accesibles."),
                           const SizedBox(height: 16),
-                          
                         ],
                       ),
                     ),
@@ -217,7 +268,8 @@ class _VistaSolicitudSeguroState extends State<VistaSolicitudSeguro> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // Acción para hacer la solicitud del seguro
+                                    _crearReporteSolicitud();
+                                    _enviarNotificacionSolicitud();
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -235,7 +287,6 @@ class _VistaSolicitudSeguroState extends State<VistaSolicitudSeguro> {
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                // Aquí puedes manejar la lógica para guardar la solicitud
                                                 Navigator.of(context).pop();
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   SnackBar(

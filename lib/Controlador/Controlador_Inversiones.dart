@@ -19,4 +19,20 @@ class ControladorInversiones {
 
     return data.map((inversion) => Inversion.fromMap(inversion)).toList();
   }
+
+  Future<Inversion?> obtenerInversion(String numeroInversion) async {
+    final Map<String, dynamic>? data = await supabase
+        .from('inversiones')
+        .select()
+        .eq('numeroinversion', numeroInversion)
+        .single();
+
+    if (data == null) {
+      print("No se encontró la inversión con número: $numeroInversion");
+      return null;
+    }
+
+    return Inversion.fromMap(data);
+  }
+
 }

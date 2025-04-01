@@ -18,8 +18,47 @@ class ControladorReportes {
       print('Error: $e');
     }
   }
+  
+
+  Future<List<ReporteSolicitud>> obtenerReportesSegurosPendientes() async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      final data = await supabase
+          .from('reportessolicitudes')
+          .select()
+          .eq('tiposolicitud', 'Seguro')
+          .eq('estado', 'Pendiente');
+
+      return (data as List<dynamic>)
+          .map((json) => ReporteSolicitud.fromMap(json))
+          .toList();
+    } catch (e) {
+      print('Error: $e');
+      return [];
+    }
+  }
 
 
+
+  Future<List<ReporteSolicitud>> obtenerReportesInversionesPendientes() async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      final data = await supabase
+          .from('reportessolicitudes')
+          .select()
+          .eq('tiposolicitud', 'Inversion')
+          .eq('estado', 'Pendiente');
+
+      return (data as List<dynamic>)
+          .map((json) => ReporteSolicitud.fromMap(json))
+          .toList();
+    } catch (e) {
+      print('Error: $e');
+      return [];
+    }
+  }
 
   Future<List<ReporteSolicitud>> obtenerReportesPrestamoPendientes() async {
     final supabase = Supabase.instance.client;

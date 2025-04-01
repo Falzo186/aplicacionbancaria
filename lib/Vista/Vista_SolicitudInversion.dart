@@ -1,7 +1,14 @@
+import 'dart:math';
+
 import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
+import 'package:aplicacionbancaria/Controlador/Controlador_Reportes.dart';
+import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Inversion.dart';
+import '../Modelo/ReporteSolicitud.dart';
+import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBackground = Color(0xFFB1ACAC);
@@ -13,9 +20,11 @@ final Color colorCircle = Color(0xFF138A43);
 
 class VistaSolicitudInversion extends StatefulWidget {
   final Inversion inversion;
+  final Usuario usuario;
 
   const VistaSolicitudInversion({
     super.key,
+    required this.usuario,
     required this.inversion,
   });
 
@@ -29,6 +38,9 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
   List<Cliente> filteredClientes = [];
   Cliente? selectedCliente;
   final controlador = ControladorDatoscliente();
+  final ControladorReporte = ControladorReportes();
+  final ControladorNotificacion = ControladorNotificaciones();
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +65,45 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
         return nombreLower.contains(searchLower) || numeroCuentaLower.contains(searchLower);
       }).toList();
     });
+  }
+
+  void _crearReporteSolicitud() {
+    if (selectedCliente == null) return;
+
+    final reporte = ReporteSolicitud(
+      idSolicitud: Random().nextInt(100000).toString(),
+      usuarioId: widget.usuario.nombreUsuario,
+      usuarioNombre: widget.usuario.nombre,
+      tipoSolicitud: "Inversion",
+      clienteId: selectedCliente!.numeroCuenta,
+      clienteNombre: selectedCliente!.nombreCompleto,
+      idsolicitado: widget.inversion.numeroInversion,
+      estado: "Pendiente",
+      fechaSolicitud: DateTime.now(),
+    );
+
+    ControladorReporte.subirReporte(reporte);
+
+    print("Reporte de Solicitud:\n${reporte.toString()}");
+  }
+
+  void _enviarNotificacionSolicitud() {
+    if (selectedCliente == null) return;
+
+    final DateFormat formato = DateFormat('yyyy-MM-dd hh:mm a');
+    final String fechaFormateada = formato.format(DateTime.now());
+
+    final mensaje = "Solicitud de Inversión de: ${widget.usuario.nombreUsuario} "
+        "tipo: Inversión a ${selectedCliente!.nombreCompleto}\n"
+        "$fechaFormateada";
+
+    ControladorNotificacion.enviarNotificacion(
+      '2d0c779e-b9f0-4cc5-9316-d74ea14a43cb',
+      '28dc2001-518f-4cc0-9190-0ecd3f1c0ead',
+      mensaje,
+    );
+
+    print("Notificación enviada: $mensaje");
   }
 
   @override
@@ -122,7 +173,6 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
                             "📍 Estado: ${widget.inversion.estado}",
                             style: TextStyle(fontSize: 16),
                           ),
-                          const SizedBox(height: 16),
                           Text(
                             "📜 Detalles sobre su inversión",
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -222,177 +272,20 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
                             Text("Teléfono: ${selectedCliente!.telefono}"),
                             Text("Correo: ${selectedCliente!.correoElectronico}"),
                             const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Acción para ver los detalles bancarios del cliente
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text("Detalles Bancarios"),
-                                          content: SingleChildScrollView(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Nombre Completo:",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                Text(selectedCliente!.nombreCompleto),
-                                                SizedBox(height: 10),
-                                                Text(
-                                                  "Número de Cuenta:",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                Text(selectedCliente!.numeroCuenta),
-                                                SizedBox(height: 10),
-                                                Text(
-                                                  "Ocupacion:",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                Text(selectedCliente!.ocupacion.toString()),
-                                                Text(
-                                                  "Ingreso:",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                Text(selectedCliente!.ingresosMensuales.toString()),
-                                                SizedBox(height: 10),
-                                                Text(
-                                                  "Cuenta con credito?:",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                Text(selectedCliente!.tieneCredito ? "Si" : "No"),
-                                                SizedBox(height: 10),
-                                                Text(
-                                                  "Tiene Prestamo Activo?:",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                Text(selectedCliente!.tienePrestamo ? "Si" : "No"),
-                                                SizedBox(height: 10),
-                                              ],
-                                            ),
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text(
-                                                "Cerrar",
-                                                style: TextStyle(color: Colors.blue),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.redAccent,
+                            ElevatedButton(
+                              onPressed: () {
+                                _crearReporteSolicitud();
+                                _enviarNotificacionSolicitud();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Solicitud de inversión procesada."),
                                   ),
-                                  child: Text("Detalles Bancarios"),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Acción para hacer la solicitud de inversión
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text("Solicitud de Inversión"),
-                                          content: Text(
-                                            "¿Desea realizar la solicitud de inversión para el cliente ${selectedCliente!.nombreCompleto}?",
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      title: Text(
-                                                        "Detalles del Cliente",
-                                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                                                      ),
-                                                      content: SingleChildScrollView(
-                                                        child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(
-                                                              "Nombre Completo:",
-                                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                                            ),
-                                                            Text(selectedCliente!.nombreCompleto),
-                                                            SizedBox(height: 10),
-                                                            Text(
-                                                              "Número de Cuenta:",
-                                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                                            ),
-                                                            Text(selectedCliente!.numeroCuenta),
-                                                            SizedBox(height: 10),
-                                                            Text(
-                                                              "Teléfono:",
-                                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                                            ),
-                                                            Text(selectedCliente!.telefono),
-                                                            SizedBox(height: 10),
-                                                            Text(
-                                                              "Correo Electrónico:",
-                                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                                            ),
-                                                            Text(selectedCliente!.correoElectronico),
-                                                            SizedBox(height: 10),
-                                                            Text(
-                                                              "Dirección:",
-                                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                                            ),
-                                                            Text(selectedCliente!.direccionCompleta ?? "No disponible"),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            Navigator.of(context).pop();
-                                                          },
-                                                          child: Text(
-                                                            "Cerrar",
-                                                            style: TextStyle(color: Colors.blue),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              child: Text("Mas Detalles"),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                // Aquí puedes manejar la lógica para guardar la solicitud
-                                                Navigator.of(context).pop();
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text("Solicitud de inversión realizada exitosamente."),
-                                                  ),
-                                                );
-                                              },
-                                              child: Text("Aceptar"),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: colorCircle,
-                                  ),
-                                  child: Text("Hacer Solicitud"),
-                                ),
-                              ],
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorCircle,
+                              ),
+                              child: Text("Procesar Solicitud"),
                             ),
                           ],
                         ],

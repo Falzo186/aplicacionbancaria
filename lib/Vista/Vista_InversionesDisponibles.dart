@@ -141,7 +141,10 @@ class _VistaInversionesDisponiblesState extends State<VistaInversionesDisponible
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VistaSolicitudInversion(inversion: inversion),
+            builder: (context) => VistaSolicitudInversion(
+              inversion: inversion,
+              usuario: widget.usuario,
+            ),
           ),
         );
         },  
