@@ -1,20 +1,21 @@
-import 'package:aplicacionbancaria/Controlador/Controlador_Prestamos.dart';
+import 'package:aplicacionbancaria/Controlador/Controlador_Seguros.dart';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
 import 'package:aplicacionbancaria/Modelo/Prestamo.dart';
+import 'package:aplicacionbancaria/Modelo/Seguro.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
-class VistaAltaprestamos extends StatefulWidget {
-  VistaAltaprestamos({super.key, required this.titulo});
+class VistaAltaSeguro extends StatefulWidget {
+  VistaAltaSeguro({super.key, required this.titulo});
   final String titulo;
 
   @override
-  _VistaAltaprestamosState createState() => _VistaAltaprestamosState();
+  _VistaAltaSeguroState createState() => _VistaAltaSeguroState();
 }
 
-class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
+class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
   final ScrollController _scrollController = ScrollController();
   VentanaModelo colorsv = VentanaModelo();
   TextEditingController claveController = TextEditingController();
@@ -29,18 +30,18 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
   DateTime fechaInicio = DateTime.now();
   DateTime fechaPago = DateTime.now().add(Duration(days: 30));
 
-  List<Prestamo> prestamos = [];
-  final controlador = ControladorPrestamos();
-  late Future<void> _prestamosFuture;
+  List<Seguro> seguros = [];
+  final controlador = ControladorSeguros();
+  late Future<void> _segurosFuture;
 
   @override
   void initState() {
     super.initState();
-    _prestamosFuture = _initializePrestamos();
+    _segurosFuture = _initializeSeguros();
   }
 
-  Future<void> _initializePrestamos() async {
-    prestamos = await controlador.obtenerPrestamos();
+  Future<void> _initializeSeguros() async {
+    //seguros = await controlador.obtenerSeguro();
   }
 
   @override
@@ -86,14 +87,12 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         children: [
                           Expanded(
                             child: campoTexto(
-                              "INGRESE LA CLAVE DEL PRÉSTAMO:",
+                              "INGRESE EL NÚMERO DE PÓLIZA:",
                               claveController,
                             ),
                           ),
                           SizedBox(width: 10),
                           campoTextoSoloLectura("NUMERACIÓN:", numeracion),
-                          SizedBox(width: 10),
-                          dropdownCantidadPrestamos(),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -101,39 +100,15 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         children: [
                           Expanded(
                             child: campoTexto(
-                              "INGRESE EL MONTO DEL PRÉSTAMO:",
+                              "INGRESE EL MONTO ASEGURADO:",
                               montoController,
                             ),
                           ),
                           SizedBox(width: 10),
                           Expanded(
                             child: campoTexto(
-                              "INGRESAR TASA DE INTERÉS:",
+                              "INGRESE LA PRIMA MENSUAL:",
                               interesController,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          dropdownMeses(),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          campoTextoSoloLectura(
-                            "PAGO MÍNIMO:",
-                            pagoMinimo.toStringAsFixed(2),
-                          ),
-                          SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: calcularPagoMinimo,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(
-                                0xFF5C3B3B,
-                              ), // Marrón intermedio
-                            ),
-                            child: Text(
-                              "CALCULAR",
-                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ],
@@ -148,41 +123,59 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      campoTexto("DÍAS DE PAGO:", diasPagoController),
+                      campoTexto("DÍAS DE COBERTURA:", diasPagoController),
                       SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () {
-                          for (int i = 1; i <= cantidadPrestamos; i++) {
-                            String numeroPrestamo =
-                                '${claveController.text}${i.toString().padLeft(3, '0')}';
-                            Prestamo nuevoPrestamo = Prestamo(
-                              numeroCuenta: "1",
-                              numeroPrestamo: numeroPrestamo,
-                              monto:
-                                  double.tryParse(montoController.text) ?? 0.0,
-                              meses: meses,
-                              tasaInteres:
-                                  double.tryParse(interesController.text) ??
-                                  0.0,
-                              fechaInicio: fechaInicio,
-                              fechapago: fechaPago,
-                              diasPago:
-                                  int.tryParse(diasPagoController.text) ?? 15,
-                              pagosRealizados: 0,
-                            );
-                            controlador.agregarPrestamo(nuevoPrestamo);
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Préstamos agregados exitosamente'),
+                        onPressed: () async {
+                          String numeroPoliza = claveController.text;
+                          double montoAsegurado =
+                              double.tryParse(montoController.text) ?? 0.0;
+                          double primaMensual =
+                              double.tryParse(interesController.text) ?? 0.0;
+                          int diasCobertura =
+                              int.tryParse(diasPagoController.text) ?? 15;
+
+                          Seguro nuevoSeguro = Seguro(
+                            numeroCuenta:
+                                "123456789", // Ejemplo de número de cuenta
+                            numeroPoliza: numeroPoliza,
+                            costo: montoAsegurado,
+                            meses: meses,
+                            tasaInteres: primaMensual / montoAsegurado,
+                            pagosRealizados: 0,
+                            tipoSeguro:
+                                "General", // Puedes ajustar el tipo según sea necesario
+                            montoCobertura: montoAsegurado,
+                            fechaInicio: fechaInicio,
+                            fechaVencimiento: fechaInicio.add(
+                              Duration(days: diasCobertura),
                             ),
+                            fechaPago: fechaPago,
                           );
+
+                          final resultado = await controlador.agregarSeguro(
+                            nuevoSeguro,
+                          );
+
+                          /*if (resultado) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Seguro agregado exitosamente'),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error al agregar el seguro'),
+                              ),
+                            );
+                          }*/
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey[300], // Botón gris claro
                         ),
                         child: Text(
-                          "AGREGAR",
+                          "AGREGAR SEGURO",
                           style: TextStyle(color: Colors.black),
                         ),
                       ),
@@ -191,6 +184,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                 ),
               ),
             ),
+
             SizedBox(width: 20),
             Expanded(
               child: Container(
@@ -209,7 +203,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         ),
                       ),
                     ),
-                    Expanded(
+                    /*Expanded(
                       child: FutureBuilder<void>(
                         future: _prestamosFuture,
                         builder: (context, snapshot) {
@@ -229,7 +223,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                           }
                         },
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
                 decoration: BoxDecoration(

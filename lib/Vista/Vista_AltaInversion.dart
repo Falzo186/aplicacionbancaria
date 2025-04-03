@@ -60,178 +60,202 @@ class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
           ),
         ),
         backgroundColor: colorsv.colorAppbar,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: colorsv.colorTexto2),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: Container(
-        padding: EdgeInsets.all(20.0),
-        color: colorsv.colorBackground,
-        child: Row(
-          children: [
-            // Parte izquierda: Formulario para agregar inversiones
-            Expanded(
-              flex: 2,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('lib/Recursos/logo.png'),
-                    fit: BoxFit.scaleDown,
-                    opacity: 0.9,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          padding: EdgeInsets.all(20.0),
+          color: colorsv.colorBackground,
+          child: Row(
+            children: [
+              // Parte izquierda: Formulario para agregar inversiones
+              Expanded(
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('lib/Recursos/logo.png'),
+                      fit: BoxFit.scaleDown,
+                      opacity: 0.9,
+                    ),
+                    color: colorsv.colorTexto2,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  color: colorsv.colorTexto2,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: campoTexto(
+                                  "INGRESE LA CLAVE DE LA INVERSIÓN:",
+                                  claveController,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: campoTextoSoloLectura(
+                                  "NUMERACIÓN:",
+                                  numeracion,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: campoTexto(
+                                  "INGRESE EL MONTO DE LA INVERSIÓN:",
+                                  montoController,
+                                  onChanged: calcularGanancia,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: campoTexto(
+                                  "INGRESAR TASA DE INTERÉS:",
+                                  tasaInteresController,
+                                  onChanged: calcularGanancia,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(children: [Expanded(child: dropdownMeses())]),
+                          SizedBox(height: 10),
+                          campoTextoSoloLectura(
+                            "GANANCIA ESPERADA:",
+                            gananciaEsperada.toStringAsFixed(2),
+                          ),
+                          SizedBox(height: 10),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: campoFecha(
+                              "FECHA DE INICIO:",
+                              fechaInicio,
+                              () => seleccionarFechaInicio(context),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: campoFecha(
+                              "FECHA DE VENCIMIENTO:",
+                              fechaVencimiento,
+                              () => seleccionarFechaVencimiento(context),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              String numeroInversion =
+                                  '${claveController.text}${numeracion}';
+                              double monto =
+                                  double.tryParse(montoController.text) ?? 0.0;
+                              double tasaInteres =
+                                  double.tryParse(tasaInteresController.text) ??
+                                  0.0;
+
+                              Inversion nuevaInversion = Inversion(
+                                numeroCuenta:
+                                    "1", // Cambiar según sea necesario
+                                numeroInversion: numeroInversion,
+                                monto: monto,
+                                gananciaEsperada: gananciaEsperada,
+                                tiempoMeses: tiempoMeses,
+                                tasaInteres: tasaInteres,
+                                fechaInicio: fechaInicio,
+                                fechaVencimiento: fechaVencimiento,
+                              );
+
+                              controlador.agregarInversion(nuevaInversion);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Inversión agregada exitosamente',
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[300],
+                            ),
+                            child: Text(
+                              "AGREGAR",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: campoTexto(
-                                "INGRESE LA CLAVE DE LA INVERSIÓN:",
-                                claveController,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            campoTextoSoloLectura("NUMERACIÓN:", numeracion),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: campoTexto(
-                                "INGRESE EL MONTO DE LA INVERSIÓN:",
-                                montoController,
-                                onChanged: calcularGanancia,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: campoTexto(
-                                "INGRESAR TASA DE INTERÉS:",
-                                tasaInteresController,
-                                onChanged: calcularGanancia,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(child: dropdownMeses()),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        campoTextoSoloLectura(
-                          "GANANCIA ESPERADA:",
-                          gananciaEsperada.toStringAsFixed(2),
-                        ),
-                        SizedBox(height: 10),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: campoFecha(
-                            "FECHA DE INICIO:",
-                            fechaInicio,
-                            () => seleccionarFechaInicio(context),
+              ),
+              SizedBox(width: 20),
+              // Parte derecha: Lista de inversiones disponibles
+              Expanded(
+                flex: 3,
+                child: Container(
+                  padding: EdgeInsets.all(25.0),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Inversiones Disponibles",
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: colorsv.colorTextoLogin,
+                            letterSpacing: 2,
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: campoFecha(
-                            "FECHA DE VENCIMIENTO:",
-                            fechaVencimiento,
-                            () => seleccionarFechaVencimiento(context),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            String numeroInversion = '${claveController.text}${numeracion}';
-                            double monto = double.tryParse(montoController.text) ?? 0.0;
-                            double tasaInteres = double.tryParse(tasaInteresController.text) ?? 0.0;
-
-                            Inversion nuevaInversion = Inversion(
-                              numeroCuenta: "1", // Cambiar según sea necesario
-                              numeroInversion: numeroInversion,
-                              monto: monto,
-                              gananciaEsperada: gananciaEsperada,
-                              tiempoMeses: tiempoMeses,
-                              tasaInteres: tasaInteres,
-                              fechaInicio: fechaInicio,
-                              fechaVencimiento: fechaVencimiento,
-                            );
-
-                            controlador.agregarInversion(nuevaInversion);
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Inversión agregada exitosamente')),
-                            );
+                      ),
+                      Expanded(
+                        child: FutureBuilder<void>(
+                          future: _inversionesFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text("Error al cargar inversiones"),
+                              );
+                            } else {
+                              return ListView.builder(
+                                controller: _scrollController,
+                                itemCount: inversiones.length,
+                                itemBuilder: (context, index) {
+                                  return _buildInversionCard(
+                                    inversiones[index],
+                                  );
+                                },
+                              );
+                            }
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[300],
-                          ),
-                          child: Text(
-                            "AGREGAR",
-                            style: TextStyle(color: Colors.black),
-                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorsv.colorShadowSplogin,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                 ),
               ),
-            ),
-            SizedBox(width: 20),
-            // Parte derecha: Lista de inversiones disponibles
-            Expanded(
-              flex: 3,
-              child: Container(
-                padding: EdgeInsets.all(25.0),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Inversiones Disponibles",
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: colorsv.colorTextoLogin,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: FutureBuilder<void>(
-                        future: _inversionesFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text("Error al cargar inversiones"));
-                          } else {
-                            return ListView.builder(
-                              controller: _scrollController,
-                              itemCount: inversiones.length,
-                              itemBuilder: (context, index) {
-                                return _buildInversionCard(inversiones[index]);
-                              },
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                decoration: BoxDecoration(
-                  color: colorsv.colorShadowSplogin,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -255,7 +279,11 @@ class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
     );
   }
 
-  Widget campoTexto(String label, TextEditingController controller, {VoidCallback? onChanged}) {
+  Widget campoTexto(
+    String label,
+    TextEditingController controller, {
+    VoidCallback? onChanged,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -287,18 +315,20 @@ class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         ),
         SizedBox(height: 5),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black),
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.white,
-          ),
-          child: Text(
-            valor,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold),
+        SizedBox(
+          width: double.infinity, // Asegurar un ancho definido
+          child: Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+            child: Text(
+              valor,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ],

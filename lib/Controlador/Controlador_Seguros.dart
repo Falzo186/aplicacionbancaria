@@ -20,19 +20,31 @@ class ControladorSeguros {
     return data.map((seguro) => Seguro.fromMap(seguro)).toList();
   }
 
-Future<Seguro?> obtenerSeguro(String numeroPoliza) async {
-  final Map<String, dynamic>? data = await supabase
-      .from('seguros')
-      .select()
-      .eq('numeropoliza', numeroPoliza)
-      .single();
+  Future<Seguro?> obtenerSeguro(String numeroPoliza) async {
+    final Map<String, dynamic>? data =
+        await supabase
+            .from('seguros')
+            .select()
+            .eq('numeropoliza', numeroPoliza)
+            .single();
 
-  if (data == null) {
-    print("No se encontró un seguro con el número de póliza: $numeroPoliza");
-    return null;
+    if (data == null) {
+      print("No se encontró el seguro con número de póliza: $numeroPoliza");
+      return null;
+    }
+
+    return Seguro.fromMap(data);
   }
 
-  return Seguro.fromMap(data);
-}
+  Future<void> agregarSeguro(Seguro seguro) async {
+    final Map<String, dynamic> seguroData = seguro.toMap();
 
+    final response = await supabase.from('seguros').insert(seguroData);
+
+    if (response.error != null) {
+      print("Error al agregar el seguro: ${response.error!.message}");
+    } else {
+      print("Seguro agregado exitosamente");
+    }
+  }
 }

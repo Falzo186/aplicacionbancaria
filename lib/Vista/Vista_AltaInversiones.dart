@@ -1,46 +1,42 @@
-import 'package:aplicacionbancaria/Controlador/Controlador_Prestamos.dart';
+import 'package:aplicacionbancaria/Controlador/Controlador_Inversiones.dart';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
-import 'package:aplicacionbancaria/Modelo/Prestamo.dart';
+import 'package:aplicacionbancaria/Modelo/Inversion.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
-class VistaAltaprestamos extends StatefulWidget {
-  VistaAltaprestamos({super.key, required this.titulo});
+class VistaAltaInversiones extends StatefulWidget {
+  VistaAltaInversiones({super.key, required this.titulo});
   final String titulo;
 
   @override
-  _VistaAltaprestamosState createState() => _VistaAltaprestamosState();
+  _VistaAltaInversionesState createState() => _VistaAltaInversionesState();
 }
 
-class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
+class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
   final ScrollController _scrollController = ScrollController();
   VentanaModelo colorsv = VentanaModelo();
   TextEditingController claveController = TextEditingController();
   TextEditingController montoController = TextEditingController();
-  TextEditingController interesController = TextEditingController();
-  TextEditingController diasPagoController = TextEditingController(text: '15');
+  TextEditingController plazoController = TextEditingController();
 
   String numeracion = "0001";
-  int cantidadPrestamos = 1;
-  int meses = 1;
-  double pagoMinimo = 0.0;
+  int cantidadInversiones = 1;
   DateTime fechaInicio = DateTime.now();
-  DateTime fechaPago = DateTime.now().add(Duration(days: 30));
+  DateTime fechaVencimiento = DateTime.now().add(Duration(days: 30));
 
-  List<Prestamo> prestamos = [];
-  final controlador = ControladorPrestamos();
-  late Future<void> _prestamosFuture;
+  List<Inversion> inversiones = [];
+  final controlador = ControladorInversiones();
+  late Future<void> _inversionesFuture;
 
   @override
   void initState() {
     super.initState();
-    _prestamosFuture = _initializePrestamos();
+    _inversionesFuture = _initializeInversiones();
   }
 
-  Future<void> _initializePrestamos() async {
-    prestamos = await controlador.obtenerPrestamos();
+  Future<void> _initializeInversiones() async {
+    inversiones = await controlador.obtenerInversiones();
   }
 
   @override
@@ -54,7 +50,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
             fontStyle: FontStyle.italic,
           ),
         ),
-        backgroundColor: colorsv.colorAppbar, // Color marrón oscuro
+        backgroundColor: colorsv.colorAppbar,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colorsv.colorTexto2),
           onPressed: () {
@@ -70,11 +66,6 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('lib/Recursos/logo.png'),
-                    fit: BoxFit.scaleDown,
-                    opacity: 0.2,
-                  ),
                   color: colorsv.colorTexto2,
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
@@ -86,14 +77,14 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         children: [
                           Expanded(
                             child: campoTexto(
-                              "INGRESE LA CLAVE DEL PRÉSTAMO:",
+                              "INGRESE LA CLAVE DE LA INVERSIÓN:",
                               claveController,
                             ),
                           ),
                           SizedBox(width: 10),
                           campoTextoSoloLectura("NUMERACIÓN:", numeracion),
                           SizedBox(width: 10),
-                          dropdownCantidadPrestamos(),
+                          dropdownCantidadInversiones(),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -101,41 +92,12 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         children: [
                           Expanded(
                             child: campoTexto(
-                              "INGRESE EL MONTO DEL PRÉSTAMO:",
+                              "INGRESE EL MONTO DE LA INVERSIÓN:",
                               montoController,
                             ),
                           ),
                           SizedBox(width: 10),
-                          Expanded(
-                            child: campoTexto(
-                              "INGRESAR TASA DE INTERÉS:",
-                              interesController,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          dropdownMeses(),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          campoTextoSoloLectura(
-                            "PAGO MÍNIMO:",
-                            pagoMinimo.toStringAsFixed(2),
-                          ),
-                          SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: calcularPagoMinimo,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(
-                                0xFF5C3B3B,
-                              ), // Marrón intermedio
-                            ),
-                            child: Text(
-                              "CALCULAR",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
+                          campoTexto("PLAZO (DÍAS):", plazoController),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -147,39 +109,39 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                           () => seleccionarFechaInicio(context),
                         ),
                       ),
-                      SizedBox(height: 10),
-                      campoTexto("DÍAS DE PAGO:", diasPagoController),
                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
-                          for (int i = 1; i <= cantidadPrestamos; i++) {
-                            String numeroPrestamo =
+                          for (int i = 1; i <= cantidadInversiones; i++) {
+                            String numeroInversion =
                                 '${claveController.text}${i.toString().padLeft(3, '0')}';
-                            Prestamo nuevoPrestamo = Prestamo(
+                            Inversion nuevaInversion = Inversion(
                               numeroCuenta: "1",
-                              numeroPrestamo: numeroPrestamo,
+                              numeroInversion: numeroInversion,
                               monto:
                                   double.tryParse(montoController.text) ?? 0.0,
-                              meses: meses,
+                              gananciaEsperada:
+                                  0.0, // Asignar un valor inicial o calcularlo
+                              tiempoMeses:
+                                  (int.tryParse(plazoController.text) ?? 30) ~/
+                                  30,
                               tasaInteres:
-                                  double.tryParse(interesController.text) ??
-                                  0.0,
+                                  0.0, // Asignar un valor inicial o calcularlo
                               fechaInicio: fechaInicio,
-                              fechapago: fechaPago,
-                              diasPago:
-                                  int.tryParse(diasPagoController.text) ?? 15,
-                              pagosRealizados: 0,
+                              fechaVencimiento: fechaVencimiento,
                             );
-                            controlador.agregarPrestamo(nuevoPrestamo);
+                            controlador.agregarInversion(nuevaInversion);
                           }
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Préstamos agregados exitosamente'),
+                              content: Text(
+                                'Inversiones agregadas exitosamente',
+                              ),
                             ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300], // Botón gris claro
+                          backgroundColor: Colors.grey[300],
                         ),
                         child: Text(
                           "AGREGAR",
@@ -200,7 +162,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Carta de Préstamos",
+                        "Lista de Inversiones",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -211,7 +173,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                     ),
                     Expanded(
                       child: FutureBuilder<void>(
-                        future: _prestamosFuture,
+                        future: _inversionesFuture,
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -221,9 +183,9 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                           } else {
                             return ListView.builder(
                               controller: _scrollController,
-                              itemCount: prestamos.length,
+                              itemCount: inversiones.length,
                               itemBuilder: (context, index) {
-                                return _buildPrestamoCard(prestamos[index]);
+                                return _buildInversionCard(inversiones[index]);
                               },
                             );
                           }
@@ -244,46 +206,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
     );
   }
 
-  Widget _buildSideLogo() {
-    return Expanded(
-      flex: 2,
-      child: Center(
-        child: Image.asset(
-          'lib/Recursos/logo.png',
-          width: 300,
-          opacity: AlwaysStoppedAnimation(0.8),
-        ).animate().scale(duration: 500.ms),
-      ),
-    );
-  }
-
-  void calcularPagoMinimo() {
-    double monto = double.tryParse(montoController.text) ?? 0.0;
-    double interes = (double.tryParse(interesController.text) ?? 0.0) / 100;
-    if (meses > 0) {
-      setState(() {
-        pagoMinimo = (monto * (1 + interes)) / meses;
-      });
-    }
-  }
-
-  Future<void> seleccionarFechaInicio(BuildContext context) async {
-    DateTime? nuevaFecha = await showDatePicker(
-      context: context,
-      initialDate: fechaInicio,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (nuevaFecha != null) {
-      setState(() {
-        fechaInicio = nuevaFecha;
-        fechaPago = fechaInicio.add(Duration(days: 30));
-      });
-    }
-  }
-
-  // Optimización de la creación de tarjetas de préstamo
-  Widget _buildPrestamoCard(Prestamo prestamo) {
+  Widget _buildInversionCard(Inversion inversion) {
     return Card(
       color: colorsv.colorCard,
       margin: EdgeInsets.all(10),
@@ -293,19 +216,15 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
             context: context,
             builder: (_) {
               return AlertDialog(
-                title: Text("Detalles del Préstamo"),
+                title: Text("Detalles de la Inversión"),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Número de Préstamo: ${prestamo.numeroPrestamo}"),
-                    Text("Monto: ${prestamo.monto}"),
-                    Text("Meses: ${prestamo.meses}"),
-                    Text("Tasa de Interés: ${prestamo.tasaInteres} %"),
-                    Text("Fecha de Inicio: ${prestamo.fechaInicio}"),
-                    Text("Fecha de Pago: ${prestamo.fechapago}"),
-                    Text("Días de Pago: ${prestamo.diasPago}"),
-                    Text("Pago Mínimo: ${prestamo.pagoMinimo}"),
+                    Text("Número de Inversión: ${inversion.numeroInversion}"),
+                    Text("Monto: ${inversion.monto}"),
+                    Text("Fecha de Inicio: ${inversion.fechaInicio}"),
+                    Text("Fecha de Vencimiento: ${inversion.fechaVencimiento}"),
                   ],
                 ),
                 actions: [
@@ -323,61 +242,27 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildPrestamoHeader(prestamo),
-              SizedBox(height: 5),
-              _buildPrestamoDetails(prestamo),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrestamoHeader(Prestamo prestamo) {
-    return Row(
-      children: [
-        CircleAvatar(radius: 10, backgroundColor: colorsv.colorCircle),
-        SizedBox(width: 10),
-        Text(
-          "Préstamo: ${prestamo.numeroPrestamo}",
-          style: TextStyle(
-            color: colorsv.colorTexto,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPrestamoDetails(Prestamo prestamo) {
-    return Row(
-      children: [
-        SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
               Text(
-                "Monto: ${prestamo.monto}",
+                "Inversión: ${inversion.numeroInversion}",
+                style: TextStyle(
+                  color: colorsv.colorTexto,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(
+                "Monto: ${inversion.monto}",
                 style: TextStyle(
                   color: colorsv.colorTexto,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
-                "Meses: ${prestamo.meses}",
-                style: TextStyle(color: colorsv.colorTexto, fontSize: 14),
-              ),
-              Text(
-                "Tasa de Interés: ${prestamo.tasaInteres} %",
-                style: TextStyle(color: colorsv.colorTexto),
-              ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -430,47 +315,23 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
     );
   }
 
-  Widget dropdownCantidadPrestamos() {
+  Widget dropdownCantidadInversiones() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "CANTIDAD DE PRÉSTAMOS:",
+          "CANTIDAD DE INVERSIONES:",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         ),
         SizedBox(height: 5),
         DropdownButton<int>(
-          value: cantidadPrestamos,
+          value: cantidadInversiones,
           items: List.generate(
             11,
             (index) =>
                 DropdownMenuItem(value: index, child: Text(index.toString())),
           ),
-          onChanged: (value) => setState(() => cantidadPrestamos = value!),
-        ),
-      ],
-    );
-  }
-
-  Widget dropdownMeses() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "INGRESAR MESES:",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        SizedBox(height: 5),
-        DropdownButton<int>(
-          value: meses,
-          items: List.generate(
-            12,
-            (index) => DropdownMenuItem(
-              value: index + 1,
-              child: Text((index + 1).toString()),
-            ),
-          ),
-          onChanged: (value) => setState(() => meses = value!),
+          onChanged: (value) => setState(() => cantidadInversiones = value!),
         ),
       ],
     );
@@ -502,5 +363,20 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
         ),
       ],
     );
+  }
+
+  Future<void> seleccionarFechaInicio(BuildContext context) async {
+    DateTime? nuevaFecha = await showDatePicker(
+      context: context,
+      initialDate: fechaInicio,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (nuevaFecha != null) {
+      setState(() {
+        fechaInicio = nuevaFecha;
+        fechaVencimiento = fechaInicio.add(Duration(days: 30));
+      });
+    }
   }
 }

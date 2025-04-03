@@ -1,6 +1,8 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Seguros.dart';
+import 'package:aplicacionbancaria/Vista/VistaAltaSeguro.dart';
 import 'package:aplicacionbancaria/Vista/Vista_SolicitudSeguro.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../Modelo/Seguro.dart';
 import '../Modelo/Usuario.dart';
 
@@ -21,7 +23,8 @@ class VistaSegurosDisponibles extends StatefulWidget {
   final Usuario usuario;
 
   @override
-  _VistaSegurosDisponiblesState createState() => _VistaSegurosDisponiblesState();
+  State<VistaSegurosDisponibles> createState() =>
+      _VistaSegurosDisponiblesState();
 }
 
 class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
@@ -50,10 +53,7 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Seguros Disponibles",
-              style: TextStyle(color: Colors.white),
-            ),
+            Text("Seguros Disponibles", style: TextStyle(color: Colors.white)),
             Text(
               "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
               style: TextStyle(fontSize: 14, color: Colors.white),
@@ -115,6 +115,18 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: colorCircle,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VistaAltaSeguro(titulo: "Alta de Seguro"),
+            ),
+          );
+        },
+        child: Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 
@@ -127,10 +139,11 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VistaSolicitudSeguro(
-                usuario: widget.usuario,
-                seguro: seguro,
-              ),
+              builder:
+                  (context) => VistaSolicitudSeguro(
+                    usuario: widget.usuario,
+                    seguro: seguro,
+                  ),
             ),
           );
         },
@@ -143,7 +156,8 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
                 children: [
                   CircleAvatar(
                     radius: 10,
-                    backgroundColor: colorCircle, // Puedes cambiar el color del círculo
+                    backgroundColor:
+                        colorCircle, // Puedes cambiar el color del círculo
                   ),
                   SizedBox(width: 10),
                   Text(

@@ -105,8 +105,13 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
             ),
           ],
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
