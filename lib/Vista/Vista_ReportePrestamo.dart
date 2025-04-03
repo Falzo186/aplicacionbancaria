@@ -31,8 +31,6 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
   final ControladorPrestamo = ControladorPrestamos();
 
   @override
-  @override
-  @override
   void initState() {
     super.initState();
     _cargarReportes();
@@ -44,12 +42,9 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
         reportes = data as List<ReporteSolicitud>;
       });
     }).catchError((error) {
-      // Manejo de errores si es necesario
       debugPrint("Error al cargar reportes: $error");
     });
   }
-
-  
 
   Future<void> seleccionarReporte(ReporteSolicitud reporte) async {
     setState(() {
@@ -63,6 +58,13 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
     });
   }
 
+  String _formatearFecha(DateTime fecha) {
+    final hora = fecha.hour % 12 == 0 ? 12 : fecha.hour % 12;
+    final minutos = fecha.minute.toString().padLeft(2, '0');
+    final amPm = fecha.hour >= 12 ? 'PM' : 'AM';
+    return "${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year} $hora:$minutos $amPm";
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -73,7 +75,11 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Préstamos"),
+              title: Text(
+                "Reporte de Solicitudes de Préstamos",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Center(
               child: CircularProgressIndicator(),
@@ -84,7 +90,11 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Préstamos"),
+              title: Text(
+                "Reporte de Solicitudes de Préstamos",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Center(
               child: Text("Error al cargar los reportes"),
@@ -96,13 +106,16 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Préstamos"),
+              title: Text(
+                "Reporte de Solicitudes de Préstamos",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Contenedor izquierdo: Información detallada
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -130,7 +143,7 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                                 Text("Usuario: ${reporteSeleccionado!.usuarioNombre}"),
                                 Text("Tipo de Solicitud: ${reporteSeleccionado!.tipoSolicitud}"),
                                 Text("Estado: ${reporteSeleccionado!.estado}"),
-                                Text("Fecha de Solicitud: ${reporteSeleccionado!.fechaSolicitud}"),
+                                Text("Fecha de Solicitud: ${_formatearFecha(reporteSeleccionado!.fechaSolicitud)}"),
                                 const SizedBox(height: 16),
                                 Text(
                                   "Información del Cliente",
@@ -151,8 +164,8 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                                 Text("Monto: \$${prestamoSeleccionado?.monto.toStringAsFixed(2) ?? 'Cargando...'}"),
                                 Text("Meses: ${prestamoSeleccionado?.meses ?? 'Cargando...'}"),
                                 Text("Tasa de Interés: ${prestamoSeleccionado?.tasaInteres ?? 'Cargando...'}%"),
-                                Text("Fecha de Inicio: ${prestamoSeleccionado?.fechaInicio ?? 'Cargando...'}"),
-                                Text("Fecha de Pago: ${prestamoSeleccionado?.fechapago ?? 'Cargando...'}"),
+                                Text("Fecha de Inicio: ${prestamoSeleccionado?.fechaInicio != null ? _formatearFecha(prestamoSeleccionado!.fechaInicio!) : 'Cargando...'}"),
+                                Text("Fecha de Pago: ${prestamoSeleccionado?.fechapago != null ? _formatearFecha(prestamoSeleccionado!.fechapago!) : 'Cargando...'}"),
                                 Text("Estado: ${prestamoSeleccionado?.estado ?? 'Cargando...'}"),
                                 const SizedBox(height: 16),
                                 Row(
@@ -160,7 +173,6 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                                   children: [
                                     ElevatedButton(
                                       onPressed: () {
-                                        // Acción para aceptar la solicitud
                                         setState(() {
                                           reporteSeleccionado!.estado = "Aprobada";
                                         });
@@ -175,7 +187,6 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                                     ),
                                     ElevatedButton(
                                       onPressed: () {
-                                        // Acción para rechazar la solicitud
                                         setState(() {
                                           reporteSeleccionado!.estado = "Rechazada";
                                         });
@@ -195,7 +206,6 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Contenedor derecho: Lista de reportes
                   Expanded(
                     flex: 1,
                     child: Container(

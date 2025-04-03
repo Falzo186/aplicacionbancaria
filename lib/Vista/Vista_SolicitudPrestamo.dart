@@ -8,7 +8,6 @@ import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Reportes.dart';
 import '../Modelo/Usuario.dart';
 import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
-import '../Modelo/Ventanas.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBackground = Color(0xFFB1ACAC);

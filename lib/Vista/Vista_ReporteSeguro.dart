@@ -57,6 +57,10 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
     });
   }
 
+  String _formatearFecha(DateTime fecha) {
+    return "${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year} ${fecha.hour % 12 == 0 ? 12 : fecha.hour % 12}:${fecha.minute.toString().padLeft(2, '0')} ${fecha.hour >= 12 ? 'PM' : 'AM'}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -67,7 +71,11 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Seguros"),
+              title: Text(
+                "Reporte de Solicitudes de Seguros",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Center(
               child: CircularProgressIndicator(),
@@ -78,7 +86,11 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Seguros"),
+              title: Text(
+                "Reporte de Solicitudes de Seguros",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Center(
               child: Text("Error al cargar los reportes"),
@@ -90,7 +102,11 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Seguros"),
+              title: Text(
+                "Reporte de Solicitudes de Seguros",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -124,7 +140,7 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
                                 Text("Usuario: ${reporteSeleccionado!.usuarioNombre}"),
                                 Text("Tipo de Solicitud: ${reporteSeleccionado!.tipoSolicitud}"),
                                 Text("Estado: ${reporteSeleccionado!.estado}"),
-                                Text("Fecha de Solicitud: ${reporteSeleccionado!.fechaSolicitud}"),
+                                Text("Fecha de Solicitud: ${_formatearFecha(reporteSeleccionado!.fechaSolicitud)}"),
                                 const SizedBox(height: 16),
                                 Text(
                                   "Información del Cliente",
@@ -146,8 +162,8 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
                                 Text("Monto de Cobertura: \$${seguroSeleccionado?.montoCobertura.toStringAsFixed(2) ?? 'Cargando...'}"),
                                 Text("Costo Total: \$${seguroSeleccionado?.costoTotal.toStringAsFixed(2) ?? 'Cargando...'}"),
                                 Text("Pago Mensual: \$${seguroSeleccionado?.pagoMensual.toStringAsFixed(2) ?? 'Cargando...'}"),
-                                Text("Fecha de Inicio: ${seguroSeleccionado?.fechaInicio ?? 'Cargando...'}"),
-                                Text("Fecha de Vencimiento: ${seguroSeleccionado?.fechaVencimiento ?? 'Cargando...'}"),
+                                Text("Fecha de Inicio: ${seguroSeleccionado?.fechaInicio != null ? _formatearFecha(seguroSeleccionado!.fechaInicio!) : 'Cargando...'}"),
+                                Text("Fecha de Vencimiento: ${seguroSeleccionado?.fechaVencimiento != null ? _formatearFecha(seguroSeleccionado!.fechaVencimiento!) : 'Cargando...'}"),
                                 Text("Estado: ${seguroSeleccionado?.estado ?? 'Cargando...'}"),
                                 const SizedBox(height: 16),
                                 Row(

@@ -57,6 +57,13 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
     });
   }
 
+  String _formatearFecha(DateTime fecha) {
+    final hora = fecha.hour > 12 ? fecha.hour - 12 : fecha.hour;
+    final periodo = fecha.hour >= 12 ? "PM" : "AM";
+    final minutos = fecha.minute.toString().padLeft(2, '0');
+    return "${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year} $hora:$minutos $periodo";
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -67,7 +74,11 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Inversiones"),
+              title: Text(
+                "Reporte de Solicitudes de Inversiones",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Center(
               child: CircularProgressIndicator(),
@@ -78,7 +89,11 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Inversiones"),
+              title: Text(
+                "Reporte de Solicitudes de Inversiones",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Center(
               child: Text("Error al cargar los reportes"),
@@ -90,7 +105,11 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
             backgroundColor: colorBackground,
             appBar: AppBar(
               backgroundColor: colorAppbar,
-              title: Text("Reporte de Solicitudes de Inversiones"),
+              title: Text(
+                "Reporte de Solicitudes de Inversiones",
+                style: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -124,7 +143,7 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
                                 Text("Usuario: ${reporteSeleccionado!.usuarioNombre}"),
                                 Text("Tipo de Solicitud: ${reporteSeleccionado!.tipoSolicitud}"),
                                 Text("Estado: ${reporteSeleccionado!.estado}"),
-                                Text("Fecha de Solicitud: ${reporteSeleccionado!.fechaSolicitud}"),
+                                Text("Fecha de Solicitud: ${_formatearFecha(reporteSeleccionado!.fechaSolicitud)}"),
                                 const SizedBox(height: 16),
                                 Text(
                                   "Información del Cliente",
@@ -146,8 +165,8 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
                                 Text("Ganancia Esperada: \$${inversionSeleccionada?.gananciaEsperada.toStringAsFixed(2) ?? 'Cargando...'}"),
                                 Text("Tiempo (meses): ${inversionSeleccionada?.tiempoMeses ?? 'Cargando...'}"),
                                 Text("Tasa de Interés: ${inversionSeleccionada?.tasaInteres ?? 'Cargando...'}%"),
-                                Text("Fecha de Inicio: ${inversionSeleccionada?.fechaInicio ?? 'Cargando...'}"),
-                                Text("Fecha de Vencimiento: ${inversionSeleccionada?.fechaVencimiento ?? 'Cargando...'}"),
+                                Text("Fecha de Inicio: ${inversionSeleccionada?.fechaInicio != null ? _formatearFecha(inversionSeleccionada!.fechaInicio) : 'Cargando...'}"),
+                                Text("Fecha de Vencimiento: ${inversionSeleccionada?.fechaVencimiento != null ? _formatearFecha(inversionSeleccionada!.fechaVencimiento) : 'Cargando...'}"),
                                 Text("Estado: ${inversionSeleccionada?.estado ?? 'Cargando...'}"),
                                 const SizedBox(height: 16),
                                 Row(
