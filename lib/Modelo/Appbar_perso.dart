@@ -5,6 +5,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final double height;
   final Widget? title;
+  final Widget? leading; // Hacemos que leading sea opcional
 
   const CustomAppBar({
     Key? key,
@@ -12,6 +13,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.height = kToolbarHeight,
     this.title,
+    this.leading, // Lo agregamos como parámetro opcional
   }) : super(key: key);
 
   @override
@@ -20,6 +22,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor,
       actions: actions,
       title: title,
+      leading: leading, // Asignamos el valor de leading
     );
   }
 

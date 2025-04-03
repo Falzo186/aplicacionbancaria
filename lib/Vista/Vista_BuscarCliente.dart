@@ -24,6 +24,7 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
   final controladorCliente = ControladorDatoscliente();
   List<Cliente> clientes = [];
   List<Cliente> filteredClientes = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -33,19 +34,21 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
 
   Future<void> _initializeClientes() async {
     clientes = await controladorCliente.obtenerClientes();
-    filteredClientes = clientes;
+    setState(() {
+      filteredClientes = clientes;
+      _isLoading = false;
+    });
   }
 
   void _filterClientes(String query) {
-    final filtered =
-        clientes.where((cliente) {
-          final nombreLower = cliente.nombreCompleto.toLowerCase();
-          final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
-          final searchLower = query.toLowerCase();
+    final filtered = clientes.where((cliente) {
+      final nombreLower = cliente.nombreCompleto.toLowerCase();
+      final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
+      final searchLower = query.toLowerCase();
 
-          return nombreLower.contains(searchLower) ||
-              numeroCuentaLower.contains(searchLower);
-        }).toList();
+      return nombreLower.contains(searchLower) ||
+          numeroCuentaLower.contains(searchLower);
+    }).toList();
 
     setState(() {
       filteredClientes = filtered;
@@ -54,9 +57,22 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
 
   @override
   Widget build(BuildContext context) {
-    if (filteredClientes.isEmpty && clientes.isNotEmpty) {
-      filteredClientes = clientes;
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: colorsv.colorBackground,
+        appBar: CustomAppBar(
+          backgroundColor: colorsv.colorAppbar,
+          title: Text(
+            "Cargando...",
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          ),
+        ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
+
     return Scaffold(
       backgroundColor: colorsv.colorBackground,
       appBar: CustomAppBar(
@@ -105,8 +121,13 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
             ),
           ],
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -164,9 +185,7 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
                 children: [
                   CircleAvatar(
                     radius: 10,
-                    backgroundColor:
-                        colorsv
-                            .colorCircle, // Puedes cambiar el color del círculo
+                    backgroundColor: colorsv.colorCircle,
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -223,25 +242,23 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
       case 0:
         showDialog(
           context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text('Datos del Usuario'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Nombre: ${widget.usuario.nombre}'),
-                    Text('Apellido: ${widget.usuario.apellido}'),
-                    Text('Email: ${widget.usuario.correoElectronico}'),
-                    // Añade más datos del usuario si es necesario
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text('Cerrar'),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            title: Text('Datos del Usuario'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Nombre: ${widget.usuario.nombre}'),
+                Text('Apellido: ${widget.usuario.apellido}'),
+                Text('Email: ${widget.usuario.correoElectronico}'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cerrar'),
               ),
+            ],
+          ),
         );
         break;
       case 1:

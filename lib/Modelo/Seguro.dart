@@ -59,20 +59,20 @@ class Seguro {
   }
 Map<String, dynamic> toMap() {
   return {
-    'numeroCuenta': numeroCuenta,
-    'numeroPoliza': numeroPoliza,
+    'numerocuenta': numeroCuenta,
+    'numeropoliza': numeroPoliza,
     'costo': costo,
     'meses': meses,
-    'tasaInteres': tasaInteres,
-    'pagosRealizados': pagosRealizados,
-    'tipoSeguro': tipoSeguro,
-    'montoCobertura': montoCobertura,
-    'fechaInicio': fechaInicio.toIso8601String(),
-    'fechaVencimiento': fechaVencimiento.toIso8601String(),
-    'fechaPago': fechaPago.toIso8601String(),
+    'tasainteres': tasaInteres,
+    'pagosrealizados': pagosRealizados,
+    'tiposeguro': tipoSeguro,
+    'montocobertura': montoCobertura,
+    'fechainicio': fechaInicio.toIso8601String(),
+    'fechavencimiento': fechaVencimiento.toIso8601String(),
+    'fechapago': fechaPago.toIso8601String(),
     'estado': estado,
-    'numeroSiniestro': numeroSiniestro,
-    'descripcionCobertura': descripcionCobertura,
+    'numerosiniestro': numeroSiniestro,
+    'descripcioncobertura': descripcionCobertura,
   };
 }
 

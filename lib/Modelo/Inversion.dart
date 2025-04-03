@@ -24,14 +24,14 @@ class Inversion {
   /// Convertir la inversión a un mapa (para guardar en base de datos)
   Map<String, dynamic> toMap() {
     return {
-      'numeroCuenta': numeroCuenta,
-      'numeroInversion': numeroInversion,
+      'numerocuenta': numeroCuenta,
+      'numeroinversion': numeroInversion,
       'monto': monto,
-      'gananciaEsperada': gananciaEsperada,
-      'tiempoMeses': tiempoMeses,
-      'tasaInteres': tasaInteres,
-      'fechaInicio': fechaInicio.toIso8601String(),
-      'fechaVencimiento': fechaVencimiento.toIso8601String(),
+      'gananciaesperada': gananciaEsperada,
+      'tiempomeses': tiempoMeses,
+      'tasainteres': tasaInteres,
+      'fechainicio': fechaInicio.toIso8601String(),
+      'fechavencimiento': fechaVencimiento.toIso8601String(),
       'estado': estado,
     };
   }

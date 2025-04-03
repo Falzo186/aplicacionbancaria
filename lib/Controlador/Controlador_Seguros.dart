@@ -35,4 +35,15 @@ Future<Seguro?> obtenerSeguro(String numeroPoliza) async {
   return Seguro.fromMap(data);
 }
 
+Future<void> agregarSeguro(Seguro seguro) async {
+  final Map<String, dynamic> seguroMap = seguro.toMap();
+
+  try {
+    await supabase.from('seguros').insert(seguroMap);
+    print("Seguro agregado exitosamente");
+  } catch (e) {
+    print("Error al agregar el seguro: $e");
+  }
+}
+
 }

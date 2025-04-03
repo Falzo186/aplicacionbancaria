@@ -1,4 +1,6 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
+import 'package:aplicacionbancaria/SistemaNotificaciones/Controlado_Notificaciones.dart';
+import 'package:aplicacionbancaria/Vista/VistaAltaSeguro.dart';
 import 'package:aplicacionbancaria/Vista/Vista_GestionUsuarios.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Inversiones.dart';
 import 'package:aplicacionbancaria/Vista/Vista_ReportePrestamo.dart';
@@ -26,6 +28,7 @@ class _AdministradorViewState extends State<AdministradorView> {
   VentanaModelo colorsv = VentanaModelo();
   final supabase = Supabase.instance.client;
   List<Map<String, dynamic>> notificaciones = [];
+  final Controlador = ControladorNotificaciones();
 
   @override
   void initState() {
@@ -274,12 +277,18 @@ class _AdministradorViewState extends State<AdministradorView> {
   }
 
   void _onSegurosPressed() {
-    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaAltaSeguro(titulo: "Alta Seguro", ),
+      ),
+    );
 
   }
 
   void _onGestionActividades() {
    _mostrarDialogoSolicitudes();
+   Controlador.borrarNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
   }
 
   void _mostrarDialogoSolicitudes() {

@@ -39,7 +39,7 @@ Future<Cliente?> buscarCliente(String numeroCuenta) async {
 
   Future<void> CrearCuenta(CuentaCliente cuentaCliente) async {
     try {
-      await supabase.from('cuentascliente').upsert(cuentaCliente.toMap());
+      await supabase.from('cuentasclientes').upsert(cuentaCliente.toMap());
     } catch (e) {
       throw Exception('Error al crear la cuenta del cliente: $e');
     }
