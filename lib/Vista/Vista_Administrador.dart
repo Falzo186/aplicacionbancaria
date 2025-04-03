@@ -5,6 +5,7 @@ import 'package:aplicacionbancaria/Vista/Vista_GestionUsuarios.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Inversiones.dart';
 import 'package:aplicacionbancaria/Vista/Vista_ReportePrestamo.dart';
 import 'package:aplicacionbancaria/Vista/Vista_ReporteSeguro.dart';
+import 'package:aplicacionbancaria/Vista/Vista_Seguros.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -280,7 +281,7 @@ class _AdministradorViewState extends State<AdministradorView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaAltaSeguro(titulo: "Alta Seguro", ),
+        builder: (context) => VistaSeguros(),
       ),
     );
 
