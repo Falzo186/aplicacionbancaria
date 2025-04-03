@@ -37,6 +37,16 @@ Future<Prestamo?> obtenerPrestamo(String numeroPrestamo) async {
   }
 }
 
+Future<void> agregarPrestamo(Prestamo prestamo) async {
+  final Map<String, dynamic> prestamoData = prestamo.toMap();
+
+  try {
+    await supabase.from('prestamos').insert(prestamoData);
+    print("Préstamo agregado exitosamente");
+  } catch (e) {
+    print("Error al agregar el préstamo: $e");
+  }
+}
 
 
 }

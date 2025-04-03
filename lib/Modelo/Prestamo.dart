@@ -25,7 +25,7 @@ class Prestamo {
     required this.fechaInicio,
     required this.fechapago,
     required this.diasPago,
-    this.estado = "Pendiente",
+    this.estado = "Disponible",
   })  : pagoMinimo = (monto * (1 + tasaInteres)) / meses,
         montoRestante = monto * (1 + tasaInteres);
 
@@ -55,7 +55,7 @@ class Prestamo {
       fechaInicio: DateTime.parse(map['fechainicio']),
       fechapago: DateTime.parse(map['fechapago']),
       diasPago: map['diaspago'],
-      estado: map['estado'] ?? "Pendiente",
+      estado: map['estado'] ?? "En Pausa",
     );
   }
   

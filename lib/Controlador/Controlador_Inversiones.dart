@@ -34,5 +34,16 @@ class ControladorInversiones {
 
     return Inversion.fromMap(data);
   }
+  Future<void> agregarInversion(Inversion inversion) async {
+    final Map<String, dynamic> inversionData = inversion.toMap();
+
+    final response = await supabase.from('inversiones').insert(inversionData);
+
+    if (response.error != null) {
+      print("Error al agregar la inversión: ${response.error!.message}");
+    } else {
+      print("Inversión agregada exitosamente");
+    }
+  }
 
 }

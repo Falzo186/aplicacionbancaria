@@ -102,6 +102,75 @@ class ControladorReportes {
       return [];
     }
   }
+  Future<void> realizarInversion(String numeroCuenta, String numeroInversion) async {
+    final supabase = Supabase.instance.client;
 
+    try {
+      // Obtener la inversión por su número
+      final inversionData = await supabase
+          .from('inversiones')
+          .select()
+          .eq('numeroinversion', numeroInversion)
+          .single();
+
+      if (inversionData == null) {
+        throw Exception('No se encontró la inversión con el número $numeroInversion');
+      }
+
+      
+      final montoInversion = inversionData['monto'] as double;
+
+      // Obtener la cuenta del cliente
+      final cuentaData = await supabase
+          .from('cuentasclientes')
+          .select()
+          .eq('numerocuenta', numeroCuenta)
+          .single();
+
+      if (cuentaData == null) {
+        throw Exception('No se encontró la cuenta con el número $numeroCuenta');
+      }
+
+      final saldoActual = cuentaData['saldo'] as double;
+
+      // Verificar si el saldo es suficiente
+      if (saldoActual >= montoInversion) {
+        // Descontar el monto de la cuenta del cliente
+        await supabase.from('cuentasclientes').update({
+          'saldo': saldoActual - montoInversion,
+        }).eq('numerocuenta', numeroCuenta);
+
+        // Actualizar el estado de la inversión
+        await supabase.from('inversiones').update({
+          'estado': 'Activo',
+        }).eq('numeroinversion', numeroInversion);
+
+        print('Inversión realizada con éxito.');
+      } else {
+        throw Exception('Saldo insuficiente para realizar la inversión.');
+      }
+    } catch (e) {
+      print('Error al realizar la inversión: $e');
+    }
+  }
+  
+  Future<void> actualizarEstadoReporte(String numeroReporte, String nuevoEstado) async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      final response = await supabase
+          .from('reportessolicitudes')
+          .update({'estado': nuevoEstado})
+          .eq('numeroreporte', numeroReporte);
+
+      if (response == null || response.isEmpty) {
+        throw Exception('No se encontró el reporte con el número $numeroReporte.');
+      }
+
+      print('Estado del reporte actualizado con éxito.');
+    } catch (e) {
+      print('Error al actualizar el estado del reporte: $e');
+    }
+  }
   
 }

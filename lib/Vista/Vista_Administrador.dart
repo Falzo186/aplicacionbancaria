@@ -1,5 +1,6 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_GestionUsuarios.dart';
+import 'package:aplicacionbancaria/Vista/Vista_Inversiones.dart';
 import 'package:aplicacionbancaria/Vista/Vista_ReportePrestamo.dart';
 import 'package:aplicacionbancaria/Vista/Vista_ReporteSeguro.dart';
 import 'package:flutter/material.dart';
@@ -255,7 +256,12 @@ class _AdministradorViewState extends State<AdministradorView> {
   }
 
   void _onInversionesPressed() {
-   
+   Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaInversiones(usuario: widget.usuario),
+      ),
+    );
   }
 
   void _onPrestacionesPressed() {

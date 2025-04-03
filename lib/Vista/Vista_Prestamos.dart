@@ -117,6 +117,7 @@ class _VistaPrestamosState extends State<VistaPrestamos> {
             context,
             MaterialPageRoute(
               builder: (context) => VistaAltaprestamos(
+                titulo: "Nuevo Préstamo",
               
               ),
             ),

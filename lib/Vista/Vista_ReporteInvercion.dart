@@ -155,12 +155,27 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
                                   children: [
                                     ElevatedButton(
                                       onPressed: () {
-                                        setState(() {
-                                          reporteSeleccionado!.estado = "Aprobada";
-                                        });
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text("Solicitud aprobada")),
-                                        );
+                                        if (clienteSeleccionado != null && inversionSeleccionada != null) {
+                                          controlador
+                                            .realizarInversion(clienteSeleccionado!.numeroCuenta, inversionSeleccionada!.numeroInversion)
+                                            .then((_) {
+                                          setState(() {
+                                            controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Realizada");
+                                            reporteSeleccionado!.estado = "Aprobada";
+                                          });
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("Inversión realizada con éxito")),
+                                          );
+                                          }).catchError((error) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("Error al realizar la inversión: $error")),
+                                          );
+                                          });
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text("Información incompleta para realizar la inversión")),
+                                          );
+                                        }
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: colorBotonAceptar,
@@ -169,12 +184,26 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
                                     ),
                                     ElevatedButton(
                                       onPressed: () {
-                                        setState(() {
-                                          reporteSeleccionado!.estado = "Rechazada";
-                                        });
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text("Solicitud rechazada")),
-                                        );
+                                        if (reporteSeleccionado != null) {
+                                          controlador
+                                            .actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Rechazada")
+                                            .then((_) {
+                                          setState(() {
+                                            reporteSeleccionado!.estado = "Rechazada";
+                                          });
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("Reporte actualizado como rechazado")),
+                                          );
+                                          }).catchError((error) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("Error al actualizar el reporte: $error")),
+                                          );
+                                          });
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text("No hay un reporte seleccionado para rechazar")),
+                                          );
+                                        }
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: colorBotonRechazar,
