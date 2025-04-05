@@ -1,5 +1,8 @@
 import 'dart:math';
+import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
+import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../Controlador/Controlador_DatosCliente.dart';
 import '../Modelo/Cliente.dart';
@@ -13,20 +16,26 @@ class VistaFormularioCliente extends StatefulWidget {
 class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   final _formKey = GlobalKey<FormState>();
   final controlador = ControladorDatoscliente(); // Instancia del controlador
+  VentanaModelo colorsv =
+      VentanaModelo(); // Instancia de la clase VentanaModelo
 
   // Controladores para cada campo
   final TextEditingController textControllerNumCuenta = TextEditingController();
-  final TextEditingController textControllerNombreCompleto = TextEditingController();
+  final TextEditingController textControllerNombreCompleto =
+      TextEditingController();
   final TextEditingController textControllerFechaNac = TextEditingController();
-  final TextEditingController textControllerIdentificacion = TextEditingController();
+  final TextEditingController textControllerIdentificacion =
+      TextEditingController();
   final TextEditingController textControllerRFC = TextEditingController();
   final TextEditingController textControllerDireccion = TextEditingController();
   final TextEditingController textControllerTelefono = TextEditingController();
   final TextEditingController textControllerEmail = TextEditingController();
   final TextEditingController textControllerEmpresa = TextEditingController();
   final TextEditingController textControllerOcupacion = TextEditingController();
-  final TextEditingController textControllerDirEmpresa = TextEditingController();
-  final TextEditingController textControllerTelEmpresa = TextEditingController();
+  final TextEditingController textControllerDirEmpresa =
+      TextEditingController();
+  final TextEditingController textControllerTelEmpresa =
+      TextEditingController();
   final TextEditingController textControllerIngresos = TextEditingController();
 
   String? _selectedEstadoCivil;
@@ -44,7 +53,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     'Casado/a',
     'Divorciado/a',
     'Viudo/a',
-    'Unión Libre'
+    'Unión Libre',
   ];
 
   final List<String> _nacionalidades = [
@@ -54,7 +63,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     'Española',
     'Colombiana',
     'Argentina',
-    'Otra'
+    'Otra',
   ];
 
   final List<String> _fuentesIngresos = [
@@ -63,13 +72,14 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     'Honorarios profesionales',
     'Inversiones',
     'Pensión',
-    'Otro'
+    'Otro',
   ];
 
   @override
   void initState() {
     super.initState();
-    textControllerNumCuenta.text = _generarNumeroCuenta(); // Generar número de cuenta al iniciar
+    textControllerNumCuenta.text =
+        _generarNumeroCuenta(); // Generar número de cuenta al iniciar
   }
 
   @override
@@ -107,7 +117,10 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.black, width: 1),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 14,
+          ),
         ),
         textTheme: const TextTheme(
           titleMedium: TextStyle(
@@ -119,35 +132,30 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xAF472F2F)),
+            backgroundColor: const Color(0xAF472F2F),
+          ),
         ),
       ),
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Nuevo Cliente',
-            style: TextStyle(
-              fontFamily: 'Lato',
+        appBar: CustomAppBar(
+          title: Text(
+            'Formulario de Cliente',
+            style: GoogleFonts.poppins(
+              color: colorsv.colorTexto2,
               fontSize: 24,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w200,
-              color: Colors.white,
+              fontWeight: FontWeight.w400,
             ),
           ),
-          centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 148, 113, 0), // Color café claro
-          elevation: 0,
+          backgroundColor: colorsv.colorAppbar,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: colorsv.colorTexto2),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
         ),
         body: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
+          decoration: const BoxDecoration(color: Colors.white),
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(40, 20, 40, 40),
             child: Form(
@@ -350,7 +358,10 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                         OutlinedButton(
                           onPressed: () {},
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 16,
+                            ),
                             side: const BorderSide(color: Color(0xAF472F2F)),
                           ),
                           child: const Text(
@@ -364,13 +375,24 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                             if (_formKey.currentState!.validate()) {
                               final Cliente datosCliente = Cliente(
                                 numeroCuenta: textControllerNumCuenta.text,
-                                nombreCompleto: textControllerNombreCompleto.text,
+                                nombreCompleto:
+                                    textControllerNombreCompleto.text,
                                 genero: _selectedGenero ?? 'No especificado',
-                                fechaNacimiento: DateTime.tryParse(textControllerFechaNac.text) ?? DateTime.now(),
-                                identificacionOficial: textControllerIdentificacion.text,
-                                rfc: textControllerRFC.text.isNotEmpty ? textControllerRFC.text : null,
-                                estadoCivil: _selectedEstadoCivil ?? 'No especificado',
-                                nacionalidad: _selectedNacionalidad ?? 'No especificado',
+                                fechaNacimiento:
+                                    DateTime.tryParse(
+                                      textControllerFechaNac.text,
+                                    ) ??
+                                    DateTime.now(),
+                                identificacionOficial:
+                                    textControllerIdentificacion.text,
+                                rfc:
+                                    textControllerRFC.text.isNotEmpty
+                                        ? textControllerRFC.text
+                                        : null,
+                                estadoCivil:
+                                    _selectedEstadoCivil ?? 'No especificado',
+                                nacionalidad:
+                                    _selectedNacionalidad ?? 'No especificado',
                                 direccionCompleta: textControllerDireccion.text,
                                 telefono: textControllerTelefono.text,
                                 correoElectronico: textControllerEmail.text,
@@ -378,34 +400,52 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                                 empresa: textControllerEmpresa.text,
                                 direccionEmpresa: textControllerDirEmpresa.text,
                                 telefonoEmpresa: textControllerTelEmpresa.text,
-                                ingresosMensuales: double.tryParse(textControllerIngresos.text) ?? 0.0,
-                                fuenteIngresos: _selectedFuenteIngresos ?? 'No especificado',
-                                tieneCredito: false, // Cambiar según la lógica de tu aplicación
-                                tieneSeguro: false, // Cambiar según la lógica de tu aplicación
-                                tienePrestamo: false, // Cambiar según la lógica de tu aplicación
+                                ingresosMensuales:
+                                    double.tryParse(
+                                      textControllerIngresos.text,
+                                    ) ??
+                                    0.0,
+                                fuenteIngresos:
+                                    _selectedFuenteIngresos ??
+                                    'No especificado',
+                                tieneCredito:
+                                    false, // Cambiar según la lógica de tu aplicación
+                                tieneSeguro:
+                                    false, // Cambiar según la lógica de tu aplicación
+                                tienePrestamo:
+                                    false, // Cambiar según la lógica de tu aplicación
                               );
-                                final CuentaCliente nuevaCuenta = CuentaCliente(
+                              final CuentaCliente nuevaCuenta = CuentaCliente(
                                 numeroCuenta: textControllerNumCuenta.text,
                                 saldo: 0.0, // Saldo inicial
-                                tipoCuenta: 'Ahorro', // Tipo de cuenta predeterminado
+                                tipoCuenta:
+                                    'Ahorro', // Tipo de cuenta predeterminado
                                 fechaApertura: DateTime.now(),
-                                estadoCuenta: 'Activa', // Estado inicial de la cuenta
-                                );
-                                print(nuevaCuenta);
-                                
-                                controlador.CrearCuenta(nuevaCuenta);
-                                print(datosCliente.toMap());
-                                
+                                estadoCuenta:
+                                    'Activa', // Estado inicial de la cuenta
+                              );
+                              print(nuevaCuenta);
+
+                              controlador.CrearCuenta(nuevaCuenta);
+                              print(datosCliente.toMap());
+
                               print(datosCliente);
                               controlador.CrearCliente(datosCliente);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Cliente guardado exitosamente')),
+                                const SnackBar(
+                                  content: Text(
+                                    'Cliente guardado exitosamente',
+                                  ),
+                                ),
                               );
                               Navigator.pop(context);
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 16,
+                            ),
                           ),
                           child: const Text('Guardar Cliente'),
                         ),
@@ -421,15 +461,17 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     );
   }
 
-  Widget _buildLabeledField(String label, TextEditingController controller,
-      {int lines = 1, bool enabled = true, VoidCallback? onTap}) {
+  Widget _buildLabeledField(
+    String label,
+    TextEditingController controller, {
+    int lines = 1,
+    bool enabled = true,
+    VoidCallback? onTap,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text(label, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         SizedBox(
           height: lines == 1 ? 56 : null,
@@ -440,12 +482,16 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
             readOnly: onTap != null,
             onTap: onTap,
             decoration: InputDecoration(
-              suffixIcon: onTap != null
-                  ? IconButton(
-                      icon: const Icon(Icons.calendar_today, color: Color(0x82A76E46)),
-                      onPressed: onTap,
-                    )
-                  : null,
+              suffixIcon:
+                  onTap != null
+                      ? IconButton(
+                        icon: const Icon(
+                          Icons.calendar_today,
+                          color: Color(0x82A76E46),
+                        ),
+                        onPressed: onTap,
+                      )
+                      : null,
             ),
           ),
         ),
@@ -463,34 +509,26 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text(label, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         SizedBox(
           height: 56,
           child: DropdownButtonFormField<String>(
             decoration: const InputDecoration(),
             value: value,
-            items: options.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
-                ),
-              );
-            }).toList(),
+            items:
+                options.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                  );
+                }).toList(),
             onChanged: onChanged,
             icon: Icon(Icons.arrow_drop_down, color: iconColor),
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-            ),
+            style: const TextStyle(fontSize: 16, color: Colors.black),
             dropdownColor: const Color(0xA8ECE9CF),
             borderRadius: BorderRadius.circular(4),
             elevation: 2,
