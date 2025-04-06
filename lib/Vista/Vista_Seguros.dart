@@ -16,7 +16,7 @@ class VistaSeguros extends StatefulWidget {
 
 class _VistaSegurosState extends State<VistaSeguros> {
   List<Seguro> seguros = []; // Lista de seguros
-  final Controlador= ControladorSeguros(); // Instancia del controlador
+  final Controlador = ControladorSeguros(); // Instancia del controlador
 
   @override
   void initState() {
@@ -37,7 +37,9 @@ class _VistaSegurosState extends State<VistaSeguros> {
       seguro.estado = "Pausado";
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("El seguro ${seguro.numeroPoliza} ha sido pausado.")),
+      SnackBar(
+        content: Text("El seguro ${seguro.numeroPoliza} ha sido pausado."),
+      ),
     );
   }
 
@@ -46,13 +48,15 @@ class _VistaSegurosState extends State<VistaSeguros> {
       seguros.remove(seguro);
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("El seguro ${seguro.numeroPoliza} ha sido borrado.")),
+      SnackBar(
+        content: Text("El seguro ${seguro.numeroPoliza} ha sido borrado."),
+      ),
     );
   }
 
   void _agregarSeguro() {
     // Lógica para agregar un nuevo seguro
-   Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VistaAltaSeguro(titulo: "Agregar Seguro"),
@@ -66,67 +70,71 @@ class _VistaSegurosState extends State<VistaSeguros> {
       backgroundColor: colorBackground,
       appBar: AppBar(
         backgroundColor: colorAppbar,
-        title: Text(
-          "Lista de Seguros",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: Text("Lista de Seguros", style: TextStyle(color: Colors.white)),
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: seguros.isEmpty
-          ? Center(child: Text("No hay seguros disponibles."))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: seguros.length,
-              itemBuilder: (context, index) {
-                final seguro = seguros[index];
-                return Card(
-                  color: colorCard,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Póliza: ${seguro.numeroPoliza}",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            PopupMenuButton<String>(
-                              onSelected: (value) {
-                                if (value == "Pausar") {
-                                  _pausarSeguro(seguro);
-                                } else if (value == "Borrar") {
-                                  _borrarSeguro(seguro);
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: "Pausar",
-                                  child: Text("Pausar"),
-                                ),
-                                PopupMenuItem(
-                                  value: "Borrar",
-                                  child: Text("Borrar"),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text("Tipo: ${seguro.tipoSeguro}"),
-                        Text("Cobertura: \$${seguro.montoCobertura.toStringAsFixed(2)}"),
-                        Text("Estado: ${seguro.estado}"),
-                      ],
+      body:
+          seguros.isEmpty
+              ? Center(child: Text("No hay seguros disponibles."))
+              : ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: seguros.length,
+                itemBuilder: (context, index) {
+                  final seguro = seguros[index];
+                  return Card(
+                    color: colorCard,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                );
-              },
-            ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Póliza: ${seguro.numeroPoliza}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  if (value == "Pausar") {
+                                    _pausarSeguro(seguro);
+                                  } else if (value == "Borrar") {
+                                    _borrarSeguro(seguro);
+                                  }
+                                },
+                                itemBuilder:
+                                    (context) => [
+                                      PopupMenuItem(
+                                        value: "Pausar",
+                                        child: Text("Pausar"),
+                                      ),
+                                      PopupMenuItem(
+                                        value: "Borrar",
+                                        child: Text("Borrar"),
+                                      ),
+                                    ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text("Tipo: ${seguro.tipoSeguro}"),
+                          Text(
+                            "Cobertura: \$${seguro.montoCobertura.toStringAsFixed(2)}",
+                          ),
+                          Text("Estado: ${seguro.estado}"),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
       floatingActionButton: FloatingActionButton(
         onPressed: _agregarSeguro,
         backgroundColor: colorBoton,

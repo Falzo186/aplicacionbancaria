@@ -1,21 +1,21 @@
 class Seguro {
-  String numeroCuenta;
-  String numeroPoliza;
-  int meses;
-  double costo;
-  double tasaInteres;
+  String numeroCuenta; //1
+  String numeroPoliza; //
+  int meses; //
+  double costo; //
+  double tasaInteres; //
   double costoTotal;
   double montoFaltante;
   double pagoMensual;
   int pagosRealizados;
-  String tipoSeguro;
-  double montoCobertura;
-  DateTime fechaInicio;
+  String tipoSeguro; //ingresa
+  double montoCobertura; //
+  DateTime fechaInicio; //
   DateTime fechaVencimiento;
-  
-  String estado;
+
+  String estado; //disponible
   String? numeroSiniestro;
-  String? descripcionCobertura;
+  String? descripcionCobertura; //
 
   DateTime fechaPago; // Fecha del próximo pago
   double interesAtraso = 0.25; // 25% de interés por cada mes de atraso
@@ -35,9 +35,9 @@ class Seguro {
     this.estado = "Activo",
     this.numeroSiniestro,
     this.descripcionCobertura,
-  })  : costoTotal = costo * (1 + tasaInteres),
-        pagoMensual = ((costo * (1 + tasaInteres)) / meses),
-        montoFaltante = costo * (1 + tasaInteres);
+  }) : costoTotal = costo * (1 + tasaInteres),
+       pagoMensual = ((costo * (1 + tasaInteres)) / meses),
+       montoFaltante = costo * (1 + tasaInteres);
 
   factory Seguro.fromMap(Map<String, dynamic> map) {
     return Seguro(
@@ -57,27 +57,24 @@ class Seguro {
       descripcionCobertura: map['descripcioncobertura'],
     );
   }
-Map<String, dynamic> toMap() {
-  return {
-    'numerocuenta': numeroCuenta,
-    'numeropoliza': numeroPoliza,
-    'costo': costo,
-    'meses': meses,
-    'tasainteres': tasaInteres,
-    'pagosrealizados': pagosRealizados,
-    'tiposeguro': tipoSeguro,
-    'montocobertura': montoCobertura,
-    'fechainicio': fechaInicio.toIso8601String(),
-    'fechavencimiento': fechaVencimiento.toIso8601String(),
-    'fechapago': fechaPago.toIso8601String(),
-    'estado': estado,
-    'numerosiniestro': numeroSiniestro,
-    'descripcioncobertura': descripcionCobertura,
-  };
-}
-
-
-
+  Map<String, dynamic> toMap() {
+    return {
+      'numerocuenta': numeroCuenta,
+      'numeropoliza': numeroPoliza,
+      'costo': costo,
+      'meses': meses,
+      'tasainteres': tasaInteres,
+      'pagosrealizados': pagosRealizados,
+      'tiposeguro': tipoSeguro,
+      'montocobertura': montoCobertura,
+      'fechainicio': fechaInicio.toIso8601String(),
+      'fechavencimiento': fechaVencimiento.toIso8601String(),
+      'fechapago': fechaPago.toIso8601String(),
+      'estado': estado,
+      'numerosiniestro': numeroSiniestro,
+      'descripcioncobertura': descripcionCobertura,
+    };
+  }
 
   // Método para verificar el estado del pago y calcular intereses si está atrasado
   void verificarEstadoPago() {
@@ -88,9 +85,13 @@ Map<String, dynamic> toMap() {
       // Cálculo de meses de atraso
       int mesesAtraso = (diasDiferencia / 30).ceil();
       double interesTotal = pagoMensual * interesAtraso * mesesAtraso;
-      print("¡Pago atrasado por $mesesAtraso mes(es)! Se aplicará un interés de: \$${interesTotal.toStringAsFixed(2)}");
+      print(
+        "¡Pago atrasado por $mesesAtraso mes(es)! Se aplicará un interés de: \$${interesTotal.toStringAsFixed(2)}",
+      );
     } else {
-      print("Pago al día. Faltan ${-diasDiferencia} días para el próximo pago.");
+      print(
+        "Pago al día. Faltan ${-diasDiferencia} días para el próximo pago.",
+      );
     }
   }
 
@@ -111,14 +112,8 @@ Map<String, dynamic> toMap() {
     montoFaltante -= totalPagar;
     pagosRealizados++;
     fechaPago = DateTime(fechaPago.year, fechaPago.month + 1, fechaPago.day);
-    
+
     print("Pago realizado de: \$${totalPagar.toStringAsFixed(2)}");
     print("Monto restante: \$${montoFaltante.toStringAsFixed(2)}");
-  } 
-
-  
-
-
-
+  }
 }
-
