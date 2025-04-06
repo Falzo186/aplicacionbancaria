@@ -1,3 +1,4 @@
+import 'package:aplicacionbancaria/Modelo/Bottom_person.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +21,20 @@ class EscritorioView extends StatefulWidget {
 
 class _EscritorioViewState extends State<EscritorioView> {
   VentanaModelo colorsv = VentanaModelo();
+  BottomPerson _buildButton(String text, VoidCallback onPressed) {
+    return BottomPerson(
+      text: text,
+      onPressed: onPressed,
+      backgroundColor: Colors.amber.shade700,
+      userHeight: 75,
+      borderRadius: 15.0,
+      textStyle: GoogleFonts.poppins(
+        color: colorsv.colorTextoLogin,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,34 +201,6 @@ class _EscritorioViewState extends State<EscritorioView> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildButton(String text, VoidCallback onPressed) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber.shade700,
-              minimumSize: Size(double.infinity, 75),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              elevation: 5,
-            ),
-            onPressed: onPressed,
-            child: Text(
-              text,
-              style: GoogleFonts.poppins(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
-          .animate()
-          .fade(duration: 500.ms)
-          .scale(begin: Offset(0.9, 0.9), end: Offset(1.0, 1.0)),
     );
   }
 

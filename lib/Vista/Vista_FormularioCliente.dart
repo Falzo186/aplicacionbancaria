@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
+import 'package:aplicacionbancaria/Modelo/Bottom_person.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../Controlador/Controlador_DatosCliente.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/CuentaCliente.dart';
@@ -37,11 +37,39 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
   final TextEditingController textControllerTelEmpresa =
       TextEditingController();
   final TextEditingController textControllerIngresos = TextEditingController();
-
   String? _selectedEstadoCivil;
   String? _selectedNacionalidad;
   String? _selectedFuenteIngresos;
   String? _selectedGenero;
+  BottomPerson guardar(String text, VoidCallback onPressed) {
+    return BottomPerson(
+      text: text,
+      onPressed: onPressed,
+      backgroundColor: colorsv.confirmado,
+      userHeight: 20,
+      borderRadius: 15.0,
+      textStyle: GoogleFonts.poppins(
+        color: colorsv.colorTextoLogin,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  BottomPerson cancelar(String text, VoidCallback onPressed) {
+    return BottomPerson(
+      text: text,
+      onPressed: onPressed,
+      backgroundColor: colorsv.denegado,
+      userHeight: 20,
+      borderRadius: 15.0,
+      textStyle: GoogleFonts.poppins(
+        color: colorsv.colorTextoLogin,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
 
   static String _generarNumeroCuenta() {
     Random random = Random();
@@ -63,7 +91,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     'Española',
     'Colombiana',
     'Argentina',
-    'Otra',
+    'Otra', // Ensure no duplicates
   ];
 
   final List<String> _fuentesIngresos = [
@@ -75,6 +103,13 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     'Otro',
   ];
 
+  final List<String> _generos = [
+    'Masculino',
+    'Femenino',
+    'No binario',
+    'Prefiero no decirlo',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -84,7 +119,6 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
 
   @override
   void dispose() {
-    // Liberar los controladores
     textControllerNumCuenta.dispose();
     textControllerNombreCompleto.dispose();
     textControllerFechaNac.dispose();
@@ -103,91 +137,62 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: const Color(0xA8ECE9CF),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: const BorderSide(color: Colors.black, width: 1),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 1),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 14,
-          ),
-        ),
-        textTheme: const TextTheme(
-          titleMedium: TextStyle(
-            fontFamily: 'Mali',
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: Text(
+          'Formulario de Cliente',
+          style: GoogleFonts.poppins(
+            color: colorsv.colorTexto2,
             fontSize: 24,
             fontWeight: FontWeight.w400,
-            color: Colors.black,
           ),
         ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xAF472F2F),
-          ),
+        backgroundColor: colorsv.colorAppbar,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: colorsv.colorTexto2),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
-      home: Scaffold(
-        appBar: CustomAppBar(
-          title: Text(
-            'Formulario de Cliente',
-            style: GoogleFonts.poppins(
-              color: colorsv.colorTexto2,
-              fontSize: 24,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          backgroundColor: colorsv.colorAppbar,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: colorsv.colorTexto2),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-        body: Container(
+      body: SingleChildScrollView(
+        child: Container(
           decoration: const BoxDecoration(color: Colors.white),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(40, 20, 40, 40),
+          padding: const EdgeInsets.all(20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: colorsv.colorFondo,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        flex: 2,
                         child: _buildLabeledField(
-                          'Número de cuenta:',
+                          'Número de Cuenta',
                           textControllerNumCuenta,
                           enabled: false,
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       Expanded(
-                        flex: 5,
                         child: _buildLabeledField(
-                          'Nombre Completo:',
+                          'Nombre Completo',
                           textControllerNombreCompleto,
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       Expanded(
-                        flex: 3,
                         child: _buildLabeledDropdown(
-                          'Género/Sexo:',
-                          ['Masculino', 'Femenino', 'Otro'],
+                          'Genero',
+                          _generos,
                           value: _selectedGenero,
+                          hint: 'Selecciona un género',
                           onChanged: (value) {
                             setState(() {
                               _selectedGenero = value;
@@ -197,13 +202,14 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
                         child: _buildLabeledField(
                           'Fecha de Nacimiento:',
                           textControllerFechaNac,
+                          hint: 'YYYY-MM-DD',
                           onTap: () async {
                             DateTime? pickedDate = await showDatePicker(
                               context: context,
@@ -220,12 +226,37 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                           },
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: _buildLabeledField(
+                          'Identificación',
+                          textControllerIdentificacion,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: _buildLabeledField(
+                          'RFC',
+                          textControllerRFC,
+                          hint: 'Ej. ABCD880101XXX',
+                          validator: (value) {
+                            if (value == null || value.isEmpty)
+                              return 'Campo requerido';
+                            if (!validarRFC(value)) return 'RFC inválido';
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
                       Expanded(
                         child: _buildLabeledDropdown(
-                          'Estado Civil:',
+                          'Estado Civil',
                           _estadosCiviles,
-                          value: _selectedEstadoCivil,
+                          hint: 'Selecciona un estado civil',
                           onChanged: (value) {
                             setState(() {
                               _selectedEstadoCivil = value;
@@ -233,12 +264,12 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                           },
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: _buildLabeledDropdown(
-                          'Nacionalidad:',
+                          'Nacionalidad',
                           _nacionalidades,
-                          value: _selectedNacionalidad,
+                          hint: 'Selecciona una nacionalidad',
                           onChanged: (value) {
                             setState(() {
                               _selectedNacionalidad = value;
@@ -246,101 +277,92 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                           },
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    children: [
+                      const SizedBox(width: 20),
                       Expanded(
                         child: _buildLabeledField(
-                          'Identificación Oficial:',
-                          textControllerIdentificacion,
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                      Expanded(
-                        child: _buildLabeledField(
-                          'RFC (Opcional):',
-                          textControllerRFC,
+                          'Dirección Completa',
+                          textControllerDireccion,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
-                  _buildLabeledField(
-                    'Dirección Completa:',
-                    textControllerDireccion,
-                    lines: 2,
-                  ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
                         child: _buildLabeledField(
-                          'Teléfono:',
+                          'Teléfono',
                           textControllerTelefono,
+                          hint: '(833) 000-0000',
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: _buildLabeledField(
-                          'Correo electrónico:',
+                          'Email',
                           textControllerEmail,
+                          hint: 'correo@outlook.com',
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    children: [
+                      const SizedBox(width: 20),
                       Expanded(
                         child: _buildLabeledField(
-                          'Empresa:',
-                          textControllerEmpresa,
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                      Expanded(
-                        child: _buildLabeledField(
-                          'Ocupación:',
+                          'Ocupación',
                           textControllerOcupacion,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Datos de la Empresa',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: colorsv.colorTexto,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
                         child: _buildLabeledField(
-                          'Dirección Empresa:',
-                          textControllerDirEmpresa,
+                          'Nombre de la Empresa',
+                          textControllerEmpresa,
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: _buildLabeledField(
-                          'Teléfono Empresa:',
+                          'Teléfono de la Empresa',
                           textControllerTelEmpresa,
+                          hint: '(833) 000-0000',
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
                   Row(
                     children: [
                       Expanded(
                         child: _buildLabeledField(
-                          'Ingresos Mensuales:',
+                          'Dirección de la Empresa',
+                          textControllerDirEmpresa,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildLabeledField(
+                          'Ingresos Mensuales',
                           textControllerIngresos,
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: _buildLabeledDropdown(
-                          'Fuente de ingresos:',
+                          'Fuente de Ingresos',
                           _fuentesIngresos,
-                          value: _selectedFuenteIngresos,
                           onChanged: (value) {
                             setState(() {
                               _selectedFuenteIngresos = value;
@@ -350,107 +372,18 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 40),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 16,
-                            ),
-                            side: const BorderSide(color: Color(0xAF472F2F)),
-                          ),
-                          child: const Text(
-                            'Cancelar',
-                            style: TextStyle(color: Color(0xAF472F2F)),
-                          ),
-                        ),
-                        const SizedBox(width: 30),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              final Cliente datosCliente = Cliente(
-                                numeroCuenta: textControllerNumCuenta.text,
-                                nombreCompleto:
-                                    textControllerNombreCompleto.text,
-                                genero: _selectedGenero ?? 'No especificado',
-                                fechaNacimiento:
-                                    DateTime.tryParse(
-                                      textControllerFechaNac.text,
-                                    ) ??
-                                    DateTime.now(),
-                                identificacionOficial:
-                                    textControllerIdentificacion.text,
-                                rfc:
-                                    textControllerRFC.text.isNotEmpty
-                                        ? textControllerRFC.text
-                                        : null,
-                                estadoCivil:
-                                    _selectedEstadoCivil ?? 'No especificado',
-                                nacionalidad:
-                                    _selectedNacionalidad ?? 'No especificado',
-                                direccionCompleta: textControllerDireccion.text,
-                                telefono: textControllerTelefono.text,
-                                correoElectronico: textControllerEmail.text,
-                                ocupacion: textControllerOcupacion.text,
-                                empresa: textControllerEmpresa.text,
-                                direccionEmpresa: textControllerDirEmpresa.text,
-                                telefonoEmpresa: textControllerTelEmpresa.text,
-                                ingresosMensuales:
-                                    double.tryParse(
-                                      textControllerIngresos.text,
-                                    ) ??
-                                    0.0,
-                                fuenteIngresos:
-                                    _selectedFuenteIngresos ??
-                                    'No especificado',
-                                tieneCredito:
-                                    false, // Cambiar según la lógica de tu aplicación
-                                tieneSeguro:
-                                    false, // Cambiar según la lógica de tu aplicación
-                                tienePrestamo:
-                                    false, // Cambiar según la lógica de tu aplicación
-                              );
-                              final CuentaCliente nuevaCuenta = CuentaCliente(
-                                numeroCuenta: textControllerNumCuenta.text,
-                                saldo: 0.0, // Saldo inicial
-                                tipoCuenta:
-                                    'Ahorro', // Tipo de cuenta predeterminado
-                                fechaApertura: DateTime.now(),
-                                estadoCuenta:
-                                    'Activa', // Estado inicial de la cuenta
-                              );
-                              print(nuevaCuenta);
-
-                              controlador.CrearCuenta(nuevaCuenta);
-                              print(datosCliente.toMap());
-
-                              print(datosCliente);
-                              controlador.CrearCliente(datosCliente);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Cliente guardado exitosamente',
-                                  ),
-                                ),
-                              );
-                              Navigator.pop(context);
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 16,
-                            ),
-                          ),
-                          child: const Text('Guardar Cliente'),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: cancelar('Cancelar', () {
+                          Navigator.pop(context);
+                        }),
+                      ),
+                      Expanded(flex: 2, child: SizedBox()),
+                      Expanded(child: guardar('Guardar', onPressed)),
+                    ],
                   ),
                 ],
               ),
@@ -467,27 +400,57 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     int lines = 1,
     bool enabled = true,
     VoidCallback? onTap,
+    String? hint,
+    FormFieldValidator<String>? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(color: colorsv.colorTextoLogin),
+        ),
+        const SizedBox(height: 16),
         SizedBox(
           height: lines == 1 ? 56 : null,
           child: TextFormField(
+            validator: validator,
             controller: controller,
             maxLines: lines,
             enabled: enabled,
             readOnly: onTap != null,
             onTap: onTap,
             decoration: InputDecoration(
+              hintText: hint, // ← aquí se usa el hint
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: colorsv.colorFondo3Login,
+                  width: 2.0,
+                ),
+              ),
+              fillColor: colorsv.colorLabel,
+              filled: true,
               suffixIcon:
                   onTap != null
                       ? IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.calendar_today,
-                          color: Color(0x82A76E46),
+                          color: colorsv.colorFondo3Login,
                         ),
                         onPressed: onTap,
                       )
@@ -504,32 +467,60 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     List<String> options, {
     String? value,
     ValueChanged<String?>? onChanged,
-    Color iconColor = Colors.black,
+    String? hint, // ← nuevo parámetro opcional
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(color: colorsv.colorTextoLogin),
+        ),
         const SizedBox(height: 8),
         SizedBox(
           height: 56,
           child: DropdownButtonFormField<String>(
-            decoration: const InputDecoration(),
+            decoration: buildCommonDecoration().copyWith(
+              hintText: hint, // ← aquí se usa el hint
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              // Aquí va el ícono personalizado
+              suffixIcon: Container(
+                decoration: BoxDecoration(
+                  color: colorsv.colorFondo3Login,
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(4),
+                    bottomRight: Radius.circular(4),
+                  ),
+                ),
+                padding: EdgeInsets.all(10), // Ajusta según tu diseño
+                child: Icon(
+                  Icons.arrow_drop_down,
+                  color: colorsv.colorIcon,
+                  size: 28,
+                ),
+              ),
+            ),
             value: value,
             items:
-                options.map((String value) {
+                options.toSet().map((String option) {
                   return DropdownMenuItem<String>(
-                    value: value,
+                    value: option,
                     child: Text(
-                      value,
-                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                      option,
+                      style: TextStyle(fontSize: 16, color: colorsv.colorTexto),
                     ),
                   );
                 }).toList(),
             onChanged: onChanged,
-            icon: Icon(Icons.arrow_drop_down, color: iconColor),
-            style: const TextStyle(fontSize: 16, color: Colors.black),
-            dropdownColor: const Color(0xA8ECE9CF),
+            icon: const SizedBox.shrink(), // Oculta el icono por defecto
+            style: TextStyle(fontSize: 16, color: colorsv.colorTexto),
+            dropdownColor: colorsv.colorDrop,
             borderRadius: BorderRadius.circular(4),
             elevation: 2,
             isExpanded: true,
@@ -537,5 +528,74 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
         ),
       ],
     );
+  }
+
+  InputDecoration buildCommonDecoration() {
+    return InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide(color: colorsv.colorFondo3Login, width: 2.0),
+      ),
+      fillColor: colorsv.colorLabel,
+      filled: true,
+    );
+  }
+
+  void onPressed() {
+    if (_formKey.currentState!.validate()) {
+      final Cliente datosCliente = Cliente(
+        numeroCuenta: textControllerNumCuenta.text,
+        nombreCompleto: textControllerNombreCompleto.text,
+        genero: _selectedGenero ?? 'No especificado',
+        fechaNacimiento:
+            DateTime.tryParse(textControllerFechaNac.text) ?? DateTime.now(),
+        identificacionOficial: textControllerIdentificacion.text,
+        rfc: textControllerRFC.text.isNotEmpty ? textControllerRFC.text : null,
+        estadoCivil: _selectedEstadoCivil ?? 'No especificado',
+        nacionalidad: _selectedNacionalidad ?? 'No especificado',
+        direccionCompleta: textControllerDireccion.text,
+        telefono: textControllerTelefono.text,
+        correoElectronico: textControllerEmail.text,
+        ocupacion: textControllerOcupacion.text,
+        empresa: textControllerEmpresa.text,
+        direccionEmpresa: textControllerDirEmpresa.text,
+        telefonoEmpresa: textControllerTelEmpresa.text,
+        ingresosMensuales: double.tryParse(textControllerIngresos.text) ?? 0.0,
+        fuenteIngresos: _selectedFuenteIngresos ?? 'No especificado',
+        tieneCredito: false,
+        tieneSeguro: false,
+        tienePrestamo: false,
+      );
+      final CuentaCliente nuevaCuenta = CuentaCliente(
+        numeroCuenta: textControllerNumCuenta.text,
+        saldo: 0.0,
+        tipoCuenta: 'Ahorro',
+        fechaApertura: DateTime.now(),
+        estadoCuenta: 'Activa',
+      );
+      print(nuevaCuenta);
+
+      controlador.CrearCuenta(nuevaCuenta);
+      print(datosCliente.toMap());
+
+      print(datosCliente);
+      controlador.CrearCliente(datosCliente);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cliente guardado exitosamente')),
+      );
+      Navigator.pop(context);
+    }
+  }
+
+  bool validarRFC(value) {
+    final regex = RegExp(
+      r'^([A-ZÑ&]{3,4}) ?-?([0-9]{2})([0-1][0-9])([0-3][0-9]) ?-?([A-Z\d]{2})([A\d])$',
+    );
+    return regex.hasMatch(value.toString().toUpperCase());
   }
 }

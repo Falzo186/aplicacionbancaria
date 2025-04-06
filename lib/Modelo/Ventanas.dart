@@ -26,4 +26,8 @@ class VentanaModelo {
   //Confirmar/Denegar
   Color confirmado = Color(0xFF18DF3D);
   Color denegado = Color(0xFFFF0000);
+
+  //Colores de diseño
+  Color colorLabel = Color(0xFFEDE9CF);
+  Color colorDrop = Color(0xA8ECE9CF);
 }
