@@ -78,15 +78,20 @@ Future<Cliente?> buscarCliente(String numeroCuenta) async {
 
   
 
- CuentaCliente buscarCuentaCliente(String numeroCuenta) {
-    return CuentaCliente(
-      numeroCuenta: numeroCuenta,
-      saldo: 5000.0,
-      tipoCuenta: "Ahorro",
-      fechaApertura: DateTime(2020, 5, 10),
-      estadoCuenta: "Activa",
-    );
+Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
+  final response = await supabase
+      .from('cuentasclientes')
+      .select()
+      .eq('numerocuenta', numeroCuenta)
+      .single();
+
+  if (response == null) {
+    return null;
   }
+
+  return CuentaCliente.fromMap(response);
+}
+
 
   CuentaCredito? buscarCuentaCredito(String numeroCuenta) {
     return CuentaCredito(

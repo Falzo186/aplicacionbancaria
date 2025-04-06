@@ -67,7 +67,95 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
     });
   }
 
+  void _crearReporteSolicitud() {
+    if (selectedCliente == null) return;
 
+    final reporte = ReporteSolicitud(
+      idSolicitud: Random().nextInt(100000).toString(),
+      usuarioId: widget.usuario.nombreUsuario,
+      usuarioNombre: widget.usuario.nombre,
+      tipoSolicitud: "Credito",
+      clienteId: selectedCliente!.numeroCuenta,
+      clienteNombre: selectedCliente!.nombreCompleto,
+      idsolicitado: "N/A",
+      estado: "Pendiente",
+      fechaSolicitud: DateTime.now(),
+    );
+
+    ControladorReporte.subirReporte(reporte);
+    print("Reporte de Solicitud de Crédito:\n${reporte.toString()}");
+  }
+
+  void _enviarNotificacionSolicitud() {
+    if (selectedCliente == null) return;
+
+    final DateFormat formato = DateFormat('yyyy-MM-dd hh:mm a');
+    final String fechaFormateada = formato.format(DateTime.now());
+
+    final mensaje = "Solicitud de Crédito de: ${widget.usuario.nombre} "
+        "para el cliente ${selectedCliente!.nombreCompleto}\n"
+        "$fechaFormateada";
+
+    ControladorNotificacion.enviarNotificacion(
+      '2d0c779e-b9f0-4cc5-9316-d74ea14a43cb',
+      '28dc2001-518f-4cc0-9190-0ecd3f1c0ead',
+      mensaje,
+    );
+
+    print("Notificación enviada: $mensaje");
+  }
+
+  void _verificarCuentaCredito() {
+    if (selectedCliente == null) return;
+
+    final tieneCuentaCredito = selectedCliente!.tieneCredito;
+
+    if (!tieneCuentaCredito) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Solicitud de Crédito"),
+            content: Text(
+              "El cliente ${selectedCliente!.nombreCompleto} no tiene una cuenta de crédito. ¿Desea realizar una solicitud de crédito?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () {
+                  _crearReporteSolicitud();
+                  _enviarNotificacionSolicitud();
+
+                  Navigator.of(context).pop(); // Regreso automático
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Solicitud de crédito realizada exitosamente."),
+                    ),
+                  );
+                },
+                child: Text("Aceptar"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _crearReporteSolicitud();
+      _enviarNotificacionSolicitud();
+
+      Navigator.of(context).pop(); // Regreso automático
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Solicitud de préstamo realizada exitosamente."),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +176,6 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Contenedor izquierdo: Información del préstamo
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -132,66 +219,11 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                             "Estado: ${widget.prestamo.estado}",
                             style: TextStyle(fontSize: 16),
                           ),
-                           Text(
-                            "🏦 Informacion Detallada",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const Divider(),
-                          Text(
-                            "📌 Número de Préstamo: ${widget.prestamo.numeroPrestamo}",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            "💰 Monto Disponible: Hasta \$${widget.prestamo.monto.toStringAsFixed(2)}",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            "📅 Plazo Flexible: Hasta ${widget.prestamo.meses} meses",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            "📊 Tasa de Interés Competitiva: Solo ${widget.prestamo.tasaInteres * 100}% mensual",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            "📅 Fechas Clave",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const Divider(),
-                          Text(
-                            "📆 Fecha de Inicio: ${widget.prestamo.fechaInicio.day}/${widget.prestamo.fechaInicio.month}/${widget.prestamo.fechaInicio.year}",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            "📆 Primer Pago: ${widget.prestamo.fechapago.day}/${widget.prestamo.fechapago.month}/${widget.prestamo.fechapago.year}",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            "💳 Día de Pago Mensual: Cada día ${widget.prestamo.diasPago} de mes",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            "📌 ¿Cómo funciona este préstamo?",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const Divider(),
-                          Text(
-                            "Al adquirir este préstamo, recibirás un monto de \$${widget.prestamo.monto.toStringAsFixed(2)}, que podrás pagar en ${widget.prestamo.meses} meses. La tasa de interés es del ${widget.prestamo.tasaInteres}% mensual, y los pagos se realizan cada día ${widget.prestamo.diasPago} de mes.",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            "Si realizas tus pagos puntuales, no tendrás cargos adicionales, pero en caso de atraso, se aplicará un interés del 25% mensual sobre el saldo vencido.",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Contenedor derecho: Búsqueda y selección de cliente
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -284,44 +316,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                                   child: Text("Más Detalles"),
                                 ),
                                 ElevatedButton(
-                                  onPressed: () {
-                                    // Acción para hacer la solicitud del préstamo
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text("Solicitud de Préstamo"),
-                                          content: Text(
-                                            "¿Desea realizar la solicitud del préstamo para el cliente ${selectedCliente!.nombreCompleto}?",
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text("Cancelar"),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                // Crear el reporte de solicitud
-                                                _crearReporteSolicitud();
-                                                // Enviar la notificación de solicitud
-                                                _enviarNotificacionSolicitud();
-
-                                                Navigator.of(context).pop();
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text("Solicitud de préstamo realizada exitosamente."),
-                                                  ),
-                                                );
-                                              },
-                                              child: Text("Aceptar"),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
+                                  onPressed: _verificarCuentaCredito,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: colorCircle,
                                   ),
@@ -339,48 +334,4 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
             ),
     );
   }
-
-void _crearReporteSolicitud() {
-  if (selectedCliente == null) return;
-
-  final reporte = ReporteSolicitud(
-    idSolicitud: Random().nextInt(100000).toString(), // Generar un ID aleatorio
-    usuarioId: widget.usuario.nombreUsuario,
-    usuarioNombre: widget.usuario.nombre,
-    tipoSolicitud: "Prestamo",
-    clienteId: selectedCliente!.numeroCuenta,
-    clienteNombre: selectedCliente!.nombreCompleto,
-    idsolicitado: widget.prestamo.numeroPrestamo,
-    estado: "Pendiente",
-    fechaSolicitud: DateTime.now(), // Solo guarda la fecha normal
-  );
-
-  ControladorReporte.subirReporte(reporte); // Subir el reporte a la base de datos
-
-  // Mostrar la fecha formateada en la consola
-  print("Reporte de Solicitud:\n${reporte.toString()}");
-}
-
-  
-void _enviarNotificacionSolicitud() {
-  if (selectedCliente == null) return;
-
-  // Formatear la fecha en el formato deseado
-  final DateFormat formato = DateFormat('yyyy-MM-dd hh:mm a'); // 24 horas -> 'HH:mm'
-  final String fechaFormateada = formato.format(DateTime.now());
-
-  final mensaje = "Solicitud de Préstamo de: ${widget.usuario.nombre} "
-      "tipo: Préstamo a ${selectedCliente!.nombreCompleto}\n"
-      "$fechaFormateada";
-
-  ControladorNotificacion.enviarNotificacion(
-    '2d0c779e-b9f0-4cc5-9316-d74ea14a43cb',
-    '28dc2001-518f-4cc0-9190-0ecd3f1c0ead',
-    mensaje,
-  );
-
-  print("Notificación enviada: $mensaje");
-}
-
-
 }

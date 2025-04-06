@@ -32,7 +32,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
   Future<void> _cargarDatosCliente() async {
     // Buscar la cuenta del cliente (esto siempre debe existir)
-    cuentaCliente = controlador.buscarCuentaCliente(widget.cliente.numeroCuenta);
+    cuentaCliente = await controlador.buscarCuentaCliente(widget.cliente.numeroCuenta);
     print(widget.cliente.tieneCredito);
     // Si el cliente tiene crédito, buscar la cuenta de crédito
     if (widget.cliente.tieneCredito) {
