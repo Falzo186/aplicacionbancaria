@@ -20,11 +20,11 @@ class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
   TextEditingController montoController = TextEditingController();
   TextEditingController tasaInteresController = TextEditingController();
 
-  String numeracion = "0001";
-  int tiempoMeses = 1;
+  String numeracion = '001'; // o el valor que uses dinámicamente
   double gananciaEsperada = 0.0;
+  int tiempoMeses = 12;
   DateTime fechaInicio = DateTime.now();
-  DateTime fechaVencimiento = DateTime.now().add(Duration(days: 30));
+  DateTime fechaVencimiento = DateTime.now().add(Duration(days: 365));
 
   List<Inversion> inversiones = [];
   final controlador = ControladorInversiones();
@@ -248,21 +248,125 @@ class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
     );
   }
 
-  Widget _buildInversionCard(Inversion inversion) {
+  Widget _buildInversionCard(Inversion inv) {
     return Card(
       color: colorsv.colorCard,
       margin: EdgeInsets.all(10),
-      child: ListTile(
-        title: Text("Inversión: ${inversion.numeroInversion}"),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Monto: ${inversion.monto}"),
-            Text("Plazo: ${inversion.tiempoMeses} meses"),
-            Text("Tasa de Interés: ${inversion.tasaInteres}%"),
-          ],
+      child: InkWell(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                title: Text("Detalles de la Inversión"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Número de Inversión: ${inv.numeroInversion}"),
+                    Text("Monto: ${inv.monto}"),
+                    Text("Meses: ${inv.tiempoMeses}"),
+                    Text("Tasa de Interés: ${inv.tasaInteres}%"),
+                    if (inv.gananciaEsperada != null)
+                      Text("Ganancia Estimada: ${inv.gananciaEsperada}"),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Cerrar"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInversionHeader(inv),
+              SizedBox(height: 5),
+              _buildInversionDetails(inv),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInversionHeader(Inversion inv) {
+    return Row(
+      children: [
+        CircleAvatar(radius: 10, backgroundColor: colorsv.colorCircle),
+        SizedBox(width: 10),
+        Text(
+          "Inversión: ${inv.numeroInversion}",
+          style: TextStyle(
+            color: colorsv.colorTexto,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInversionDetails(Inversion inv) {
+    return Row(
+      children: [
+        SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.monetization_on,
+                    color: colorsv.colorTexto,
+                    size: 16,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "Monto: ${inv.monto}",
+                    style: TextStyle(
+                      color: colorsv.colorTexto,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    color: colorsv.colorTexto,
+                    size: 16,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "Meses: ${inv.tiempoMeses}",
+                    style: TextStyle(color: colorsv.colorTexto, fontSize: 14),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(Icons.percent, color: colorsv.colorTexto, size: 16),
+                  SizedBox(width: 5),
+                  Text(
+                    "Tasa de Interés: ${inv.tasaInteres}%",
+                    style: TextStyle(color: colorsv.colorTexto),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

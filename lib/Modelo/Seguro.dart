@@ -1,21 +1,21 @@
 class Seguro {
   String numeroCuenta; //1
-  String numeroPoliza; //
-  int meses; //
-  double costo; //
-  double tasaInteres; //
+  String numeroPoliza; //ingresa
+  int meses; //ingresa
+  double costo; //ingresa
+  double tasaInteres; //ingresa
   double costoTotal;
   double montoFaltante;
   double pagoMensual;
   int pagosRealizados;
   String tipoSeguro; //ingresa
-  double montoCobertura; //
-  DateTime fechaInicio; //
+  double montoCobertura; //ingresa
+  DateTime fechaInicio; //ingresa
   DateTime fechaVencimiento;
 
   String estado; //disponible
   String? numeroSiniestro;
-  String? descripcionCobertura; //
+  String? descripcionCobertura; //ingresa
 
   DateTime fechaPago; // Fecha del próximo pago
   double interesAtraso = 0.25; // 25% de interés por cada mes de atraso

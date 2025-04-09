@@ -358,21 +358,47 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Monto: ${prestamo.monto}",
-                style: TextStyle(
-                  color: colorsv.colorTexto,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                children: [
+                  Icon(Icons.attach_money, color: colorsv.colorTexto, size: 16),
+                  SizedBox(width: 5),
+                  Text(
+                    "Monto: ${prestamo.monto}",
+                    style: TextStyle(
+                      color: colorsv.colorTexto,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "Meses: ${prestamo.meses}",
-                style: TextStyle(color: colorsv.colorTexto, fontSize: 14),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    color: colorsv.colorTexto,
+                    size: 16,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "Meses: ${prestamo.meses}",
+                    style: TextStyle(color: colorsv.colorTexto, fontSize: 14),
+                  ),
+                ],
               ),
-              Text(
-                "Tasa de Interés: ${prestamo.tasaInteres} %",
-                style: TextStyle(color: colorsv.colorTexto),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    color: colorsv.colorTexto,
+                    size: 16,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "Tasa de Interés: ${prestamo.tasaInteres} %",
+                    style: TextStyle(color: colorsv.colorTexto),
+                  ),
+                ],
               ),
             ],
           ),

@@ -102,6 +102,24 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                         children: [
                           Expanded(
                             child: campoTexto(
+                              "TIPO DE SEGURO",
+                              nombreseguroController,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: campoTexto(
+                              "DESCRIPCIÓN DEL SEGURO:",
+                              descripcionController,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: campoTexto(
                               "INGRESE EL MONTO ASEGURADO:",
                               montoController,
                             ),
@@ -109,11 +127,10 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                           SizedBox(width: 10),
                           Expanded(
                             child: campoTexto(
-                              "INGRESE TASA DE INTERES:",
+                              "INGRESE TASA DE INTERÉS:",
                               interesController,
                             ),
                           ),
-                          SizedBox(width: 10),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -137,15 +154,15 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                               double.tryParse(interesController.text) ?? 0.0;
                           int diasCobertura =
                               int.tryParse(diasPagoController.text) ?? 15;
+
                           Seguro nuevoSeguro = Seguro(
-                            numeroCuenta: "1", // Ejemplo de número de cuenta
+                            numeroCuenta: "1", // Número de cuenta ficticio
                             numeroPoliza: numeroPoliza,
                             costo: primaMensual,
                             meses: meses,
                             tasaInteres: primaMensual / montoAsegurado,
                             pagosRealizados: 0,
-                            tipoSeguro:
-                                "General", // Puedes ajustar el tipo según sea necesario
+                            tipoSeguro: "General",
                             montoCobertura: primaMensual,
                             fechaInicio: fechaInicio,
                             fechaVencimiento: fechaInicio.add(
@@ -157,6 +174,7 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                           final resultado = await controlador.agregarSeguro(
                             nuevoSeguro,
                           );
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Seguro agregado exitosamente'),
@@ -164,7 +182,7 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300], // Botón gris claro
+                          backgroundColor: Colors.grey[300],
                         ),
                         child: Text(
                           "AGREGAR SEGURO",
@@ -176,7 +194,6 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                 ),
               ),
             ),
-
             SizedBox(width: 20),
             Expanded(
               child: Container(
@@ -186,7 +203,7 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Carta de Préstamos",
+                        "Cartilla de Seguros",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -209,7 +226,9 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                               controller: _scrollController,
                               itemCount: seguros.length,
                               itemBuilder: (context, index) {
-                                return _buildPrestamoCard(seguros[index]);
+                                return _buildSeguroCard(
+                                  seguros[index],
+                                ); // Ajustado
                               },
                             );
                           }
@@ -269,7 +288,7 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
   }
 
   // Optimización de la creación de tarjetas de préstamo
-  Widget _buildPrestamoCard(Seguro seguros) {
+  Widget _buildSeguroCard(Seguro seguros) {
     return Card(
       color: colorsv.colorCard,
       margin: EdgeInsets.all(10),
@@ -285,6 +304,8 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Número de Préstamo: ${seguros.numeroPoliza}"),
+                    Text("Tipo de Seguro: ${seguros.tipoSeguro}"),
+                    Text("Descripción: ${seguros.descripcionCobertura}"),
                     Text("Monto: ${seguros.costoTotal}"),
                     Text("Meses: ${seguros.meses}"),
                     Text("Tasa de Interés: ${seguros.tasaInteres} %"),
@@ -343,21 +364,43 @@ class _VistaAltaSeguroState extends State<VistaAltaSeguro> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Monto: ${seguros.costo}",
-                style: TextStyle(
-                  color: colorsv.colorTexto,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                children: [
+                  Icon(Icons.attach_money, color: colorsv.colorTexto, size: 16),
+                  SizedBox(width: 5),
+                  Text(
+                    "Monto: ${seguros.costo}",
+                    style: TextStyle(
+                      color: colorsv.colorTexto,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "Meses: ${seguros.meses}",
-                style: TextStyle(color: colorsv.colorTexto, fontSize: 14),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    color: colorsv.colorTexto,
+                    size: 16,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "Meses: ${seguros.meses}",
+                    style: TextStyle(color: colorsv.colorTexto, fontSize: 14),
+                  ),
+                ],
               ),
-              Text(
-                "Tasa de Interés: ${seguros.tasaInteres} %",
-                style: TextStyle(color: colorsv.colorTexto),
+              Row(
+                children: [
+                  Icon(Icons.check_circle, color: colorsv.colorTexto, size: 16),
+                  SizedBox(width: 5),
+                  Text(
+                    "Tasa de Interés: ${seguros.tasaInteres} %",
+                    style: TextStyle(color: colorsv.colorTexto),
+                  ),
+                ],
               ),
             ],
           ),

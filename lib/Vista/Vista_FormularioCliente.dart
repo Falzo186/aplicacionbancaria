@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
 import 'package:aplicacionbancaria/Modelo/Bottom_person.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
@@ -162,7 +163,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: colorsv.colorFondo,
+              color: colorsv.colorFondo2,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Form(
@@ -434,7 +435,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(color: Colors.grey),
+                borderSide: BorderSide(color: colorsv.colorFondo3Login),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -467,7 +468,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     List<String> options, {
     String? value,
     ValueChanged<String?>? onChanged,
-    String? hint, // ← nuevo parámetro opcional
+    String? hint,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,70 +480,46 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
           ).textTheme.titleMedium?.copyWith(color: colorsv.colorTextoLogin),
         ),
         const SizedBox(height: 8),
-        SizedBox(
-          height: 56,
-          child: DropdownButtonFormField<String>(
-            decoration: buildCommonDecoration().copyWith(
-              hintText: hint, // ← aquí se usa el hint
-              hintStyle: TextStyle(color: Colors.grey[500]),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              // Aquí va el ícono personalizado
-              suffixIcon: Container(
-                decoration: BoxDecoration(
-                  color: colorsv.colorFondo3Login,
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(4),
-                    bottomRight: Radius.circular(4),
-                  ),
-                ),
-                padding: EdgeInsets.all(10), // Ajusta según tu diseño
-                child: Icon(
-                  Icons.arrow_drop_down,
-                  color: colorsv.colorIcon,
-                  size: 28,
-                ),
-              ),
+        DropdownButtonFormField2<String>(
+          isExpanded: true,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: colorsv.colorLabel,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: colorsv.colorFondo3Login),
             ),
-            value: value,
-            items:
-                options.toSet().map((String option) {
-                  return DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(
-                      option,
-                      style: TextStyle(fontSize: 16, color: colorsv.colorTexto),
-                    ),
-                  );
-                }).toList(),
-            onChanged: onChanged,
-            icon: const SizedBox.shrink(), // Oculta el icono por defecto
-            style: TextStyle(fontSize: 16, color: colorsv.colorTexto),
-            dropdownColor: colorsv.colorDrop,
-            borderRadius: BorderRadius.circular(4),
-            elevation: 2,
-            isExpanded: true,
+          ),
+          hint: Text(
+            hint ?? 'Selecciona una opción',
+            style: const TextStyle(color: Color.fromARGB(255, 92, 87, 87)),
+          ),
+          items:
+              options.map((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(
+                    option,
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                );
+              }).toList(),
+          value: value,
+          onChanged: onChanged,
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 200,
+            decoration: BoxDecoration(
+              color: colorsv.colorLabel,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            offset: const Offset(0, 0),
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 48,
+            padding: EdgeInsets.symmetric(horizontal: 16),
           ),
         ),
       ],
-    );
-  }
-
-  InputDecoration buildCommonDecoration() {
-    return InputDecoration(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: BorderSide(color: colorsv.colorFondo3Login, width: 2.0),
-      ),
-      fillColor: colorsv.colorLabel,
-      filled: true,
     );
   }
 

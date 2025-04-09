@@ -6,6 +6,7 @@ class VentanaModelo {
   Color colorBackground = Color(0xFFB1ACAC);
   Color colorMenu = Color(0xFF5C3B3B);
   Color colorFondo = Color(0xFF676464);
+  Color colorFondo2 = Color(0XFFC2BDB7);
   Color colorCard = Color(0xFFEDECEC);
   Color colorBoton = Color(0xFFA08181);
   Color colorTexto = Color(0xFF140A0A);
@@ -24,10 +25,9 @@ class VentanaModelo {
   Color colorIcons = Color(0x89000000);
 
   //Confirmar/Denegar
-  Color confirmado = Color(0xFF18DF3D);
-  Color denegado = Color(0xFFFF0000);
+  Color confirmado = Color(0xFF0B6D1D);
+  Color denegado = Color(0xFFA31B16);
 
   //Colores de diseño
   Color colorLabel = Color(0xFFEDE9CF);
-  Color colorDrop = Color(0xA8ECE9CF);
 }
