@@ -19,13 +19,18 @@ import 'package:audioplayers/audioplayers.dart';
 
 class AdministradorView extends StatefulWidget {
   final Usuario usuario;
-  AdministradorView({super.key, required this.usuario, required bool mostrarMenu});
+  AdministradorView({
+    super.key,
+    required this.usuario,
+    required bool mostrarMenu,
+  });
 
   @override
   _AdministradorViewState createState() => _AdministradorViewState();
 }
 
-class _AdministradorViewState extends State<AdministradorView> with TickerProviderStateMixin {
+class _AdministradorViewState extends State<AdministradorView>
+    with TickerProviderStateMixin {
   VentanaModelo colorsv = VentanaModelo();
   final supabase = Supabase.instance.client;
   List<Map<String, dynamic>> notificaciones = [];
@@ -48,7 +53,10 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
     super.dispose();
   }
 
-  void mostrarNotificacionesSecuenciales(BuildContext context, List<String> mensajes) async {
+  void mostrarNotificacionesSecuenciales(
+    BuildContext context,
+    List<String> mensajes,
+  ) async {
     OverlayState? overlayState = Overlay.of(context);
     if (overlayState == null) {
       print("Error: Overlay.of(context) es nulo.");
@@ -73,38 +81,42 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
         await player.play(AssetSource('sounds/notification.mp3'));
 
         overlayEntry = OverlayEntry(
-          builder: (context) => Positioned(
-            top: 100,
-            right: 50,
-            child: SlideTransition(
-              position: offsetAnimation,
-              child: Material(
-                color: Colors.transparent,
-                child: AnimatedOpacity(
-                  opacity: 1.0,
-                  duration: Duration(milliseconds: 500),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.brown.shade700,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 5,
-                          offset: Offset(0, 3),
+          builder:
+              (context) => Positioned(
+                top: 100,
+                right: 50,
+                child: SlideTransition(
+                  position: offsetAnimation,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: AnimatedOpacity(
+                      opacity: 1.0,
+                      duration: Duration(milliseconds: 500),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
                         ),
-                      ],
-                    ),
-                    child: Text(
-                      mensaje,
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.brown.shade700,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 5,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          mensaje,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
         );
 
         overlayState.insert(overlayEntry);
@@ -121,8 +133,6 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
     }
   }
 
-  
-
   void cargarNotificacionesAnteriores(String adminId) async {
     try {
       final response = await supabase
@@ -135,7 +145,8 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
         notificaciones = List<Map<String, dynamic>>.from(response as List);
       });
 
-      List<String> mensajes = notificaciones.map((n) => n['mensaje'] as String).toList();
+      List<String> mensajes =
+          notificaciones.map((n) => n['mensaje'] as String).toList();
       mostrarNotificacionesSecuenciales(context, mensajes);
     } catch (e) {
       print("Error al cargar notificaciones anteriores: $e");
@@ -159,7 +170,9 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
             });
 
             print('Nueva notificación: ${nuevaNotificacion['mensaje']}');
-            mostrarNotificacionesSecuenciales(context, [nuevaNotificacion['mensaje']]);
+            mostrarNotificacionesSecuenciales(context, [
+              nuevaNotificacion['mensaje'],
+            ]);
           }
         }
       });
@@ -365,7 +378,7 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
   }
 
   void _onConsultasClientesPressed() {
-     Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
@@ -374,7 +387,7 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
   }
 
   void _onInversionesPressed() {
-   Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VistaInversiones(usuario: widget.usuario),
@@ -395,15 +408,14 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaSeguros(),
+        builder: (context) => VistaSeguros(usuario: widget.usuario),
       ),
     );
-
   }
 
   void _onGestionActividades() {
-   _mostrarDialogoSolicitudes();
-   Controlador.borrarNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
+    _mostrarDialogoSolicitudes();
+    Controlador.borrarNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
   }
 
   void _mostrarDialogoSolicitudes() {
@@ -426,10 +438,22 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildDialogButton("Solicitudes de Préstamos", _onSolicitudesPrestamosPressed),
-              _buildDialogButton("Solicitudes de Seguros", _onSolicitudesSegurosPressed),
-              _buildDialogButton("Solicitudes de Inversiones", _onSolicitudesInversionesPressed),
-              _buildDialogButton("Gestión de Empleados", _onGestionEmpleadosPressed),
+              _buildDialogButton(
+                "Solicitudes de Préstamos",
+                _onSolicitudesPrestamosPressed,
+              ),
+              _buildDialogButton(
+                "Solicitudes de Seguros",
+                _onSolicitudesSegurosPressed,
+              ),
+              _buildDialogButton(
+                "Solicitudes de Inversiones",
+                _onSolicitudesInversionesPressed,
+              ),
+              _buildDialogButton(
+                "Gestión de Empleados",
+                _onGestionEmpleadosPressed,
+              ),
             ],
           ),
           actions: [
@@ -474,9 +498,7 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
     // Acción para solicitudes de préstamos
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => VistaReportePrestamos()
-      ),
+      MaterialPageRoute(builder: (context) => VistaReportePrestamos()),
     );
   }
 
@@ -484,9 +506,7 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
     // Acción para solicitudes de seguros
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => VistaReporteSeguros()
-      ),
+      MaterialPageRoute(builder: (context) => VistaReporteSeguros()),
     );
   }
 
@@ -494,9 +514,7 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
     // Acción para solicitudes de inversiones
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => VistaReporteInversiones()
-      ),
+      MaterialPageRoute(builder: (context) => VistaReporteInversiones()),
     );
   }
 
@@ -504,16 +522,7 @@ class _AdministradorViewState extends State<AdministradorView> with TickerProvid
     // Acción para gestión de empleados
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => VistaReporteUsuarios(),
-      ),
+      MaterialPageRoute(builder: (context) => VistaReporteUsuarios()),
     );
   }
-
-
-
-
-
-  
-
 }

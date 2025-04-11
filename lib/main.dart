@@ -9,7 +9,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final String title = 'Cooperativa Bancaria';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicializar Supabase
@@ -27,7 +26,7 @@ void main() async {
       setWindowFrame(screen.frame); // Set the window to fullscreen
     }
   }
-   
+
   runApp(MyApp());
 }
 

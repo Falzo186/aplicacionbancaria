@@ -67,6 +67,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
         color: colorsv.colorBackground,
         child: Row(
           children: [
+            //inicia aca el expanded
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -86,14 +87,19 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         children: [
                           Expanded(
                             child: campoTexto(
-                              "INGRESE LA CLAVE DEL PRÉSTAMO:",
+                              'INGRESE LA CLAVE DEL PRESTAMO:',
                               claveController,
                             ),
                           ),
                           SizedBox(width: 10),
-                          campoTextoSoloLectura("NUMERACIÓN:", numeracion),
+                          Expanded(
+                            child: campoTextoSoloLectura(
+                              "NUMERACION",
+                              numeracion,
+                            ),
+                          ),
                           SizedBox(width: 10),
-                          dropdownCantidadPrestamos(),
+                          Expanded(child: dropdownCantidadPrestamos()),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -101,39 +107,28 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         children: [
                           Expanded(
                             child: campoTexto(
-                              "INGRESE EL MONTO DEL PRÉSTAMO:",
+                              "INGRESAR EL MONTO DEL PRESTAMO:",
                               montoController,
                             ),
                           ),
                           SizedBox(width: 10),
                           Expanded(
                             child: campoTexto(
-                              "INGRESAR TASA DE INTERÉS:",
+                              "INGRESAR TASA DE INTERES:",
                               interesController,
                             ),
                           ),
                           SizedBox(width: 10),
-                          dropdownMeses(),
+                          Expanded(child: dropdownMeses()),
                         ],
                       ),
                       SizedBox(height: 10),
                       Row(
                         children: [
-                          campoTextoSoloLectura(
-                            "PAGO MÍNIMO:",
-                            pagoMinimo.toStringAsFixed(2),
-                          ),
-                          SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: calcularPagoMinimo,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(
-                                0xFF5C3B3B,
-                              ), // Marrón intermedio
-                            ),
-                            child: Text(
-                              "CALCULAR",
-                              style: TextStyle(color: Colors.white),
+                          Expanded(
+                            child: campoTextoSoloLectura(
+                              "PAGO MINIMO",
+                              calcularPagoMinimo(),
                             ),
                           ),
                         ],
@@ -148,7 +143,16 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      campoTexto("DÍAS DE PAGO:", diasPagoController),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: campoTexto(
+                              "DIAS DE PAGO: ",
+                              diasPagoController,
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
@@ -190,7 +194,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                   ),
                 ),
               ),
-            ),
+            ), //ternina aqui el ese
             SizedBox(width: 20),
             Expanded(
               child: Container(
@@ -257,7 +261,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
     );
   }
 
-  void calcularPagoMinimo() {
+  String calcularPagoMinimo() {
     double monto = double.tryParse(montoController.text) ?? 0.0;
     double interes = (double.tryParse(interesController.text) ?? 0.0) / 100;
     if (meses > 0) {
@@ -265,6 +269,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
         pagoMinimo = (monto * (1 + interes)) / meses;
       });
     }
+    return pagoMinimo.toStringAsFixed(2);
   }
 
   Future<void> seleccionarFechaInicio(BuildContext context) async {

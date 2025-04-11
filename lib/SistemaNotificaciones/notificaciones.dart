@@ -16,10 +16,10 @@ void inicializarNotificaciones() async {
 
   const WindowsInitializationSettings initializationSettingsWindows =
       WindowsInitializationSettings(
-    appName: 'Aplicacion Bancaria',
-    appUserModelId: 'com.example.aplicacionbancaria',
-    guid: '{12345678-1234-1234-1234-123456789abc}',
-  );
+        appName: 'Aplicacion Bancaria',
+        appUserModelId: 'com.example.aplicacionbancaria',
+        guid: '12345678-1234-1234-1234-123456789abc',
+      );
 
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -34,17 +34,16 @@ void inicializarNotificaciones() async {
 void mostrarNotificacionEnApp(String mensaje) async {
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
-    'canal_notificaciones',
-    'Notificaciones',
-    channelDescription: 'Notificaciones del sistema',
-    importance: Importance.max,
-    priority: Priority.high,
-    showWhen: true,
-  );
+        'canal_notificaciones',
+        'Notificaciones',
+        channelDescription: 'Notificaciones del sistema',
+        importance: Importance.max,
+        priority: Priority.high,
+        showWhen: true,
+      );
 
   const WindowsNotificationDetails windowsPlatformChannelSpecifics =
-      WindowsNotificationDetails(
-  );
+      WindowsNotificationDetails();
 
   const NotificationDetails platformChannelSpecifics = NotificationDetails(
     android: androidPlatformChannelSpecifics,

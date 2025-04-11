@@ -3,11 +3,17 @@ import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Modelo/WarningModel.dart';
 import 'package:flutter/material.dart';
 
-class VistaLogin extends StatelessWidget {
+class VistaLogin extends StatefulWidget {
+  @override
+  _VistaLoginState createState() => _VistaLoginState();
+}
+
+class _VistaLoginState extends State<VistaLogin> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final controlador = ControladorLogin();
-  VentanaModelo colorsv = VentanaModelo();
+  final VentanaModelo colorsv = VentanaModelo();
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +70,6 @@ class VistaLogin extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-
                   // Caja de Login
                   Container(
                     padding: EdgeInsets.all(20),
@@ -85,12 +90,7 @@ class VistaLogin extends StatelessWidget {
                         // Campo de usuario
                         TextField(
                           controller: _usernameController,
-                          onSubmitted:
-                              (_) => validUser(
-                                _usernameController,
-                                _passwordController,
-                                context,
-                              ),
+                          onSubmitted: (_) => validUser(context),
                           decoration: InputDecoration(
                             prefixIcon: Icon(
                               Icons.person,
@@ -107,20 +107,28 @@ class VistaLogin extends StatelessWidget {
                         ),
                         SizedBox(height: 16.0),
 
-                        // Campo de contraseña
+                        // Campo de contraseña con icono de visibilidad
                         TextField(
                           controller: _passwordController,
-                          obscureText: true,
-                          onSubmitted:
-                              (_) => validUser(
-                                _usernameController,
-                                _passwordController,
-                                context,
-                              ),
+                          obscureText: _obscurePassword,
+                          onSubmitted: (_) => validUser(context),
                           decoration: InputDecoration(
                             prefixIcon: Icon(
                               Icons.lock,
                               color: colorsv.colorIcons,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: colorsv.colorIcons,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
                             ),
                             labelText: 'Password',
                             filled: true,
@@ -145,12 +153,7 @@ class VistaLogin extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed:
-                              () => validUser(
-                                _usernameController,
-                                _passwordController,
-                                context,
-                              ),
+                          onPressed: () => validUser(context),
                           child: Text(
                             'LOGIN',
                             style: TextStyle(
@@ -171,8 +174,7 @@ class VistaLogin extends StatelessWidget {
     );
   }
 
-  //validar campos
-  void validUser(_usernameController, _passwordController, context) async {
+  void validUser(BuildContext context) async {
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       ErrorDialog(
         context: context,
@@ -188,7 +190,7 @@ class VistaLogin extends StatelessWidget {
   }
 }
 
-// Clipper para el fondo curvo superior¿
+// Clipper para el fondo curvo superior
 class CurvedBackgroundClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -196,7 +198,7 @@ class CurvedBackgroundClipper extends CustomClipper<Path> {
     path.lineTo(0, size.height - 30);
     path.quadraticBezierTo(
       size.width / 2,
-      size.height - 300, // Hace que la curva se alinee con la siguiente sección
+      size.height - 300,
       size.width,
       size.height - 30,
     );

@@ -1,20 +1,11 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Inversiones.dart';
+import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_AltaInversion.dart';
 import 'package:flutter/material.dart';
 import '../Modelo/Inversion.dart';
 import '../Modelo/Usuario.dart';
 
-final Color colorAppbar = Color(0xFF472F2F);
-final Color colorBuscador = Color(0xFFD9D9D9);
-final Color colorBackground = Color(0xFFB1ACAC);
-final Color colorMenu = Color(0xFF5C3B3B);
-final Color colorFondo = Color(0xFF676464);
-final Color colorCard = Color(0xFFEDECEC);
-final Color colorBoton = Color(0xFFA08181);
-final Color colorTexto = Color(0xFF140A0A);
-final Color colorTexto2 = Color(0xFFEEEEEE);
-final Color colorIcon = Color(0xFF1F1010);
-final Color colorCircle = Color(0xFF138A43);
+VentanaModelo colorsv = VentanaModelo();
 
 class VistaInversiones extends StatefulWidget {
   const VistaInversiones({super.key, required this.usuario});
@@ -67,9 +58,9 @@ class _VistaInversionesState extends State<VistaInversiones> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: colorBackground,
+      backgroundColor: colorsv.colorBackground,
       appBar: AppBar(
-        backgroundColor: colorAppbar,
+        backgroundColor: colorsv.colorAppbar,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -91,10 +82,7 @@ class _VistaInversionesState extends State<VistaInversiones> {
           Positioned.fill(
             child: Opacity(
               opacity: 0.1,
-              child: Image.asset(
-                'lib/Recursos/logo.png',
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset('lib/Recursos/logo.png', fit: BoxFit.cover),
             ),
           ),
           FutureBuilder(
@@ -114,7 +102,7 @@ class _VistaInversionesState extends State<VistaInversiones> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
-                            color: colorFondo,
+                            color: colorsv.colorFondo,
                           ),
                           child: Scrollbar(
                             thumbVisibility: true,
@@ -143,12 +131,14 @@ class _VistaInversionesState extends State<VistaInversiones> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: colorCircle,
+        backgroundColor: colorsv.confirmado,
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VistaAltaInversiones(titulo: "Alta de Inversiones"),
+              builder:
+                  (context) =>
+                      VistaAltaInversiones(titulo: "Alta de Inversiones"),
             ),
           );
         },
@@ -159,7 +149,7 @@ class _VistaInversionesState extends State<VistaInversiones> {
 
   Widget _buildInversionCard(Inversion inversion) {
     return Card(
-      color: colorCard,
+      color: colorsv.colorCard,
       margin: EdgeInsets.all(10),
       child: InkWell(
         onTap: () {
@@ -174,14 +164,14 @@ class _VistaInversionesState extends State<VistaInversiones> {
                 children: [
                   CircleAvatar(
                     radius: 10,
-                    backgroundColor: colorCircle,
+                    backgroundColor: colorsv.colorCircle,
                   ),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       "Inversión: ${inversion.numeroInversion}",
                       style: TextStyle(
-                        color: colorTexto,
+                        color: colorsv.colorTexto,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -195,16 +185,11 @@ class _VistaInversionesState extends State<VistaInversiones> {
                         _borrarInversion(inversion);
                       }
                     },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: "Pausar",
-                        child: Text("Pausar"),
-                      ),
-                      PopupMenuItem(
-                        value: "Borrar",
-                        child: Text("Borrar"),
-                      ),
-                    ],
+                    itemBuilder:
+                        (context) => [
+                          PopupMenuItem(value: "Pausar", child: Text("Pausar")),
+                          PopupMenuItem(value: "Borrar", child: Text("Borrar")),
+                        ],
                   ),
                 ],
               ),
@@ -219,18 +204,21 @@ class _VistaInversionesState extends State<VistaInversiones> {
                         Text(
                           "Monto: ${inversion.monto}",
                           style: TextStyle(
-                            color: colorTexto,
+                            color: colorsv.colorTexto,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
                           "Plazo: ${inversion.tiempoMeses} meses",
-                          style: TextStyle(color: colorTexto, fontSize: 14),
+                          style: TextStyle(
+                            color: colorsv.colorTexto,
+                            fontSize: 14,
+                          ),
                         ),
                         Text(
                           "Tasa de Interés: ${inversion.tasaInteres}%",
-                          style: TextStyle(color: colorTexto),
+                          style: TextStyle(color: colorsv.colorTexto),
                         ),
                       ],
                     ),
