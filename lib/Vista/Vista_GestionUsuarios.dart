@@ -65,7 +65,10 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
       backgroundColor: colorsv.colorBackground,
       appBar: CustomAppBar(
         backgroundColor: colorsv.colorAppbar,
-        title: Text("Reporte de Usuarios"),
+        title: Text(
+          "Reporte de Usuarios",
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colorsv.colorTexto2),
           onPressed: () {
@@ -82,7 +85,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
               flex: 1,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(204),
+                  color: Colors.brown.shade100,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: const EdgeInsets.all(16.0),
@@ -118,7 +121,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
               flex: 2,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.brown.shade100,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: const EdgeInsets.all(16.0),

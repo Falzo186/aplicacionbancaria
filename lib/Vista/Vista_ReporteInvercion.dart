@@ -8,7 +8,7 @@ import '../Modelo/Inversion.dart';
 
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBackground = Color(0xFFB1ACAC);
-final Color colorCard = Color(0xFFEDECEC);
+final Color colorCard = Colors.brown.shade100;
 final Color colorTexto = Color(0xFF140A0A);
 final Color colorBotonAceptar = Color(0xFF138A43);
 final Color colorBotonRechazar = Colors.redAccent;
@@ -120,7 +120,7 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
                     flex: 2,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.brown.shade100,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       padding: const EdgeInsets.all(16.0),
@@ -241,7 +241,7 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
                     flex: 1,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.brown.shade100,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       padding: const EdgeInsets.all(16.0),

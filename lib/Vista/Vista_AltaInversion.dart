@@ -157,8 +157,7 @@ class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
                           double monto =
                               double.tryParse(montoController.text) ?? 0.0;
                           double tasaInteres =
-                              double.tryParse(tasaInteresController.text) ??
-                              0.0;
+                              double.tryParse(tasaInteresController.text) ?? 0.0;
 
                           Inversion nuevaInversion = Inversion(
                             numeroCuenta: "1", // Cambiar según sea necesario
@@ -253,45 +252,69 @@ class _VistaAltaInversionesState extends State<VistaAltaInversiones> {
       color: colorsv.colorCard,
       margin: EdgeInsets.all(10),
       child: InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (_) {
-              return AlertDialog(
-                title: Text("Detalles de la Inversión"),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Número de Inversión: ${inv.numeroInversion}"),
-                    Text("Monto: ${inv.monto}"),
-                    Text("Meses: ${inv.tiempoMeses}"),
-                    Text("Tasa de Interés: ${inv.tasaInteres}%"),
-                    if (inv.gananciaEsperada != null)
-                      Text("Ganancia Estimada: ${inv.gananciaEsperada}"),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text("Cerrar"),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
+      onTap: () {
+        showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+          title: Text("Detalles de la Inversión"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildInversionHeader(inv),
-              SizedBox(height: 5),
-              _buildInversionDetails(inv),
+            Text("Número de Inversión: ${inv.numeroInversion}"),
+            Text("Monto: ${inv.monto}"),
+            Text("Meses: ${inv.tiempoMeses}"),
+            Text("Tasa de Interés: ${inv.tasaInteres}%"),
+            if (inv.gananciaEsperada != null)
+              Text("Ganancia Estimada: ${inv.gananciaEsperada}"),
             ],
           ),
+          actions: [
+            TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cerrar"),
+            ),
+          ],
+          );
+        },
+        );
+      },
+      child: Stack(
+        children: [
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInversionHeader(inv),
+            SizedBox(height: 5),
+            _buildInversionDetails(inv),
+          ],
+          ),
         ),
+        Positioned(
+          top: 5,
+          right: 5, // Mover el botón al lado derecho superior
+          child: IconButton(
+          icon: Icon(Icons.copy, color: const Color.fromARGB(255, 0, 0, 0)),
+          onPressed: () {
+            setState(() {
+            montoController.text = inv.monto.toString();
+            tasaInteresController.text = inv.tasaInteres.toString();
+            tiempoMeses = inv.tiempoMeses;
+            calcularGanancia();
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Información copiada a los campos'),
+            ),
+            );
+          },
+          ),
+        ),
+        ],
+      ),
       ),
     );
   }

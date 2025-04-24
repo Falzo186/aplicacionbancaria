@@ -5,7 +5,6 @@ import '../Controlador/Controlador_Reportes.dart';
 import '../Modelo/ReporteSolicitud.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Seguro.dart';
-
 final Color colorAppbar = Color(0xFF472F2F);
 final Color colorBackground = Color(0xFFB1ACAC);
 final Color colorCard = Color(0xFFEDECEC);
@@ -117,8 +116,9 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
                     flex: 2,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.brown.shade100,
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade300), // Añadido borde para evitar mezcla
                       ),
                       padding: const EdgeInsets.all(16.0),
                       child: reporteSeleccionado == null
@@ -209,8 +209,9 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
                     flex: 1,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.brown.shade100,
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade300), // Añadido borde para evitar mezcla
                       ),
                       padding: const EdgeInsets.all(16.0),
                       child: ListView.builder(

@@ -1,6 +1,5 @@
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/SistemaNotificaciones/Controlado_Notificaciones.dart';
-import 'package:aplicacionbancaria/Vista/VistaAltaSeguro.dart';
 import 'package:aplicacionbancaria/Vista/Vista_GestionUsuarios.dart';
 import 'package:aplicacionbancaria/Vista/Vista_Inversiones.dart';
 import 'package:aplicacionbancaria/Vista/Vista_ReportePrestamo.dart';
@@ -53,86 +52,6 @@ class _AdministradorViewState extends State<AdministradorView>
     super.dispose();
   }
 
-  void mostrarNotificacionesSecuenciales(
-    BuildContext context,
-    List<String> mensajes,
-  ) async {
-    OverlayState? overlayState = Overlay.of(context);
-    if (overlayState == null) {
-      print("Error: Overlay.of(context) es nulo.");
-      return;
-    }
-
-    for (String mensaje in mensajes) {
-      try {
-        OverlayEntry overlayEntry;
-        AnimationController controller = AnimationController(
-          duration: Duration(milliseconds: 500),
-          vsync: this,
-        );
-        _animationControllers.add(controller);
-
-        Animation<Offset> offsetAnimation = Tween<Offset>(
-          begin: Offset(1.0, 0.0),
-          end: Offset(0.0, 0.0),
-        ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
-
-        // Reproducir sonido de notificación
-        await player.play(AssetSource('sounds/notification.mp3'));
-
-        overlayEntry = OverlayEntry(
-          builder:
-              (context) => Positioned(
-                top: 100,
-                right: 50,
-                child: SlideTransition(
-                  position: offsetAnimation,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: AnimatedOpacity(
-                      opacity: 1.0,
-                      duration: Duration(milliseconds: 500),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.brown.shade700,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          mensaje,
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-        );
-
-        overlayState.insert(overlayEntry);
-        controller.forward();
-
-        await Future.delayed(Duration(seconds: 5));
-
-        controller.reverse().then((_) {
-          overlayEntry.remove();
-        });
-      } catch (e) {
-        print("Error al mostrar notificación: $e");
-      }
-    }
-  }
-
   void cargarNotificacionesAnteriores(String adminId) async {
     try {
       final response = await supabase
@@ -144,10 +63,6 @@ class _AdministradorViewState extends State<AdministradorView>
       setState(() {
         notificaciones = List<Map<String, dynamic>>.from(response as List);
       });
-
-      List<String> mensajes =
-          notificaciones.map((n) => n['mensaje'] as String).toList();
-      mostrarNotificacionesSecuenciales(context, mensajes);
     } catch (e) {
       print("Error al cargar notificaciones anteriores: $e");
     }
@@ -168,11 +83,6 @@ class _AdministradorViewState extends State<AdministradorView>
             setState(() {
               notificaciones.add(nuevaNotificacion);
             });
-
-            print('Nueva notificación: ${nuevaNotificacion['mensaje']}');
-            mostrarNotificacionesSecuenciales(context, [
-              nuevaNotificacion['mensaje'],
-            ]);
           }
         }
       });
@@ -212,99 +122,6 @@ class _AdministradorViewState extends State<AdministradorView>
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.brown.shade700, colorsv.colorAppbar],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black38,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Administrador",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "Matrícula: 102937456",
-                style: TextStyle(color: Colors.white70, fontSize: 16),
-              ),
-            ],
-          ),
-          Builder(
-            builder:
-                (context) => IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white, size: 30),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSideLogo() {
-    return Expanded(
-      flex: 2,
-      child: Center(
-        child: Image.asset(
-          'lib/Recursos/logo.png',
-          width: 300,
-          opacity: AlwaysStoppedAnimation(0.8),
-        ).animate().scale(duration: 500.ms),
-      ),
-    );
-  }
-
-  Widget _buildMenu() {
-    return Expanded(
-      flex: 3,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(15),
-            bottomLeft: Radius.circular(15),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildButton("🔍 Consultas Clientes", _onConsultasClientesPressed),
-            _buildButton("💰 Inversiones", _onInversionesPressed),
-            _buildButton("📄 Prestaciones", _onPrestacionesPressed),
-            _buildButton("🛡️ Seguros", _onSegurosPressed),
-            _buildButton("⚙️ Gestion de Actividades", _onGestionActividades),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildDrawer() {
     return Drawer(
       child: ListView(
@@ -335,6 +152,28 @@ class _AdministradorViewState extends State<AdministradorView>
               ],
             ),
           ),
+          ExpansionTile(
+            leading: Icon(Icons.notifications, color: Colors.amber),
+            title: Text('Notificaciones', style: TextStyle(fontSize: 18)),
+            children: notificaciones.isEmpty
+                ? [
+                    ListTile(
+                      title: Text(
+                        '*No hay notificaciones*',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ]
+                : notificaciones.map((notificacion) {
+                    return ListTile(
+                      title: Text(notificacion['mensaje']),
+                      subtitle: Text(
+                        notificacion['fecha'] ?? '',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    );
+                  }).toList(),
+          ),
           ListTile(
             leading: Icon(Icons.logout, color: Colors.redAccent),
             title: Text('Cerrar Sesión', style: TextStyle(fontSize: 18)),
@@ -348,129 +187,7 @@ class _AdministradorViewState extends State<AdministradorView>
       ),
     );
   }
-
-  Widget _buildButton(String text, VoidCallback onPressed) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber.shade700,
-              minimumSize: Size(double.infinity, 75),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              elevation: 5,
-            ),
-            onPressed: onPressed,
-            child: Text(
-              text,
-              style: GoogleFonts.poppins(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
-          .animate()
-          .fade(duration: 500.ms)
-          .scale(begin: Offset(0.9, 0.9), end: Offset(1.0, 1.0)),
-    );
-  }
-
-  void _onConsultasClientesPressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
-      ),
-    );
-  }
-
-  void _onInversionesPressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VistaInversiones(usuario: widget.usuario),
-      ),
-    );
-  }
-
-  void _onPrestacionesPressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VistaPrestamos(usuario: widget.usuario),
-      ),
-    );
-  }
-
-  void _onSegurosPressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VistaSeguros(usuario: widget.usuario),
-      ),
-    );
-  }
-
-  void _onGestionActividades() {
-    _mostrarDialogoSolicitudes();
-    Controlador.borrarNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
-  }
-
-  void _mostrarDialogoSolicitudes() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.brown.shade100,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: Text(
-            "Gestión de Solicitudes",
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.brown.shade800,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildDialogButton(
-                "Solicitudes de Préstamos",
-                _onSolicitudesPrestamosPressed,
-              ),
-              _buildDialogButton(
-                "Solicitudes de Seguros",
-                _onSolicitudesSegurosPressed,
-              ),
-              _buildDialogButton(
-                "Solicitudes de Inversiones",
-                _onSolicitudesInversionesPressed,
-              ),
-              _buildDialogButton(
-                "Gestión de Empleados",
-                _onGestionEmpleadosPressed,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                "Cerrar",
-                style: TextStyle(color: Colors.brown.shade800),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildDialogButton(String text, VoidCallback onPressed) {
+Widget _buildDialogButton(String text, VoidCallback onPressed) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: ElevatedButton(
@@ -525,4 +242,217 @@ class _AdministradorViewState extends State<AdministradorView>
       MaterialPageRoute(builder: (context) => VistaReporteUsuarios()),
     );
   }
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.brown.shade700, colorsv.colorAppbar],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black38,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Administrador",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "Matrícula: 102937456",
+                style: TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+            ],
+          ),
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white, size: 30),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+ void _mostrarDialogoSolicitudes() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.brown.shade100,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Text(
+            "Gestión de Solicitudes",
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.brown.shade800,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildDialogButton(
+                "Solicitudes de Préstamos",
+                _onSolicitudesPrestamosPressed,
+              ),
+              _buildDialogButton(
+                "Solicitudes de Seguros",
+                _onSolicitudesSegurosPressed,
+              ),
+              _buildDialogButton(
+                "Solicitudes de Inversiones",
+                _onSolicitudesInversionesPressed,
+              ),
+              _buildDialogButton(
+                "Gestión de Empleados",
+                _onGestionEmpleadosPressed,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                "Cerrar",
+                style: TextStyle(color: Colors.brown.shade800),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+   Widget _buildButton(String text, VoidCallback onPressed) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber.shade700,
+              minimumSize: Size(double.infinity, 75),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 5,
+            ),
+            onPressed: onPressed,
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          )
+          .animate()
+          .fade(duration: 500.ms)
+          .scale(begin: Offset(0.9, 0.9), end: Offset(1.0, 1.0)),
+    );
+  }
+  Widget _buildSideLogo() {
+    return Expanded(
+      flex: 2,
+      child: Center(
+        child: Image.asset(
+          'lib/Recursos/logo.png',
+          width: 300,
+          opacity: AlwaysStoppedAnimation(0.8),
+        ).animate().scale(duration: 500.ms),
+      ),
+    );
+  }
+
+  Widget _buildMenu() {
+    return Expanded(
+      flex: 3,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15),
+            bottomLeft: Radius.circular(15),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildButton("🔍 Consultas Clientes", _onConsultasClientesPressed),
+            _buildButton("💰 Inversiones", _onInversionesPressed),
+            _buildButton("📄 Prestaciones", _onPrestacionesPressed),
+            _buildButton("🛡️ Seguros", _onSegurosPressed),
+            _buildButton("⚙️ Gestion de Actividades", _onGestionActividades),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onConsultasClientesPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
+      ),
+    );
+  }
+
+  void _onInversionesPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaInversiones(usuario: widget.usuario),
+      ),
+    );
+  }
+
+  void _onPrestacionesPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaPrestamos(usuario: widget.usuario),
+      ),
+    );
+  }
+
+  void _onSegurosPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaSeguros(usuario: widget.usuario),
+      ),
+    );
+  }
+
+  void _onGestionActividades() {
+    _mostrarDialogoSolicitudes();
+    Controlador.borrarNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
+  }
+
+  
 }

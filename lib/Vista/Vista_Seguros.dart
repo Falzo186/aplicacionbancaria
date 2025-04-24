@@ -2,7 +2,7 @@ import 'package:aplicacionbancaria/Controlador/Controlador_Seguros.dart';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
 import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
-import 'package:aplicacionbancaria/Vista/VistaAltaSeguro.dart';
+import 'package:aplicacionbancaria/Vista/Vista_AltaSeguro.dart';
 import 'package:aplicacionbancaria/Vista/Vista_SolicitudSeguro.dart';
 import 'package:flutter/material.dart';
 import '../Modelo/Seguro.dart';

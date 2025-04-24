@@ -54,7 +54,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
             fontStyle: FontStyle.italic,
           ),
         ),
-        backgroundColor: colorsv.colorAppbar, // Color marrón oscuro
+        backgroundColor: colorsv.colorAppbar,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colorsv.colorTexto2),
           onPressed: () {
@@ -67,7 +67,6 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
         color: colorsv.colorBackground,
         child: Row(
           children: [
-            //inicia aca el expanded
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -183,7 +182,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300], // Botón gris claro
+                          backgroundColor: Colors.grey[300],
                         ),
                         child: Text(
                           "AGREGAR",
@@ -194,7 +193,7 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
                   ),
                 ),
               ),
-            ), //ternina aqui el ese
+            ),
             SizedBox(width: 20),
             Expanded(
               child: Container(
@@ -248,92 +247,75 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
     );
   }
 
-  Widget _buildSideLogo() {
-    return Expanded(
-      flex: 2,
-      child: Center(
-        child: Image.asset(
-          'lib/Recursos/logo.png',
-          width: 300,
-          opacity: AlwaysStoppedAnimation(0.8),
-        ).animate().scale(duration: 500.ms),
-      ),
-    );
-  }
-
-  String calcularPagoMinimo() {
-    double monto = double.tryParse(montoController.text) ?? 0.0;
-    double interes = (double.tryParse(interesController.text) ?? 0.0) / 100;
-    if (meses > 0) {
-      setState(() {
-        pagoMinimo = (monto * (1 + interes)) / meses;
-      });
-    }
-    return pagoMinimo.toStringAsFixed(2);
-  }
-
-  Future<void> seleccionarFechaInicio(BuildContext context) async {
-    DateTime? nuevaFecha = await showDatePicker(
-      context: context,
-      initialDate: fechaInicio,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (nuevaFecha != null) {
-      setState(() {
-        fechaInicio = nuevaFecha;
-        fechaPago = fechaInicio.add(Duration(days: 30));
-      });
-    }
-  }
-
-  // Optimización de la creación de tarjetas de préstamo
   Widget _buildPrestamoCard(Prestamo prestamo) {
     return Card(
       color: colorsv.colorCard,
       margin: EdgeInsets.all(10),
-      child: InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (_) {
-              return AlertDialog(
-                title: Text("Detalles del Préstamo"),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Número de Préstamo: ${prestamo.numeroPrestamo}"),
-                    Text("Monto: ${prestamo.monto}"),
-                    Text("Meses: ${prestamo.meses}"),
-                    Text("Tasa de Interés: ${prestamo.tasaInteres} %"),
-                    Text("Fecha de Inicio: ${prestamo.fechaInicio}"),
-                    Text("Fecha de Pago: ${prestamo.fechapago}"),
-                    Text("Días de Pago: ${prestamo.diasPago}"),
-                    Text("Pago Mínimo: ${prestamo.pagoMinimo}"),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text("Cerrar"),
-                  ),
-                ],
+      child: Stack(
+        children: [
+          InkWell(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                    title: Text("Detalles del Préstamo"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Número de Préstamo: ${prestamo.numeroPrestamo}"),
+                        Text("Monto: ${prestamo.monto}"),
+                        Text("Meses: ${prestamo.meses}"),
+                        Text("Tasa de Interés: ${prestamo.tasaInteres} %"),
+                        Text("Fecha de Inicio: ${prestamo.fechaInicio}"),
+                        Text("Fecha de Pago: ${prestamo.fechapago}"),
+                        Text("Días de Pago: ${prestamo.diasPago}"),
+                        Text("Pago Mínimo: ${prestamo.pagoMinimo}"),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Cerrar"),
+                      ),
+                    ],
+                  );
+                },
               );
             },
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPrestamoHeader(prestamo),
-              SizedBox(height: 5),
-              _buildPrestamoDetails(prestamo),
-            ],
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildPrestamoHeader(prestamo),
+                  SizedBox(height: 5),
+                  _buildPrestamoDetails(prestamo),
+                ],
+              ),
+            ),
           ),
-        ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: IconButton(
+              icon: Icon(Icons.copy, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  montoController.text = prestamo.monto.toString();
+                  interesController.text = prestamo.tasaInteres.toString();
+                  meses = prestamo.meses;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Datos copiados al formulario'),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -533,5 +515,30 @@ class _VistaAltaprestamosState extends State<VistaAltaprestamos> {
         ),
       ],
     );
+  }
+   String calcularPagoMinimo() {
+    double monto = double.tryParse(montoController.text) ?? 0.0;
+    double interes = (double.tryParse(interesController.text) ?? 0.0) / 100;
+    if (meses > 0) {
+      setState(() {
+        pagoMinimo = (monto * (1 + interes)) / meses;
+      });
+    }
+    return pagoMinimo.toStringAsFixed(2);
+  }
+
+  Future<void> seleccionarFechaInicio(BuildContext context) async {
+    DateTime? nuevaFecha = await showDatePicker(
+      context: context,
+      initialDate: fechaInicio,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (nuevaFecha != null) {
+      setState(() {
+        fechaInicio = nuevaFecha;
+        fechaPago = fechaInicio.add(Duration(days: 30));
+      });
+    }
   }
 }
