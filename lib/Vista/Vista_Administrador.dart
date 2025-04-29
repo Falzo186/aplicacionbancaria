@@ -42,8 +42,8 @@ class _AdministradorViewState extends State<AdministradorView>
 
   void initState() {
     super.initState();
-    cargarNotificacionesAnteriores("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
-    escucharNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
+    cargarNotificacionesAnteriores("usr-001");
+    escucharNotificaciones("usr-001");
   }
 
   @override
