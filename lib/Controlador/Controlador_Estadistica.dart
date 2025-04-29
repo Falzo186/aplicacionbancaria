@@ -7,23 +7,28 @@ import '../Modelo/Estadistica.dart';
 class ControladorEstadistica {
   final supabase = Supabase.instance.client;
 
-  Future<Estadistica?> obtenerEstadisticaPorId(String id) async {
-    try {
-      final response = await supabase
-          .from('estadisticas')
-          .select()
-          .eq('id', id)
-          .single();
+Future<Estadistica?> obtenerEstadisticaPorId(String usuarioId) async {
+  print("Obteniendo estadística para el usuario: $usuarioId");
+  try {
+    final data = await supabase
+        .from('estadisticas')
+        .select()
+        .eq('id', usuarioId)
+        .maybeSingle();
 
-      if (response != null) {
-        return Estadistica.fromMap(response);
-      }
-      return null;
-    } catch (e) {
-      print('Error al obtener la estadística: $e');
+    if (data != null) {
+      print('Estadística encontrada para el usuario $usuarioId: $data');
+      return Estadistica.fromMap(data);
+    } else {
+      print('No se encontró estadística para el usuario $usuarioId.');
       return null;
     }
+  } catch (e) {
+    print('Error al obtener estadística para el usuario $usuarioId: $e');
+    return null;
   }
+}
+
 
   Future<bool> actualizarEstadistica(Estadistica estadistica) async {
     try {
@@ -40,18 +45,22 @@ class ControladorEstadistica {
   }
 
 
-  Future<List<Estadistica>> obtenerTodasLasEstadisticas() async {
-    try {
-      final response = await supabase.from('estadisticas').select();
+Future<List<Estadistica>> obtenerTodasLasEstadisticas() async {
+ print("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+  try {
+    final response = await supabase.from('estadisticas').select();
+    print("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    print(response); // <--- aquí
 
-      if (response != null && response is List) {
-        return response.map((e) => Estadistica.fromMap(e)).toList();
-      }
-      return [];
-    } catch (e) {
-      print('Error al obtener todas las estadísticas: $e');
-      return [];
+    if (response != null && response is List) {
+      return response.map((e) => Estadistica.fromMap(e)).toList();
     }
+    return [];
+  } catch (e) {
+    print('Error al obtener todas las estadísticas: $e');
+    return [];
   }
+}
+
   
 }

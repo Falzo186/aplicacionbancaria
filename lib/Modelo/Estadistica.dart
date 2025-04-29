@@ -13,7 +13,9 @@ Estadistica({
   required this.SolucionesRechazadas,
   required this.SolucionesPendientes,
   double? porcentajeAprobadas,
-}) : porcentajeAprobadas = porcentajeAprobadas ?? 0.0;
+}) : porcentajeAprobadas = porcentajeAprobadas ?? 0.0 {
+  calcularPorcentajeAprobadas();
+}
 
 void calcularPorcentajeAprobadas() {
   if (numeroSolicitudes > 0) {
@@ -35,6 +37,7 @@ factory Estadistica.fromMap(Map<String, dynamic> data) {
     SolucionesPendientes: data['solucionespendientes'] as int,
   );
 }
+
 Map<String, dynamic> toMap() {
   return {
     'id': id,

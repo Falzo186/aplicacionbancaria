@@ -23,7 +23,7 @@ void main() async {
     setWindowTitle(title);
     final screen = await getCurrentScreen();
     if (screen != null) {
-      setWindowFrame(screen.frame); // Set the window to fullscreen
+       setWindowFrame(screen.frame); // Set the window to fullscreen
     }
   }
 

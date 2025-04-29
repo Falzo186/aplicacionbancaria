@@ -7,7 +7,6 @@ import '../Controlador/Controlador_Reportes.dart';
 import '../Modelo/Empleado.dart';
 import '../Modelo/Estadistica.dart';
 import '../Modelo/ReporteSolicitud.dart';
-
 class VistaReporteUsuarios extends StatefulWidget {
   final Empleado empleado;
   const VistaReporteUsuarios({super.key, required this.empleado});
@@ -19,10 +18,10 @@ class VistaReporteUsuarios extends StatefulWidget {
 class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
   VentanaModelo colorsv = VentanaModelo();
   List<Empleado> Empleados = []; // Lista de usuarios
-  List<Estadistica> EstadisticasUsuarios = [];
   List<ReporteSolicitud> reportes =
       []; // Lista de reportes del usuario seleccionado
   Empleado? usuarioSeleccionado; // Usuario seleccionado
+  Estadistica? estadisticaSeleccionada; // Estadística del usuario seleccionado
   final Controlador = ControladorLogin();
   final ControladorReporte = ControladorReportes();
   final ControladorEstadisticas = ControladorEstadistica();
@@ -31,10 +30,32 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
   void initState() {
     super.initState();
     _cargarUsuarios(); // Cargar la lista de usuarios al iniciar
-    _cargarEstadisticaUsuarios(); // Cargar las estadísticas al iniciar
   }
 
-  // Método para cargar la lista de usuarios
+  Future<void> _cargarReportes(String idEmpleado) async {
+    try {
+      final reportesObtenidos =
+          await ControladorReporte.obtenerReportesPorUsuario(idEmpleado);
+      setState(() {
+        reportes = reportesObtenidos;
+      });
+    } catch (error) {
+      print("Error al cargar reportes: $error");
+    }
+  }
+
+  Future<void> _cargarEstadistica(String idEmpleado) async {
+    try {
+      final estadistica =
+          await ControladorEstadisticas.obtenerEstadisticaPorId(idEmpleado);
+      setState(() {
+        estadisticaSeleccionada = estadistica;
+      });
+    } catch (error) {
+      print("Error al cargar estadística: $error");
+    }
+  }
+
   void _cargarUsuarios() {
     Controlador.obtenerUsuariosEscritorio()
         .then((usuarios) {
@@ -45,46 +66,6 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
         .catchError((error) {
           print("Error al cargar usuarios: $error");
         });
-  }
-
-  // Método para cargar las estadísticas de los usuarios
-  Future<void> _cargarEstadisticaUsuarios() async {
-    try {
-      final estadisticas =
-          await ControladorEstadisticas.obtenerTodasLasEstadisticas();
-      setState(() {
-        this.EstadisticasUsuarios = estadisticas;
-      });
-    } catch (error) {
-      print("Error al cargar estadísticas: $error");
-    }
-  }
-
-  // Método para obtener la estadística de un usuario específico
-  Estadistica? _obtenerEstadisticaPorUsuario(String idUsuario) {
-    return EstadisticasUsuarios.firstWhere(
-        (estadistica) => estadistica.id == idUsuario,
-        orElse: () => Estadistica(
-              id: idUsuario,
-              numeroSolicitudes: 0,
-              SolucionesAprobadas: 0,
-              SolucionesRechazadas: 0,
-              SolucionesPendientes: 0,
-            ));
-        
-  }
-
-  Future<void> _cargarReportes(String idEmpleado) async {
-    try {
-      print("Cargando reportes para el usuario: $idEmpleado");
-      final reportesObtenidos =
-          await ControladorReporte.obtenerReportesPorUsuario(idEmpleado);
-      setState(() {
-        reportes = reportesObtenidos;
-      });
-    } catch (error) {
-      print("Error al cargar reportes: $error");
-    }
   }
 
   @override
@@ -120,31 +101,23 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                   itemCount: Empleados.length,
                   itemBuilder: (context, index) {
                     final Empleado empleado = Empleados[index];
-                    final estadistica =
-                        _obtenerEstadisticaPorUsuario(empleado.id);
-                    final estadisticaTexto = estadistica != null
-                        ? "${estadistica.SolucionesAprobadas} de ${estadistica.numeroSolicitudes} solicitudes aprobadas"
-                        : "Sin estadísticas disponibles";
-
                     return Card(
                       color: colorsv.colorCard,
                       child: ListTile(
                         title: Text(empleado.id),
                         trailing: Icon(Icons.person),
                         leading: Icon(Icons.account_circle),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Cuenta: ${empleado.nombreEmpleado}"),
-                            Text(estadisticaTexto),
-                          ],
+                        subtitle: Text(
+                          "Cuenta: ${empleado.nombreEmpleado}\nPuesto: ${empleado.puestoTrabajo}",
                         ),
                         onTap: () {
                           setState(() {
                             usuarioSeleccionado = empleado;
                             reportes.clear();
+                            estadisticaSeleccionada = null;
                           });
                           _cargarReportes(empleado.id);
+                          _cargarEstadistica(empleado.id);
                         },
                       ),
                     );
@@ -182,6 +155,60 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                             ),
                           ),
                           const Divider(),
+                          if (estadisticaSeleccionada != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Estadísticas: ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Aprobadas: ${estadisticaSeleccionada!.SolucionesAprobadas}",
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "Rechazadas: ${estadisticaSeleccionada!.SolucionesRechazadas}",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8), 
+                                  Text(
+                                    "Pendientes: ${estadisticaSeleccionada!.SolucionesPendientes}",
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(255, 88, 74, 73),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "Porcentaje Aprobadas: ${estadisticaSeleccionada!.porcentajeAprobadas.toStringAsFixed(2)}%",
+                                    style: TextStyle(
+                                      color: estadisticaSeleccionada!
+                                                  .porcentajeAprobadas >=
+                                              70
+                                          ? Colors.green
+                                          : estadisticaSeleccionada!
+                                                      .porcentajeAprobadas >=
+                                                  40
+                                              ? Colors.yellow
+                                              : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           Expanded(
                             child: ListView.builder(
                               itemCount: reportes.length,
@@ -256,7 +283,6 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
       ),
     );
   }
-}
 
   String _formatearFecha(DateTime fecha) {
     final dia = fecha.day.toString().padLeft(2, '0');
@@ -268,4 +294,5 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
 
     return '$dia/$mes/$anio $hora:$minutos $amPm';
   }
+}
 
