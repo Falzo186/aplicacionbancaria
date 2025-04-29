@@ -2,8 +2,10 @@ import 'package:aplicacionbancaria/Controlador/Controlador_Login.dart';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
+import '../Controlador/Controlador_Estadistica.dart';
 import '../Controlador/Controlador_Reportes.dart';
 import '../Modelo/Empleado.dart';
+import '../Modelo/Estadistica.dart';
 import '../Modelo/ReporteSolicitud.dart';
 
 class VistaReporteUsuarios extends StatefulWidget {
@@ -17,21 +19,23 @@ class VistaReporteUsuarios extends StatefulWidget {
 class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
   VentanaModelo colorsv = VentanaModelo();
   List<Empleado> Empleados = []; // Lista de usuarios
+  List<Estadistica> EstadisticasUsuarios = [];
   List<ReporteSolicitud> reportes =
       []; // Lista de reportes del usuario seleccionado
   Empleado? usuarioSeleccionado; // Usuario seleccionado
   final Controlador = ControladorLogin();
   final ControladorReporte = ControladorReportes();
+  final ControladorEstadisticas = ControladorEstadistica();
 
   @override
   void initState() {
     super.initState();
     _cargarUsuarios(); // Cargar la lista de usuarios al iniciar
+    _cargarEstadisticaUsuarios(); // Cargar las estadísticas al iniciar
   }
 
-  // Método para cargar la lista de usuarios (simulado)
+  // Método para cargar la lista de usuarios
   void _cargarUsuarios() {
-    // Aquí puedes reemplazar con la lógica para obtener usuarios desde la base de datos
     Controlador.obtenerUsuariosEscritorio()
         .then((usuarios) {
           setState(() {
@@ -39,14 +43,38 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
           });
         })
         .catchError((error) {
-          // Manejo de errores al cargar usuarios
           print("Error al cargar usuarios: $error");
         });
   }
 
-  // Método para cargar los reportes del usuario seleccionado
+  // Método para cargar las estadísticas de los usuarios
+  Future<void> _cargarEstadisticaUsuarios() async {
+    try {
+      final estadisticas =
+          await ControladorEstadisticas.obtenerTodasLasEstadisticas();
+      setState(() {
+        this.EstadisticasUsuarios = estadisticas;
+      });
+    } catch (error) {
+      print("Error al cargar estadísticas: $error");
+    }
+  }
+
+  // Método para obtener la estadística de un usuario específico
+  Estadistica? _obtenerEstadisticaPorUsuario(String idUsuario) {
+    return EstadisticasUsuarios.firstWhere(
+        (estadistica) => estadistica.id == idUsuario,
+        orElse: () => Estadistica(
+              id: idUsuario,
+              numeroSolicitudes: 0,
+              SolucionesAprobadas: 0,
+              SolucionesRechazadas: 0,
+              SolucionesPendientes: 0,
+            ));
+        
+  }
+
   Future<void> _cargarReportes(String idEmpleado) async {
-    // Aquí puedes reemplazar con la lógica para obtener reportes desde la base de datos
     try {
       print("Cargando reportes para el usuario: $idEmpleado");
       final reportesObtenidos =
@@ -55,7 +83,6 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
         reportes = reportesObtenidos;
       });
     } catch (error) {
-      // Manejo de errores al cargar reportes
       print("Error al cargar reportes: $error");
     }
   }
@@ -81,7 +108,6 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            // Contenedor izquierdo: Lista de usuarios
             Expanded(
               flex: 1,
               child: Container(
@@ -93,24 +119,32 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                 child: ListView.builder(
                   itemCount: Empleados.length,
                   itemBuilder: (context, index) {
-                    final Empleado = Empleados[index];
+                    final Empleado empleado = Empleados[index];
+                    final estadistica =
+                        _obtenerEstadisticaPorUsuario(empleado.id);
+                    final estadisticaTexto = estadistica != null
+                        ? "${estadistica.SolucionesAprobadas} de ${estadistica.numeroSolicitudes} solicitudes aprobadas"
+                        : "Sin estadísticas disponibles";
+
                     return Card(
                       color: colorsv.colorCard,
                       child: ListTile(
-                        title: Text(Empleado.id),
+                        title: Text(empleado.id),
                         trailing: Icon(Icons.person),
                         leading: Icon(Icons.account_circle),
-                        subtitle: Text("Cuenta: ${Empleado.nombreEmpleado}"),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Cuenta: ${empleado.nombreEmpleado}"),
+                            Text(estadisticaTexto),
+                          ],
+                        ),
                         onTap: () {
                           setState(() {
-                            usuarioSeleccionado =
-                                Empleado; // Guarda el usuario seleccionado
-                            reportes
-                                .clear(); // Limpia la lista de reportes mientras carga
+                            usuarioSeleccionado = empleado;
+                            reportes.clear();
                           });
-
-                          // Luego, carga los reportes y actualiza el estado
-                          _cargarReportes(Empleado.id);
+                          _cargarReportes(empleado.id);
                         },
                       ),
                     );
@@ -119,7 +153,6 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
               ),
             ),
             const SizedBox(width: 16),
-            // Contenedor derecho: Lista de reportes del usuario seleccionado
             Expanded(
               flex: 2,
               child: Container(
@@ -169,7 +202,6 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                                       ],
                                     ),
                                     onTap: () {
-                                      // Acción al seleccionar un reporte
                                       showDialog(
                                         context: context,
                                         builder: (context) {
@@ -224,6 +256,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
       ),
     );
   }
+}
 
   String _formatearFecha(DateTime fecha) {
     final dia = fecha.day.toString().padLeft(2, '0');
@@ -235,4 +268,4 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
 
     return '$dia/$mes/$anio $hora:$minutos $amPm';
   }
-}
+

@@ -38,4 +38,20 @@ class ControladorEstadistica {
       return false;
     }
   }
+
+
+  Future<List<Estadistica>> obtenerTodasLasEstadisticas() async {
+    try {
+      final response = await supabase.from('estadisticas').select();
+
+      if (response != null && response is List) {
+        return response.map((e) => Estadistica.fromMap(e)).toList();
+      }
+      return [];
+    } catch (e) {
+      print('Error al obtener todas las estadísticas: $e');
+      return [];
+    }
+  }
+  
 }
