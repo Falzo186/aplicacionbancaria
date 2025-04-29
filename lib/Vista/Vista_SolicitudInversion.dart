@@ -101,8 +101,8 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
         "$fechaFormateada";
 
     ControladorNotificacion.enviarNotificacion(
-      'usr-001',
-      'usr-001',
+      '2d0c779e-b9f0-4cc5-9316-d74ea14a43cb',
+      '28dc2001-518f-4cc0-9190-0ecd3f1c0ead',
       mensaje,
     );
 

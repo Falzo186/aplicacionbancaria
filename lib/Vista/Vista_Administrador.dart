@@ -42,8 +42,8 @@ class _AdministradorViewState extends State<AdministradorView>
 
   void initState() {
     super.initState();
-    cargarNotificacionesAnteriores("usr-001");
-    escucharNotificaciones("usr-001");
+    cargarNotificacionesAnteriores("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
+    escucharNotificaciones("28dc2001-518f-4cc0-9190-0ecd3f1c0ead");
   }
 
   @override
@@ -53,6 +53,85 @@ class _AdministradorViewState extends State<AdministradorView>
     }
     player.dispose();
     super.dispose();
+  }
+void mostrarNotificacionesSecuenciales(
+    BuildContext context,
+    List<String> mensajes,
+  ) async {
+    OverlayState? overlayState = Overlay.of(context);
+    if (overlayState == null) {
+      print("Error: Overlay.of(context) es nulo.");
+      return;
+    }
+
+    for (String mensaje in mensajes) {
+      try {
+        OverlayEntry overlayEntry;
+        AnimationController controller = AnimationController(
+          duration: Duration(milliseconds: 500),
+          vsync: this,
+        );
+        _animationControllers.add(controller);
+
+        Animation<Offset> offsetAnimation = Tween<Offset>(
+          begin: Offset(1.0, 0.0),
+          end: Offset(0.0, 0.0),
+        ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
+
+        // Reproducir sonido de notificación
+        await player.play(AssetSource('sounds/notification.mp3'));
+
+        overlayEntry = OverlayEntry(
+          builder:
+              (context) => Positioned(
+                top: 100,
+                right: 50,
+                child: SlideTransition(
+                  position: offsetAnimation,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: AnimatedOpacity(
+                      opacity: 1.0,
+                      duration: Duration(milliseconds: 500),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.brown.shade700,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 5,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          mensaje,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+        );
+
+        overlayState.insert(overlayEntry);
+        controller.forward();
+
+        await Future.delayed(Duration(seconds: 5));
+
+        controller.reverse().then((_) {
+          overlayEntry.remove();
+        });
+      } catch (e) {
+        print("Error al mostrar notificación: $e");
+      }
+    }
   }
 
   void cargarNotificacionesAnteriores(String adminId) async {
@@ -66,6 +145,10 @@ class _AdministradorViewState extends State<AdministradorView>
       setState(() {
         notificaciones = List<Map<String, dynamic>>.from(response as List);
       });
+       List<String> mensajes =
+          notificaciones.map((n) => n['mensaje'] as String).toList();
+      mostrarNotificacionesSecuenciales(context, mensajes);
+      
     } catch (e) {
       print("Error al cargar notificaciones anteriores: $e");
     }
@@ -86,6 +169,11 @@ class _AdministradorViewState extends State<AdministradorView>
             setState(() {
               notificaciones.add(nuevaNotificacion);
             });
+            mostrarNotificacionesSecuenciales(
+              context,
+              [nuevaNotificacion['mensaje']],
+            );
+
           }
         }
       });
