@@ -1,3 +1,4 @@
+import 'package:aplicacionbancaria/Modelo/Empleado.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/SistemaNotificaciones/Controlado_Notificaciones.dart';
 import 'package:aplicacionbancaria/Vista/Vista_GestionUsuarios.dart';
@@ -18,8 +19,10 @@ import 'package:audioplayers/audioplayers.dart';
 
 class AdministradorView extends StatefulWidget {
   final Usuario usuario;
+  final Empleado empleado;
   AdministradorView({
     super.key,
+    required this.empleado,
     required this.usuario,
     required bool mostrarMenu,
   });
@@ -142,7 +145,7 @@ class _AdministradorViewState extends State<AdministradorView>
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}',
+                  'Usuario: ${widget.empleado.nombreEmpleado}',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Text(
@@ -239,7 +242,9 @@ Widget _buildDialogButton(String text, VoidCallback onPressed) {
     // Acción para gestión de empleados
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VistaReporteUsuarios()),
+      MaterialPageRoute(builder: (context) => VistaReporteUsuarios( 
+        empleado: widget.empleado,
+      )),
     );
   }
   Widget _buildHeader() {
@@ -417,7 +422,7 @@ Widget _buildDialogButton(String text, VoidCallback onPressed) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
+        builder: (context) => VistaBuscarCliente(usuario: widget.usuario, empleado: widget.empleado),
       ),
     );
   }
@@ -426,7 +431,7 @@ Widget _buildDialogButton(String text, VoidCallback onPressed) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaInversiones(usuario: widget.usuario),
+        builder: (context) => VistaInversiones(usuario: widget.usuario, empleado: widget.empleado),
       ),
     );
   }
@@ -435,7 +440,7 @@ Widget _buildDialogButton(String text, VoidCallback onPressed) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaPrestamos(usuario: widget.usuario),
+        builder: (context) => VistaPrestamos(usuario: widget.usuario, empleado: widget.empleado),
       ),
     );
   }
@@ -444,7 +449,7 @@ Widget _buildDialogButton(String text, VoidCallback onPressed) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaSeguros(usuario: widget.usuario),
+        builder: (context) => VistaSeguros(usuario: widget.usuario, empleado: widget.empleado),
       ),
     );
   }

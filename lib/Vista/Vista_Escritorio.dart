@@ -3,6 +3,7 @@ import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Usuario.dart';
 import 'Vista_BuscarCliente.dart';
 import 'Vista_FormularioCliente.dart';
@@ -13,7 +14,8 @@ import 'Vista_SegurosDisponibles.dart';
 
 class EscritorioView extends StatefulWidget {
   final Usuario usuario;
-  EscritorioView({super.key, required this.usuario, required bool mostrarMenu});
+  EscritorioView({super.key, required this.usuario, required bool mostrarMenu,required this.empleado});
+  final Empleado empleado;
 
   @override
   _EscritorioViewState createState() => _EscritorioViewState();
@@ -180,7 +182,7 @@ class _EscritorioViewState extends State<EscritorioView> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}',
+                  'Usuario: ${widget.empleado.nombreEmpleado}',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Text(
@@ -208,7 +210,7 @@ class _EscritorioViewState extends State<EscritorioView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaBuscarCliente(usuario: widget.usuario),
+        builder: (context) => VistaBuscarCliente(usuario: widget.usuario, empleado: widget.empleado,),
       ),
     );
   }
@@ -218,7 +220,7 @@ class _EscritorioViewState extends State<EscritorioView> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => VistaInversionesDisponibles(usuario: widget.usuario),
+            (context) => VistaInversionesDisponibles(usuario: widget.usuario, empleado: widget.empleado),
       ),
     );
   }
@@ -228,7 +230,7 @@ class _EscritorioViewState extends State<EscritorioView> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => VistaPrestamosDisponibles(usuario: widget.usuario),
+            (context) => VistaPrestamosDisponibles(usuario: widget.usuario , empleado: widget.empleado),
       ),
     );
   }
@@ -237,7 +239,7 @@ class _EscritorioViewState extends State<EscritorioView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaSegurosDisponibles(usuario: widget.usuario),
+        builder: (context) => VistaSegurosDisponibles(usuario: widget.usuario , empleado: widget.empleado),
       ),
     );
   }

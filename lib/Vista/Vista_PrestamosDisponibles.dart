@@ -1,5 +1,6 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Prestamos.dart';
 import 'package:flutter/material.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Prestamo.dart';
 import '../Modelo/Usuario.dart';
 import 'Vista_SolicitudPrestamo.dart';
@@ -17,7 +18,8 @@ final Color colorIcon = Color(0xFF1F1010);
 final Color colorCircle = Color(0xFF138A43);
 
 class VistaPrestamosDisponibles extends StatefulWidget {
-  const VistaPrestamosDisponibles({super.key, required this.usuario});
+  const VistaPrestamosDisponibles({super.key, required this.usuario, required this.empleado});
+  final Empleado empleado;
   final Usuario usuario;
 
   @override
@@ -55,7 +57,7 @@ class _VistaPrestamosDisponiblesState extends State<VistaPrestamosDisponibles> {
               style: TextStyle(color: Colors.white),
             ),
             Text(
-              "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+              "Usuario: ${widget.empleado.nombreEmpleado}",
               style: TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],
@@ -132,9 +134,8 @@ class _VistaPrestamosDisponiblesState extends State<VistaPrestamosDisponibles> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VistaSolicitudPrestamo(prestamo: prestamo, usuario: widget.usuario
-              ),
-            ),
+              builder: (context) => VistaSolicitudPrestamo(prestamo: prestamo, usuario: widget.usuario, empleado:widget.empleado), ),
+
           );
         
         },

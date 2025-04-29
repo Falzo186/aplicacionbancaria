@@ -1,6 +1,7 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Seguros.dart';
 import 'package:aplicacionbancaria/Vista/Vista_SolicitudSeguro.dart';
 import 'package:flutter/material.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Seguro.dart';
 import '../Modelo/Usuario.dart';
 
@@ -17,7 +18,8 @@ final Color colorIcon = Color(0xFF1F1010);
 final Color colorCircle = Color(0xFF138A43);
 
 class VistaSegurosDisponibles extends StatefulWidget {
-  const VistaSegurosDisponibles({super.key, required this.usuario});
+  const VistaSegurosDisponibles({super.key, required this.usuario, required this.empleado});
+  final Empleado empleado;
   final Usuario usuario;
 
   @override
@@ -55,7 +57,7 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
               style: TextStyle(color: Colors.white),
             ),
             Text(
-              "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+              "Usuario: ${widget.empleado.nombreEmpleado}",
               style: TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],
@@ -130,6 +132,7 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
               builder: (context) => VistaSolicitudSeguro(
                 usuario: widget.usuario,
                 seguro: seguro,
+                empleado: widget.empleado,
               ),
             ),
           );

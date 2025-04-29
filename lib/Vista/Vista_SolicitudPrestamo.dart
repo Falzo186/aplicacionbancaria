@@ -6,6 +6,7 @@ import 'package:aplicacionbancaria/Modelo/ReporteSolicitud.dart';
 import 'package:intl/intl.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Reportes.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Usuario.dart';
 import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
 
@@ -21,11 +22,13 @@ final Color colorCircle = Color(0xFF138A43);
 class VistaSolicitudPrestamo extends StatefulWidget {
   final Prestamo prestamo;
   final Usuario usuario;
+  final Empleado empleado;
 
   const VistaSolicitudPrestamo({
     super.key,
     required this.prestamo,
     required this.usuario,
+    required this.empleado,
   });
 
   @override
@@ -73,7 +76,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
     final reporte = ReporteSolicitud(
       idSolicitud: Random().nextInt(100000).toString(),
       usuarioId: widget.usuario.nombreUsuario,
-      usuarioNombre: widget.usuario.nombre,
+      usuarioNombre: widget.empleado.nombreEmpleado,
       tipoSolicitud: "Credito",
       clienteId: selectedCliente!.numeroCuenta,
       clienteNombre: selectedCliente!.nombreCompleto,
@@ -92,7 +95,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
     final DateFormat formato = DateFormat('yyyy-MM-dd hh:mm a');
     final String fechaFormateada = formato.format(DateTime.now());
 
-    final mensaje = "Solicitud de Crédito de: ${widget.usuario.nombre} "
+    final mensaje = "Solicitud de Crédito de: ${widget.empleado.nombreEmpleado} "
         "para el cliente ${selectedCliente!.nombreCompleto}\n"
         "$fechaFormateada";
 

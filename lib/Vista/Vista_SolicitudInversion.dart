@@ -6,6 +6,7 @@ import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Modelo/Cliente.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Inversion.dart';
 import '../Modelo/ReporteSolicitud.dart';
 import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
@@ -21,11 +22,13 @@ final Color colorCircle = Color(0xFF138A43);
 class VistaSolicitudInversion extends StatefulWidget {
   final Inversion inversion;
   final Usuario usuario;
+  final Empleado empleado;
 
   const VistaSolicitudInversion({
     super.key,
     required this.usuario,
     required this.inversion,
+    required this.empleado,
   });
 
   @override
@@ -73,7 +76,7 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
     final reporte = ReporteSolicitud(
       idSolicitud: Random().nextInt(100000).toString(),
       usuarioId: widget.usuario.nombreUsuario,
-      usuarioNombre: widget.usuario.nombre,
+      usuarioNombre: widget.empleado.nombreEmpleado,
       tipoSolicitud: "Inversion",
       clienteId: selectedCliente!.numeroCuenta,
       clienteNombre: selectedCliente!.nombreCompleto,

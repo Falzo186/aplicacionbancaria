@@ -5,11 +5,13 @@ import 'package:aplicacionbancaria/Modelo/Cliente.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_DatosCliente.dart';
 import 'package:flutter/material.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Usuario.dart';
 
 class VistaBuscarCliente extends StatefulWidget {
-  VistaBuscarCliente({super.key, required this.usuario});
+  VistaBuscarCliente({super.key, required this.usuario,required this.empleado});
   final Usuario usuario;
+  final Empleado empleado;
 
   @override
   _VistaBuscarClienteScreenState createState() =>
@@ -247,9 +249,8 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Nombre: ${widget.usuario.nombre}'),
-                Text('Apellido: ${widget.usuario.apellido}'),
-                Text('Email: ${widget.usuario.correoElectronico}'),
+                Text('Nombre: ${widget.empleado.nombreEmpleado}'),
+                Text('Email: ${widget.empleado.correoElectronico}'),
               ],
             ),
             actions: [

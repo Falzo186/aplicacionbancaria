@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Controlador/Controlador_Reportes.dart';
 import '../Modelo/Cliente.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/ReporteSolicitud.dart';
 import '../Modelo/Seguro.dart';
 import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
@@ -21,11 +22,13 @@ final Color colorCircle = Color(0xFF138A43);
 class VistaSolicitudSeguro extends StatefulWidget {
   final Seguro seguro;
   final Usuario usuario;
+  final Empleado empleado;
 
   const VistaSolicitudSeguro({
     super.key,
     required this.seguro,
     required this.usuario,
+    required this.empleado,
   });
 
   @override
@@ -74,7 +77,7 @@ class _VistaSolicitudSeguroState extends State<VistaSolicitudSeguro> {
     final reporte = ReporteSolicitud(
       idSolicitud: Random().nextInt(100000).toString(), // Generar un ID aleatorio
       usuarioId: widget.usuario.nombreUsuario,
-      usuarioNombre: widget.usuario.nombre,
+      usuarioNombre: widget.empleado.nombreEmpleado,
       tipoSolicitud: "Seguro",
       clienteId: selectedCliente!.numeroCuenta,
       clienteNombre: selectedCliente!.nombreCompleto,

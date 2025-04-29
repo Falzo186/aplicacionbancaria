@@ -2,6 +2,7 @@ import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Modelo/WarningModel.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../Modelo/Empleado.dart';
 import '../Vista/Vista_Administrador.dart';
 import '../Vista/Vista_Escritorio.dart';
 import '../Vista/Vista_Ventanilla.dart';
@@ -11,74 +12,72 @@ class ControladorLogin {
   final supabase = Supabase.instance.client;
   VentanaModelo colorsv = VentanaModelo();
 
-  Future<void> login(
-    String nombreUsuario,
-    String password,
-    BuildContext context,
-  ) async {
+  Future<void> login(String nombreUsuario, String password, BuildContext context) async {
     try {
       // Buscar al usuario en la base de datos por su nombre de usuario
-      final response =
-          await supabase
-              .from(
-                'usuarios',
-              ) // Asegúrate de que esta tabla existe en Supabase
-              .select()
-              .eq('nombre_usuario', nombreUsuario)
-              .single();
 
-      if (response == null) {
+      final response = await supabase
+          .from('usuarios')
+          .select()
+          .eq('nombreusuario', nombreUsuario)
+          .limit(1);
+
+      if (response == null || response.isEmpty) {
         _mostrarError(context, "Usuario no encontrado.");
         return;
       }
 
+      final userData = response[0];
+
       // Verificar la contraseña (esto debería hacerse con hashing en producción)
-      if (response['contrasena'] != password) {
+      if (userData['contrasena'] != password) {
         _mostrarError(context, "Contraseña incorrecta.");
         return;
       }
 
       // Crear objeto Usuario con los datos obtenidos
-      Usuario usuario = Usuario(
-        nombre: response['nombre'],
-        apellido: response['apellido'],
-        correoElectronico: response['correo_electronico'],
-        numeroTelefono: response['numero_telefono'],
-        direccion: response['direccion'],
-        nombreUsuario: response['nombre_usuario'],
-        contrasena:
-            response['contrasena'], // ⚠️ En producción, nunca guardes contraseñas planas
-        fechaNacimiento: DateTime.parse(response['fecha_nacimiento']),
-        numeroIdentificacion: response['numero_identificacion'],
-        puestoTrabajo: response['puesto_trabajo'],
-      );
+      Usuario usuario = Usuario.fromJson(userData);
+      usuario.idUsuario = userData['idusuario']; // Asegúrate de que este campo existe en tu tabla
 
-      // Redirigir según el puesto de trabajo
-      if (usuario.puestoTrabajo == 'administrador') {
+      // Buscar al empleado relacionado en la tabla empleados
+      final empleadoResponse = await supabase
+          .from('empleados')
+          .select()
+          .eq('idempleado', usuario.idempleado)
+          .limit(1);
+
+      if (empleadoResponse == null || empleadoResponse.isEmpty) {
+       
+        _mostrarError(context, "Empleado relacionado no encontrado.");
+        return;
+      }
+
+      final empleadoData = empleadoResponse[0];
+      final empleado = Empleado.fromJson(empleadoData);
+
+      // Redirigir según el puesto de trabajo del empleado
+      if (empleadoData['puestotrabajo'] == 'Administracion') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder:
-                (context) =>
-                    AdministradorView(usuario: usuario, mostrarMenu: false),
+            builder: (context) =>
+                AdministradorView(usuario: usuario, mostrarMenu: false, empleado: empleado),
           ),
         );
-      } else if (usuario.puestoTrabajo == 'escritorio') {
+      } else if (empleadoData['puestotrabajo'] == 'Escritorio') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder:
-                (context) =>
-                    EscritorioView(usuario: usuario, mostrarMenu: false),
+            builder: (context) =>
+                EscritorioView(usuario: usuario, mostrarMenu: false, empleado: empleado),
           ),
         );
-      } else if (usuario.puestoTrabajo == 'cajero') {
+      } else if (empleadoData['puestotrabajo'] == 'Ventanilla') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder:
-                (context) =>
-                    VistaVentanilla(usuario: usuario, mostrarMenu: true),
+            builder: (context) =>
+                VistaVentanilla(usuario: usuario, mostrarMenu: true, empleado: empleado),
           ),
         );
       }
@@ -87,13 +86,43 @@ class ControladorLogin {
     }
   }
 
+
   //show error message
   void _mostrarError(BuildContext context, String mensaje) {
     final errorDialog = ErrorDialog(context: context, mensaje: mensaje);
     errorDialog.mostrar();
   }
 
-  // no toquen mas este metodo es de prueba
+ 
+
+  Future<List<Usuario>> obtenerUsuariosEscritorio() async {
+    try {
+      final response = await supabase
+          .from('usuarios')
+          .select()
+          .eq('puestotrabajo', 'escritorio');
+
+      if (response == null || response.isEmpty) {
+        return [];
+      }
+
+      return (response as List).map((data) {
+        return Usuario(
+          idUsuario: data['idusuario'],
+          nombreUsuario: data['nombreusuario'],
+          contrasena: data['contrasena'],
+          idempleado: data['idempleado'],
+          departamento: data['departamento'],
+        );
+      }).toList();
+    } catch (e) {
+      print('Error al obtener usuarios tipo escritorio: ${e.toString()}');
+      return [];
+    }
+  }
+  
+
+ // no toquen mas este metodo es de prueba
 
   Future<void> insertarUsuarios() async {
     final supabase = Supabase.instance.client;
@@ -136,50 +165,12 @@ class ControladorLogin {
         'puesto_trabajo': 'cajero',
       },
     ]; // hola ---
-
-    for (var usuario in usuarios) {
+  for (var usuario in usuarios) {
       await supabase.from('usuarios').insert(usuario);
     }
 
     print('Usuarios insertados correctamente');
   }
-
-  Future<List<Usuario>> obtenerUsuariosEscritorio() async {
-    try {
-      final response = await supabase
-          .from('usuarios')
-          .select()
-          .eq('puesto_trabajo', 'escritorio');
-
-      if (response == null || response.isEmpty) {
-        return [];
-      }
-
-      return (response as List).map((data) {
-        return Usuario(
-          nombre: data['nombre'],
-          apellido: data['apellido'],
-          correoElectronico: data['correo_electronico'],
-          numeroTelefono: data['numero_telefono'],
-          direccion: data['direccion'],
-          nombreUsuario: data['nombre_usuario'],
-          contrasena: data['contrasena'],
-          fechaNacimiento: DateTime.parse(data['fecha_nacimiento']),
-          numeroIdentificacion: data['numero_identificacion'],
-          puestoTrabajo: data['puesto_trabajo'],
-        );
-      }).toList();
-    } catch (e) {
-      print('Error al obtener usuarios tipo escritorio: ${e.toString()}');
-      return [];
-    }
-  }
-  
-
-
-
-
-
-
+  // no toquen mas este metodo es de prueba
 
 }

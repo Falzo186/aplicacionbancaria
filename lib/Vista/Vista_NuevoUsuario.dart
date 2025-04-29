@@ -161,26 +161,26 @@ class _CrearUsuarioState extends State<CrearUsuario> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final nuevoUsuario = Usuario(
-                      nombre: _nombreController.text,
-                      apellido: _apellidoController.text,
-                      correoElectronico: _correoController.text,
-                      numeroTelefono: _telefonoController.text,
-                      direccion: _direccionController.text,
-                      nombreUsuario: _nombreUsuarioController.text,
-                      contrasena: _contrasenaController.text,
-                      fechaNacimiento: DateTime.parse(_fechaNacimientoController.text),
-                      numeroIdentificacion: _numeroIdentificacionController.text,
-                      puestoTrabajo: _tipoUsuario ?? 'Cajero',
+                  // if (_formKey.currentState!.validate()) {
+                  //   final nuevoUsuario = Usuario(
+                  //     nombre: _nombreController.text,
+                  //     apellido: _apellidoController.text,
+                  //     correo: _correoController.text,
+                  //     telefono: _telefonoController.text,
+                  //     direccion: _direccionController.text,
+                  //     nombreUsuario: _nombreUsuarioController.text,
+                  //     contrasena: _contrasenaController.text,
+                  //     fechaNacimiento: DateFormat('yyyy-MM-dd').parse(_fechaNacimientoController.text),
+                  //     numeroIdentificacion: _numeroIdentificacionController.text,
+                  //     puestoTrabajo: _tipoUsuario!,
                      
-                    );
-                    controlador.agregarUsuario(nuevoUsuario);
-                    cleanText();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Usuario creado exitosamente')),
-                    );
-                  }
+                  //   );
+                  //   controlador.agregarUsuario(nuevoUsuario);
+                  //   cleanText();
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(content: Text('Usuario creado exitosamente')),
+                  //   );
+                  // }
                 },
                 child: Text('Crear Usuario'),
               ),

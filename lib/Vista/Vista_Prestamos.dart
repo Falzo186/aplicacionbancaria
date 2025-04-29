@@ -2,6 +2,7 @@ import 'package:aplicacionbancaria/Controlador/Controlador_Prestamos.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_AltaPrestamos.dart';
 import 'package:flutter/material.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Prestamo.dart';
 import '../Modelo/Usuario.dart';
 import 'Vista_SolicitudPrestamo.dart';
@@ -9,7 +10,8 @@ import 'Vista_SolicitudPrestamo.dart';
 VentanaModelo colorsv = VentanaModelo();
 
 class VistaPrestamos extends StatefulWidget {
-  const VistaPrestamos({super.key, required this.usuario});
+  const VistaPrestamos({super.key, required this.usuario, required this.empleado});
+  final Empleado empleado;
   final Usuario usuario;
 
   @override
@@ -44,7 +46,7 @@ class _VistaPrestamosState extends State<VistaPrestamos> {
           children: [
             Text("Oferta de Préstamos", style: TextStyle(color: Colors.white)),
             Text(
-              "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+              "Usuario: ${widget.empleado.nombreEmpleado}",
               style: TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],
@@ -127,6 +129,7 @@ class _VistaPrestamosState extends State<VistaPrestamos> {
                   (context) => VistaSolicitudPrestamo(
                     prestamo: prestamo,
                     usuario: widget.usuario,
+                    empleado: widget.empleado,
                   ),
             ),
           );

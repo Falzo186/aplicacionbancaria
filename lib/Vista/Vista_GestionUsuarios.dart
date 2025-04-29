@@ -4,10 +4,12 @@ import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_Reportes.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/ReporteSolicitud.dart';
 
 class VistaReporteUsuarios extends StatefulWidget {
-  const VistaReporteUsuarios({super.key});
+  final Empleado empleado;
+  const VistaReporteUsuarios({super.key, required this.empleado});
 
   @override
   _VistaReporteUsuariosState createState() => _VistaReporteUsuariosState();
@@ -66,7 +68,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
       appBar: CustomAppBar(
         backgroundColor: colorsv.colorAppbar,
         title: Text(
-          "Reporte de Usuarios",
+          "Reporte de Usuarios - ${widget.empleado.nombreEmpleado}",
           style: TextStyle(color: Colors.white),
         ),
         leading: IconButton(
@@ -96,7 +98,9 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                     return Card(
                       color: colorsv.colorCard,
                       child: ListTile(
-                        title: Text(usuario.nombre),
+                        title: Text(widget.empleado.nombreEmpleado),
+                        trailing: Icon(Icons.person),
+                        leading: Icon(Icons.account_circle),
                         subtitle: Text("Cuenta: ${usuario.nombreUsuario}"),
                         onTap: () {
                           setState(() {
@@ -125,99 +129,95 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: const EdgeInsets.all(16.0),
-                child:
-                    usuarioSeleccionado == null
-                        ? Center(
-                          child: Text(
-                            "Seleccione un usuario para ver los reportes",
+                child: usuarioSeleccionado == null
+                    ? Center(
+                        child: Text(
+                          "Seleccione un usuario para ver los reportes",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Reportes de ${usuarioSeleccionado!.nombreUsuario}",
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
-                        : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Reportes de ${usuarioSeleccionado!.nombre}",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const Divider(),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: reportes.length,
-                                itemBuilder: (context, index) {
-                                  final reporte = reportes[index];
-                                  return Card(
-                                    color: colorsv.colorCard,
-                                    child: ListTile(
-                                      title: Text(reporte.tipoSolicitud),
-                                      subtitle: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "ID Solicitud: ${reporte.idSolicitud}",
-                                          ),
-                                          Text("Estado: ${reporte.estado}"),
-                                        ],
-                                      ),
-                                      onTap: () {
-                                        // Acción al seleccionar un reporte
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: Text(
-                                                "Detalles del Reporte",
-                                              ),
-                                              content: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    "ID Solicitud: ${reporte.idSolicitud}",
-                                                  ),
-                                                  Text(
-                                                    "Tipo de Solicitud: ${reporte.tipoSolicitud}",
-                                                  ),
-                                                  Text(
-                                                    "Cliente: ${reporte.clienteNombre}",
-                                                  ),
-                                                  Text(
-                                                    "Estado: ${reporte.estado}",
-                                                  ),
-                                                  Text(
-                                                    "Fecha de Solicitud: ${_formatearFecha(reporte.fechaSolicitud)}",
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed:
-                                                      () =>
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop(),
-                                                  child: Text("Cerrar"),
+                          const Divider(),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: reportes.length,
+                              itemBuilder: (context, index) {
+                                final reporte = reportes[index];
+                                return Card(
+                                  color: colorsv.colorCard,
+                                  child: ListTile(
+                                    title: Text(reporte.tipoSolicitud),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "ID Solicitud: ${reporte.idSolicitud}",
+                                        ),
+                                        Text("Estado: ${reporte.estado}"),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      // Acción al seleccionar un reporte
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                              "Detalles del Reporte",
+                                            ),
+                                            content: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  "ID Solicitud: ${reporte.idSolicitud}",
+                                                ),
+                                                Text(
+                                                  "Tipo de Solicitud: ${reporte.tipoSolicitud}",
+                                                ),
+                                                Text(
+                                                  "Cliente: ${reporte.clienteNombre}",
+                                                ),
+                                                Text(
+                                                  "Estado: ${reporte.estado}",
+                                                ),
+                                                Text(
+                                                  "Fecha de Solicitud: ${_formatearFecha(reporte.fechaSolicitud)}",
                                                 ),
                                               ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(),
+                                                child: Text("Cerrar"),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
               ),
             ),
           ],

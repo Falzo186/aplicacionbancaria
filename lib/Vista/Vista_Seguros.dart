@@ -5,12 +5,14 @@ import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_AltaSeguro.dart';
 import 'package:aplicacionbancaria/Vista/Vista_SolicitudSeguro.dart';
 import 'package:flutter/material.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Seguro.dart';
 
 VentanaModelo colorsv = VentanaModelo();
 
 class VistaSeguros extends StatefulWidget {
-  const VistaSeguros({super.key, required this.usuario});
+  const VistaSeguros({super.key, required this.usuario , required this.empleado});
+  final Empleado empleado;
 
   final Usuario usuario;
 
@@ -155,6 +157,9 @@ class _VistaSegurosState extends State<VistaSeguros> {
                   (context) => VistaSolicitudSeguro(
                     seguro: seguro,
                     usuario: widget.usuario,
+                    empleado: widget.empleado,
+
+
                   ),
             ),
           );

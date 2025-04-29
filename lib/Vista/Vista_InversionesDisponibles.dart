@@ -1,6 +1,7 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Inversiones.dart';
 import 'package:aplicacionbancaria/Vista/Vista_SolicitudInversion.dart';
 import 'package:flutter/material.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Inversion.dart';
 import '../Modelo/Usuario.dart';
 
@@ -17,7 +18,8 @@ final Color colorIcon = Color(0xFF1F1010);
 final Color colorCircle = Color(0xFF138A43);
 
 class VistaInversionesDisponibles extends StatefulWidget {
-  const VistaInversionesDisponibles({super.key, required this.usuario});
+  const VistaInversionesDisponibles({super.key, required this.usuario, required this.empleado});
+  final Empleado empleado;
   final Usuario usuario;
 
   @override
@@ -64,7 +66,7 @@ class _VistaInversionesDisponiblesState extends State<VistaInversionesDisponible
               style: TextStyle(color: Colors.white),
             ),
             Text(
-              "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+              "Usuario: ${widget.empleado.nombreEmpleado}",
               style: TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],
@@ -142,6 +144,7 @@ class _VistaInversionesDisponiblesState extends State<VistaInversionesDisponible
           context,
           MaterialPageRoute(
             builder: (context) => VistaSolicitudInversion(
+              empleado: widget.empleado,
               inversion: inversion,
               usuario: widget.usuario,
             ),

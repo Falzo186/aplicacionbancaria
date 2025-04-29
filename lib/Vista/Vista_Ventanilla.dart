@@ -4,15 +4,17 @@ import 'package:flutter/material.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Ventanilla.dart';
 import '../Modelo/Cliente.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Usuario.dart';
 import '../Modelo/Appbar_perso.dart';
 import 'Vista_Login.dart';
 
 class VistaVentanilla extends StatefulWidget {
   final Usuario usuario;
+  final Empleado empleado;
   //final CustomAppBar appBar;
   //VistaVentanilla({super.key, required this.usuario, required this.appBar})
-  VistaVentanilla({Key? key, required this.usuario, required bool mostrarMenu});
+  VistaVentanilla({Key? key, required this.usuario, required bool mostrarMenu,required this.empleado}) : super(key: key);
 
   @override
   _VentanillaScreenState createState() => _VentanillaScreenState();
@@ -131,11 +133,11 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}',
+                    'Usuario: ${widget.empleado.nombreEmpleado}',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Text(
-                    'Correo: ${widget.usuario.correoElectronico}',
+                    'Correo: ${widget.empleado.correoElectronico}',
                     style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
@@ -275,9 +277,9 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Nombre: ${widget.usuario.nombre}'),
-                    Text('Apellido: ${widget.usuario.apellido}'),
-                    Text('Email: ${widget.usuario.correoElectronico}'),
+                    Text('Nombre: ${widget.empleado.nombreEmpleado}'),
+                    Text('Sexo: ${widget.empleado.sexo}'),
+                    Text('Email: ${widget.empleado.correoElectronico}'),
                     // Añade más datos del usuario si es necesario
                   ],
                 ),

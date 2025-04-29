@@ -2,13 +2,15 @@ import 'package:aplicacionbancaria/Controlador/Controlador_Inversiones.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:aplicacionbancaria/Vista/Vista_AltaInversion.dart';
 import 'package:flutter/material.dart';
+import '../Modelo/Empleado.dart';
 import '../Modelo/Inversion.dart';
 import '../Modelo/Usuario.dart';
 
 VentanaModelo colorsv = VentanaModelo();
 
 class VistaInversiones extends StatefulWidget {
-  const VistaInversiones({super.key, required this.usuario});
+  const VistaInversiones({super.key, required this.usuario, required this.empleado});
+  final Empleado empleado;
   final Usuario usuario;
 
   @override
@@ -69,7 +71,7 @@ class _VistaInversionesState extends State<VistaInversiones> {
               style: TextStyle(color: Colors.white),
             ),
             Text(
-              "Usuario: ${widget.usuario.nombre} ${widget.usuario.apellido}",
+              "Usuario: ${widget.empleado.nombreEmpleado}",
               style: TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],

@@ -1,37 +1,35 @@
 class Usuario {
-  String nombre;
-  String apellido;
-  String correoElectronico;
-  String numeroTelefono;
-  String direccion;
+  String idUsuario;
   String nombreUsuario;
   String contrasena;
-  DateTime fechaNacimiento; 
-  String numeroIdentificacion; 
-  String puestoTrabajo; 
+  String departamento;
+  String idempleado;
 
   Usuario({
-    required this.nombre,
-    required this.apellido,
-    required this.correoElectronico,
-    required this.numeroTelefono,
-    required this.direccion,
+    required this.idUsuario,
     required this.nombreUsuario,
     required this.contrasena,
-    required this.fechaNacimiento, 
-    required this.numeroIdentificacion, 
-    required this.puestoTrabajo, 
+    required this.departamento,
+    required this.idempleado,
   });
-
-  
-  void mostrarInformacion() {
-    print('Nombre: $nombre $apellido');
-    print('Correo Electrónico: $correoElectronico');
-    print('Número de Teléfono: $numeroTelefono');
-    print('Dirección: $direccion');
-    print('Nombre de Usuario: $nombreUsuario');
-    print('Fecha de Nacimiento: ${fechaNacimiento.toLocal()}'.split(' ')[0]); 
-    print('Número de Identificación: $numeroIdentificacion'); 
-    print('Puesto de Trabajo: $puestoTrabajo'); 
+  factory Usuario.fromJson(Map<String, dynamic> json) {
+    return Usuario(
+      idUsuario: json['idusuario'],
+      nombreUsuario: json['nombreusuario'],
+      contrasena: json['contrasena'],
+      idempleado: json['idempleado'],
+      departamento: json['departamento'],
+    );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'idusuario': idUsuario, 
+      'nombreusuario': nombreUsuario,
+      'contrasena': contrasena,
+      'idempleado': idempleado,
+      'departamento': departamento,
+    };
+  }
+
 }
