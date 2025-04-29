@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
 import 'package:aplicacionbancaria/Controlador/Controlador_Reportes.dart';
+import 'package:aplicacionbancaria/Modelo/Estadistica.dart';
 import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../Controlador/Controlador_Estadistica.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Empleado.dart';
 import '../Modelo/Inversion.dart';
@@ -43,6 +45,8 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
   final controlador = ControladorDatoscliente();
   final ControladorReporte = ControladorReportes();
   final ControladorNotificacion = ControladorNotificaciones();
+  final controladorestadistica= ControladorEstadistica();
+  Estadistica? estadistica;
 
   @override
   void initState() {
@@ -68,6 +72,27 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
         return nombreLower.contains(searchLower) || numeroCuentaLower.contains(searchLower);
       }).toList();
     });
+  }
+
+
+
+
+Future<void> agregarEstadistica() async {
+    try {
+      estadistica = await controladorestadistica.obtenerEstadisticaPorId(widget.usuario.idempleado);
+
+      if (estadistica != null) {
+        setState(() {
+          estadistica!.SolucionesPendientes += 1;
+          estadistica!.numeroSolicitudes += 1;
+        });
+        await controladorestadistica.actualizarEstadistica(estadistica!);
+      } else {
+        print("No se encontró la estadística para el usuario ${widget.usuario.idempleado}.");
+      }
+    } catch (e) {
+      print("Error al actualizar la estadística: $e");
+    }
   }
 
   void _crearReporteSolicitud() {

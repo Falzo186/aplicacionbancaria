@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:aplicacionbancaria/Controlador/Controlador_Estadistica.dart';
 import 'package:flutter/material.dart';
 import 'package:aplicacionbancaria/Modelo/Cliente.dart';
 import 'package:aplicacionbancaria/Modelo/Prestamo.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
 import '../Controlador/Controlador_Reportes.dart';
 import '../Modelo/Empleado.dart';
+import '../Modelo/Estadistica.dart';
 import '../Modelo/Usuario.dart';
 import '../SistemaNotificaciones/Controlado_Notificaciones.dart';
 
@@ -40,15 +42,20 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
   List<Cliente> clientes = [];
   List<Cliente> filteredClientes = [];
   Cliente? selectedCliente;
+   
   final controlador = ControladorDatoscliente();
   final ControladorNotificacion = ControladorNotificaciones();
   final ControladorReporte = ControladorReportes();
-
+  final controladorestadistica= ControladorEstadistica();
+  Estadistica? estadistica;
   @override
   void initState() {
     super.initState();
     _loadClientes();
   }
+  
+   
+
 
   Future<void> _loadClientes() async {
     final fetchedClientes = await controlador.obtenerClientes();
@@ -69,6 +76,26 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
       }).toList();
     });
   }
+
+  Future<void> agregarEstadistica() async {
+    try {
+      estadistica = await controladorestadistica.obtenerEstadisticaPorId(widget.usuario.idempleado);
+
+      if (estadistica != null) {
+        setState(() {
+          estadistica!.SolucionesPendientes += 1;
+          estadistica!.numeroSolicitudes += 1;
+        });
+        await controladorestadistica.actualizarEstadistica(estadistica!);
+      } else {
+        print("No se encontró la estadística para el usuario ${widget.usuario.idempleado}.");
+      }
+    } catch (e) {
+      print("Error al actualizar la estadística: $e");
+    }
+  }
+
+
 
   void _crearReporteSolicitud() {
     if (selectedCliente == null) return;
@@ -150,6 +177,7 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
     } else {
       _crearReporteSolicitud();
       _enviarNotificacionSolicitud();
+      agregarEstadistica(); // Agregar estadística
 
       Navigator.of(context).pop(); // Regreso automático
       ScaffoldMessenger.of(context).showSnackBar(
@@ -222,6 +250,60 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
                             "Estado: ${widget.prestamo.estado}",
                             style: TextStyle(fontSize: 16),
                           ),
+                            Text(
+                            "🏦 Informacion Detallada",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const Divider(),
+                          Text(
+                            "📌 Número de Préstamo: ${widget.prestamo.numeroPrestamo}",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            "💰 Monto Disponible: Hasta \$${widget.prestamo.monto.toStringAsFixed(2)}",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            "📅 Plazo Flexible: Hasta ${widget.prestamo.meses} meses",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            "📊 Tasa de Interés Competitiva: Solo ${widget.prestamo.tasaInteres * 100}% mensual",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "📅 Fechas Clave",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const Divider(),
+                          Text(
+                            "📆 Fecha de Inicio: ${widget.prestamo.fechaInicio.day}/${widget.prestamo.fechaInicio.month}/${widget.prestamo.fechaInicio.year}",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            "📆 Primer Pago: ${widget.prestamo.fechapago.day}/${widget.prestamo.fechapago.month}/${widget.prestamo.fechapago.year}",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            "💳 Día de Pago Mensual: Cada día ${widget.prestamo.diasPago} de mes",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "📌 ¿Cómo funciona este préstamo?",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const Divider(),
+                          Text(
+                            "Al adquirir este préstamo, recibirás un monto de \$${widget.prestamo.monto.toStringAsFixed(2)}, que podrás pagar en ${widget.prestamo.meses} meses. La tasa de interés es del ${widget.prestamo.tasaInteres}% mensual, y los pagos se realizan cada día ${widget.prestamo.diasPago} de mes.",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            "Si realizas tus pagos puntuales, no tendrás cargos adicionales, pero en caso de atraso, se aplicará un interés del 25% mensual sobre el saldo vencido.",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),

@@ -1,7 +1,9 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Prestamos.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
+import '../Controlador/Controlador_Estadistica.dart';
 import '../Controlador/Controlador_Reportes.dart';
+import '../Modelo/Estadistica.dart';
 import '../Modelo/ReporteSolicitud.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Prestamo.dart';
@@ -29,6 +31,8 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
   final controlador = ControladorReportes();
   final ControladorClientes = ControladorDatoscliente();
   final ControladorPrestamo = ControladorPrestamos();
+  final controladorestadistica= ControladorEstadistica();
+  Estadistica? estadistica;
 
   @override
   void initState() {
@@ -64,6 +68,25 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
     final amPm = fecha.hour >= 12 ? 'PM' : 'AM';
     return "${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year} $hora:$minutos $amPm";
   }
+ 
+
+ void _actualizarEstadistica(String idEmpleado,String Estado) async {
+    estadistica = await controladorestadistica.obtenerEstadisticaPorId(idEmpleado);
+    if (estadistica != null) {
+      if (Estado == "Aprobada") {
+        estadistica!.SolucionesAprobadas += 1;
+        estadistica!.SolucionesPendientes -= 1;
+      } else if (Estado == "Rechazada") {
+        estadistica!.SolucionesRechazadas += 1;
+        estadistica!.SolucionesPendientes -= 1;
+      }
+      await controladorestadistica.actualizarEstadistica(estadistica!);
+    } else {
+      print("No se encontró la estadística para el empleado con ID: $idEmpleado");
+    }
+      
+ } 
+
 
   @override
   Widget build(BuildContext context) {
@@ -173,12 +196,22 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                                   children: [
                                     ElevatedButton(
                                       onPressed: () {
+
+
+
                                         setState(() {
                                           reporteSeleccionado!.estado = "Aprobada";
+                                          controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Aprobada");
+                                          _actualizarEstadistica(reporteSeleccionado!.usuarioId,"Aprobada");
                                         });
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text("Solicitud aprobada")),
                                         );
+
+
+
+
+
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: colorBotonAceptar,
@@ -187,12 +220,21 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                                     ),
                                     ElevatedButton(
                                       onPressed: () {
+
+
+
+
                                         setState(() {
                                           reporteSeleccionado!.estado = "Rechazada";
+                                          controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Rechazada");
+                                          _actualizarEstadistica(reporteSeleccionado!.usuarioId,"Rechazada");
+
                                         });
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text("Solicitud rechazada")),
                                         );
+
+
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: colorBotonRechazar,

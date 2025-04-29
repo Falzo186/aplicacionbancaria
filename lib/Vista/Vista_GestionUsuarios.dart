@@ -1,6 +1,5 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Login.dart';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
-import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_Reportes.dart';
@@ -98,7 +97,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                     return Card(
                       color: colorsv.colorCard,
                       child: ListTile(
-                        title: Text(widget.empleado.nombreEmpleado),
+                        title: Text(Empleado.id),
                         trailing: Icon(Icons.person),
                         leading: Icon(Icons.account_circle),
                         subtitle: Text("Cuenta: ${Empleado.nombreEmpleado}"),
