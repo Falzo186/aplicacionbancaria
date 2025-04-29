@@ -102,6 +102,7 @@ class ControladorReportes {
       return [];
     }
   }
+  
   Future<void> realizarInversion(String numeroCuenta, String numeroInversion) async {
     final supabase = Supabase.instance.client;
 

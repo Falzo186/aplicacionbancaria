@@ -75,7 +75,7 @@ class _VistaSolicitudInversionState extends State<VistaSolicitudInversion> {
 
     final reporte = ReporteSolicitud(
       idSolicitud: Random().nextInt(100000).toString(),
-      usuarioId: widget.usuario.nombreUsuario,
+      usuarioId: widget.usuario.idempleado,
       usuarioNombre: widget.empleado.nombreEmpleado,
       tipoSolicitud: "Inversion",
       clienteId: selectedCliente!.numeroCuenta,

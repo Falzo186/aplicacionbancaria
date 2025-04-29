@@ -95,24 +95,32 @@ class ControladorLogin {
 
  
 
-  Future<List<Usuario>> obtenerUsuariosEscritorio() async {
+  Future<List<Empleado>> obtenerUsuariosEscritorio() async {
     try {
       final response = await supabase
-          .from('usuarios')
+          .from('empleados')
           .select()
-          .eq('puestotrabajo', 'escritorio');
+          .eq('puestotrabajo', 'Escritorio');
 
       if (response == null || response.isEmpty) {
         return [];
       }
 
       return (response as List).map((data) {
-        return Usuario(
-          idUsuario: data['idusuario'],
-          nombreUsuario: data['nombreusuario'],
-          contrasena: data['contrasena'],
-          idempleado: data['idempleado'],
-          departamento: data['departamento'],
+        return Empleado(
+         
+      id: data['idempleado'],
+      nombreEmpleado: data['nombreempleado'],
+      sexo: data['sexo'],
+      fechaCumpleanos: DateTime.parse(data['fechacumpleanos']),
+      rfc: data['rfc'],
+      direccion: data['direccion'],
+      numeroTelefono: data['numerotelefono'],
+      estadoCivil: data['estadocivil'],
+      puestoTrabajo: data['puestotrabajo'],
+      correoElectronico: data['correoelectronico'],
+      numeroIdentificacionOficial: data['numeroidentificacionoficial'],
+
         );
       }).toList();
     } catch (e) {

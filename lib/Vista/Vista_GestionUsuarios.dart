@@ -17,10 +17,10 @@ class VistaReporteUsuarios extends StatefulWidget {
 
 class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
   VentanaModelo colorsv = VentanaModelo();
-  List<Usuario> usuarios = []; // Lista de usuarios
+  List<Empleado> Empleados = []; // Lista de usuarios
   List<ReporteSolicitud> reportes =
       []; // Lista de reportes del usuario seleccionado
-  Usuario? usuarioSeleccionado; // Usuario seleccionado
+  Empleado? usuarioSeleccionado; // Usuario seleccionado
   final Controlador = ControladorLogin();
   final ControladorReporte = ControladorReportes();
 
@@ -36,7 +36,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
     Controlador.obtenerUsuariosEscritorio()
         .then((usuarios) {
           setState(() {
-            this.usuarios = usuarios;
+            this.Empleados = usuarios;
           });
         })
         .catchError((error) {
@@ -46,12 +46,12 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
   }
 
   // Método para cargar los reportes del usuario seleccionado
-  Future<void> _cargarReportes(String nombreUsuario) async {
+  Future<void> _cargarReportes(String idEmpleado) async {
     // Aquí puedes reemplazar con la lógica para obtener reportes desde la base de datos
     try {
-      print("Cargando reportes para el usuario: $nombreUsuario");
+      print("Cargando reportes para el usuario: $idEmpleado");
       final reportesObtenidos =
-          await ControladorReporte.obtenerReportesPorUsuario(nombreUsuario);
+          await ControladorReporte.obtenerReportesPorUsuario(idEmpleado);
       setState(() {
         reportes = reportesObtenidos;
       });
@@ -92,26 +92,26 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                 ),
                 padding: const EdgeInsets.all(16.0),
                 child: ListView.builder(
-                  itemCount: usuarios.length,
+                  itemCount: Empleados.length,
                   itemBuilder: (context, index) {
-                    final usuario = usuarios[index];
+                    final Empleado = Empleados[index];
                     return Card(
                       color: colorsv.colorCard,
                       child: ListTile(
                         title: Text(widget.empleado.nombreEmpleado),
                         trailing: Icon(Icons.person),
                         leading: Icon(Icons.account_circle),
-                        subtitle: Text("Cuenta: ${usuario.nombreUsuario}"),
+                        subtitle: Text("Cuenta: ${Empleado.nombreEmpleado}"),
                         onTap: () {
                           setState(() {
                             usuarioSeleccionado =
-                                usuario; // Guarda el usuario seleccionado
+                                Empleado; // Guarda el usuario seleccionado
                             reportes
                                 .clear(); // Limpia la lista de reportes mientras carga
                           });
 
                           // Luego, carga los reportes y actualiza el estado
-                          _cargarReportes(usuario.nombreUsuario);
+                          _cargarReportes(Empleado.id);
                         },
                       ),
                     );
@@ -143,7 +143,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Reportes de ${usuarioSeleccionado!.nombreUsuario}",
+                            "Reportes de ${usuarioSeleccionado!.nombreEmpleado}",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

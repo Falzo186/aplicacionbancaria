@@ -76,7 +76,7 @@ class _VistaSolicitudSeguroState extends State<VistaSolicitudSeguro> {
 
     final reporte = ReporteSolicitud(
       idSolicitud: Random().nextInt(100000).toString(), // Generar un ID aleatorio
-      usuarioId: widget.usuario.nombreUsuario,
+      usuarioId: widget.usuario.idempleado,
       usuarioNombre: widget.empleado.nombreEmpleado,
       tipoSolicitud: "Seguro",
       clienteId: selectedCliente!.numeroCuenta,
