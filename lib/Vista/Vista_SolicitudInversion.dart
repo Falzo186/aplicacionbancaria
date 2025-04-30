@@ -109,7 +109,7 @@ Future<void> agregarEstadistica() async {
       estado: "Pendiente",
       fechaSolicitud: DateTime.now(),
     );
-
+     agregarEstadistica();
     ControladorReporte.subirReporte(reporte);
 
     print("Reporte de Solicitud:\n${reporte.toString()}");

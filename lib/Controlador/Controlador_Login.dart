@@ -128,7 +128,54 @@ class ControladorLogin {
       return [];
     }
   }
-  
+
+  Future<void> altaEmpleado(Empleado empleado) async {
+    try {
+      final response = await supabase.from('empleados').insert({
+        'idempleado': empleado.id,
+        'nombreempleado': empleado.nombreEmpleado,
+        'sexo': empleado.sexo,
+        'fechacumpleanos': empleado.fechaCumpleanos.toIso8601String(),
+        'rfc': empleado.rfc,
+        'direccion': empleado.direccion,
+        'numerotelefono': empleado.numeroTelefono,
+        'estadocivil': empleado.estadoCivil,
+        'puestotrabajo': empleado.puestoTrabajo,
+        'correoelectronico': empleado.correoElectronico,
+        'numeroidentificacionoficial': empleado.numeroIdentificacionOficial,
+      });
+
+      if (response == null) {
+        print('Error al insertar el empleado.');
+      } else {
+        print('Empleado insertado correctamente.');
+      }
+    } catch (e) {
+      print('Error al dar de alta al empleado: ${e.toString()}');
+    }
+  }
+   
+
+  Future<void> altaUsuario(Usuario usuario) async {
+    try {
+      final response = await supabase.from('usuarios').insert({
+        'idusuario': usuario.idUsuario,
+        'nombreusuario': usuario.nombreUsuario,
+        'contrasena': usuario.contrasena,
+        'idempleado': usuario.idempleado,
+      });
+
+      if (response == null) {
+        print('Error al insertar el usuario.');
+      } else {
+        print('Usuario insertado correctamente.');
+      }
+    } catch (e) {
+      print('Error al dar de alta al usuario: ${e.toString()}');
+    }
+  }
+
+
 
  // no toquen mas este metodo es de prueba
 

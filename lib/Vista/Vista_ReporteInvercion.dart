@@ -1,7 +1,9 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Inversiones.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
+import '../Controlador/Controlador_Estadistica.dart';
 import '../Controlador/Controlador_Reportes.dart';
+import '../Modelo/Estadistica.dart';
 import '../Modelo/ReporteSolicitud.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Inversion.dart';
@@ -28,6 +30,9 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
   final controlador = ControladorReportes();
   final ControladorClientes = ControladorDatoscliente();
   final ControladorInversion = ControladorInversiones();
+  final controladorestadistica= ControladorEstadistica();
+  Estadistica? estadistica;
+  
 
   @override
   void initState() {
@@ -63,6 +68,23 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
     final minutos = fecha.minute.toString().padLeft(2, '0');
     return "${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year} $hora:$minutos $periodo";
   }
+
+  void _actualizarEstadistica(String idEmpleado,String Estado) async {
+    estadistica = await controladorestadistica.obtenerEstadisticaPorId(idEmpleado);
+    if (estadistica != null) {
+      if (Estado == "Aprobada") {
+        estadistica!.SolucionesAprobadas += 1;
+        estadistica!.SolucionesPendientes -= 1;
+      } else if (Estado == "Rechazada") {
+        estadistica!.SolucionesRechazadas += 1;
+        estadistica!.SolucionesPendientes -= 1;
+      }
+      await controladorestadistica.actualizarEstadistica(estadistica!);
+    } else {
+      print("No se encontró la estadística para el empleado con ID: $idEmpleado");
+    }
+      
+ } 
 
   @override
   Widget build(BuildContext context) {
@@ -171,61 +193,63 @@ class _VistaReporteInversionesState extends State<VistaReporteInversiones> {
                                 const SizedBox(height: 16),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
+                                    children: [
                                     ElevatedButton(
                                       onPressed: () {
-                                        if (clienteSeleccionado != null && inversionSeleccionada != null) {
-                                          controlador
-                                            .realizarInversion(clienteSeleccionado!.numeroCuenta, inversionSeleccionada!.numeroInversion)
-                                            .then((_) {
-                                          setState(() {
-                                            controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Realizada");
-                                            reporteSeleccionado!.estado = "Aprobada";
-                                          });
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("Inversión realizada con éxito")),
-                                          );
-                                          }).catchError((error) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("Error al realizar la inversión: $error")),
-                                          );
-                                          });
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text("Información incompleta para realizar la inversión")),
-                                          );
-                                        }
+                                      if (clienteSeleccionado != null && inversionSeleccionada != null) {
+                                        controlador
+                                        .realizarInversion(clienteSeleccionado!.numeroCuenta, inversionSeleccionada!.numeroInversion)
+                                        .then((_) {
+                                        setState(() {
+                                        controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Aprobada");
+                                        reporteSeleccionado!.estado = "Aprobada";
+                                        _actualizarEstadistica(reporteSeleccionado!.usuarioId, "Aprobada");
+                                        });
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Inversión realizada con éxito")),
+                                        );
+                                        }).catchError((error) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Error al realizar la inversión: $error")),
+                                        );
+                                        });
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Información incompleta para realizar la inversión")),
+                                        );
+                                      }
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: colorBotonAceptar,
+                                      backgroundColor: colorBotonAceptar,
                                       ),
                                       child: Text("Aceptar"),
                                     ),
                                     ElevatedButton(
                                       onPressed: () {
-                                        if (reporteSeleccionado != null) {
-                                          controlador
-                                            .actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Rechazada")
-                                            .then((_) {
-                                          setState(() {
-                                            reporteSeleccionado!.estado = "Rechazada";
-                                          });
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("Reporte actualizado como rechazado")),
-                                          );
-                                          }).catchError((error) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("Error al actualizar el reporte: $error")),
-                                          );
-                                          });
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text("No hay un reporte seleccionado para rechazar")),
-                                          );
-                                        }
+                                      if (reporteSeleccionado != null) {
+                                        controlador
+                                        .actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Rechazada")
+                                        .then((_) {
+                                        setState(() {
+                                        reporteSeleccionado!.estado = "Rechazada";
+                                        _actualizarEstadistica(reporteSeleccionado!.usuarioId, "Rechazada");
+                                        });
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Reporte actualizado como rechazado")),
+                                        );
+                                        }).catchError((error) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Error al actualizar el reporte: $error")),
+                                        );
+                                        });
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("No hay un reporte seleccionado para rechazar")),
+                                        );
+                                      }
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: colorBotonRechazar,
+                                      backgroundColor: colorBotonRechazar,
                                       ),
                                       child: Text("Rechazar"),
                                     ),

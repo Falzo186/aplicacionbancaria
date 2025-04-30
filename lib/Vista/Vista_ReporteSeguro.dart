@@ -1,7 +1,9 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Seguros.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_DatosCliente.dart';
+import '../Controlador/Controlador_Estadistica.dart';
 import '../Controlador/Controlador_Reportes.dart';
+import '../Modelo/Estadistica.dart';
 import '../Modelo/ReporteSolicitud.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/Seguro.dart';
@@ -27,7 +29,9 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
   final controlador = ControladorReportes();
   final ControladorClientes = ControladorDatoscliente();
   final ControladorSeguro = ControladorSeguros();
-
+  final controladorestadistica= ControladorEstadistica();
+  Estadistica? estadistica;
+  
   @override
   void initState() {
     super.initState();
@@ -43,6 +47,24 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
       debugPrint("Error al cargar reportes: $error");
     });
   }
+
+
+  void _actualizarEstadistica(String idEmpleado,String Estado) async {
+    estadistica = await controladorestadistica.obtenerEstadisticaPorId(idEmpleado);
+    if (estadistica != null) {
+      if (Estado == "Aprobada") {
+        estadistica!.SolucionesAprobadas += 1;
+        estadistica!.SolucionesPendientes -= 1;
+      } else if (Estado == "Rechazada") {
+        estadistica!.SolucionesRechazadas += 1;
+        estadistica!.SolucionesPendientes -= 1;
+      }
+      await controladorestadistica.actualizarEstadistica(estadistica!);
+    } else {
+      print("No se encontró la estadística para el empleado con ID: $idEmpleado");
+    }
+      
+ } 
 
   Future<void> seleccionarReporte(ReporteSolicitud reporte) async {
     setState(() {
@@ -168,36 +190,41 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
                                 const SizedBox(height: 16),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
+                                    children: [
                                     ElevatedButton(
                                       onPressed: () {
-                                        setState(() {
-                                          reporteSeleccionado!.estado = "Aprobada";
-                                        });
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text("Solicitud aprobada")),
-                                        );
+                                      setState(() {
+                                        reporteSeleccionado!.estado = "Aprobada";
+                                        controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Aprobada");
+                                        _actualizarEstadistica(reporteSeleccionado!.usuarioId, "Aprobada");
+                                      });
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Solicitud aprobada")),
+                                      );
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: colorBotonAceptar,
+                                      backgroundColor: colorBotonAceptar,
                                       ),
                                       child: Text("Aceptar"),
                                     ),
                                     ElevatedButton(
                                       onPressed: () {
-                                        setState(() {
-                                          reporteSeleccionado!.estado = "Rechazada";
-                                        });
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text("Solicitud rechazada")),
-                                        );
+                                      setState(() {
+                                        reporteSeleccionado!.estado = "Rechazada";
+                                        controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Rechazada");
+                                        _actualizarEstadistica(reporteSeleccionado!.usuarioId, "Rechazada");
+                                      });
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Solicitud rechazada")),
+                                      );
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: colorBotonRechazar,
+                                      backgroundColor: colorBotonRechazar,
                                       ),
                                       child: Text("Rechazar"),
                                     ),
-                                  ],
+                                    ],
+                                  
                                 ),
                               ],
                             ),

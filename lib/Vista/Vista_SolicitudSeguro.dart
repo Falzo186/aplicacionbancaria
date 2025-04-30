@@ -105,9 +105,9 @@ Future<void> agregarEstadistica() async {
       estado: "Pendiente",
       fechaSolicitud: DateTime.now(), // Solo guarda la fecha normal
     );
-
+     
     ControladorReporte.subirReporte(reporte); // Subir el reporte a la base de datos
-
+    agregarEstadistica(); // Actualizar la estadística
     // Mostrar la fecha formateada en la consola
     print("Reporte de Solicitud:\n${reporte.toString()}");
   }

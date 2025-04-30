@@ -1,6 +1,7 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Login.dart';
 import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
 import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
+import 'package:aplicacionbancaria/Vista/Vista_AgregarEmpleados.dart';
 import 'package:flutter/material.dart';
 import '../Controlador/Controlador_Estadistica.dart';
 import '../Controlador/Controlador_Reportes.dart';
@@ -280,6 +281,22 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VistaFormularioEmpleado(
+                
+              ),
+            ),
+          ).then((_) {
+            _cargarUsuarios(); // Recargar la lista de usuarios después de agregar
+          });
+        },
+        backgroundColor: colorsv.colorAppbar,
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }

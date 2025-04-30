@@ -1,14 +1,9 @@
+import 'package:aplicacionbancaria/Controlador/Controlador_Login.dart';
+import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: VistaFormularioEmpleado(),
-    theme: ThemeData(
-      fontFamily: 'Mali',
-    ),
-  ));
-}
+import '../Modelo/Empleado.dart';
+
 
 class VistaFormularioEmpleado extends StatefulWidget {
   @override
@@ -17,18 +12,19 @@ class VistaFormularioEmpleado extends StatefulWidget {
 
 class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _numEmpleadoController = TextEditingController();
-  final TextEditingController _nombreController = TextEditingController();
-  final TextEditingController _fechaContratacionController = TextEditingController();
-  final TextEditingController _puestoController = TextEditingController();
-  final TextEditingController _salarioController = TextEditingController();
-  final TextEditingController _nssController = TextEditingController();
+  final TextEditingController _idEmpleadoController = TextEditingController();
+  final TextEditingController _nombreEmpleadoController = TextEditingController();
+  final TextEditingController _fechaCumpleanosController = TextEditingController();
+  final TextEditingController _nombreUsuarioController = TextEditingController();
+  final TextEditingController _contrasenaController = TextEditingController();
+  final TextEditingController _rfcController = TextEditingController();
   final TextEditingController _telefonoController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _correoElectronicoController = TextEditingController();
   final TextEditingController _direccionController = TextEditingController();
+  final controlador = ControladorLogin();
 
   String? _selectedDepartamento;
-  String? _selectedTipoContrato;
+  String? _selectedEstadoCivil;
   String? _selectedGenero;
   List<String> _selectedBeneficios = [];
 
@@ -38,11 +34,11 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
     'Escritorio'
   ];
 
-  final List<String> _tiposContrato = [
-    'Tiempo Completo',
-    'Medio Tiempo',
-    'Por Proyecto',
-    'Temporal'
+  final List<String> _estadosCiviles = [
+    'Soltero',
+    'Casado',
+    'Viudo',
+    'Divorciado',
   ];
 
   final List<String> _beneficios = [
@@ -52,6 +48,52 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
     'PTU',
     'Fondo de Ahorro'
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _generateEmployeeId();
+  }
+
+  void _generateEmployeeId() {
+    // Simulate generating a unique employee ID
+    final uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
+    _idEmpleadoController.text = uniqueId;
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      final empleado = Empleado(
+        id: _idEmpleadoController.text,
+        nombreEmpleado: _nombreEmpleadoController.text,
+        sexo: _selectedGenero ?? '',
+        fechaCumpleanos: DateTime.parse(_fechaCumpleanosController.text),
+        rfc: _rfcController.text,
+        direccion: _direccionController.text,
+        numeroTelefono: _telefonoController.text,
+        estadoCivil: _selectedEstadoCivil ?? '',
+        puestoTrabajo: _nombreUsuarioController.text,
+        correoElectronico: _correoElectronicoController.text,
+        numeroIdentificacionOficial: _contrasenaController.text,
+      );
+
+      final usuario = Usuario(
+        idUsuario: _idEmpleadoController.text,
+        nombreUsuario: _nombreUsuarioController.text,
+        contrasena: _contrasenaController.text,
+        departamento: _selectedDepartamento ?? '',
+        idempleado: _idEmpleadoController.text,
+      );
+
+      controlador.altaEmpleado(empleado);
+      controlador.altaUsuario(usuario as Usuario);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Empleado y usuario registrados exitosamente')),
+      );
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +133,7 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
                     Expanded(
                       child: _buildLabeledField(
                         'ID del Empleado:',
-                        _numEmpleadoController,
+                        _idEmpleadoController,
                         enabled: false,
                       ),
                     ),
@@ -111,21 +153,21 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildLabeledField('Nombre Completo:', _nombreController),
+                _buildLabeledField('Nombre Completo:', _nombreEmpleadoController),
                 _buildSectionTitle('Datos Laborales'),
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
                       child: _buildLabeledField(
-                        'Fecha Contratación:',
-                        _fechaContratacionController,
+                        'Fecha Cumpleaños:',
+                        _fechaCumpleanosController,
                         onTap: () => _selectDate(context),
                       ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
-                      child: _buildLabeledField('Puesto:', _puestoController),
+                      child: _buildLabeledField('Nombre Usuario:', _nombreUsuarioController),
                     ),
                   ],
                 ),
@@ -146,28 +188,32 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
                     ),
                     const SizedBox(width: 20),
                     Expanded(
-                      child: _buildLabeledDropdown(
-                        'Tipo Contrato:',
-                        _tiposContrato,
-                        value: _selectedTipoContrato,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedTipoContrato = value;
-                          });
-                        },
+                      child: _buildLabeledField(
+                        'Contraseña:',
+                        _contrasenaController,
+                        keyboardType: TextInputType.number,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildLabeledField('Salario:', _salarioController, keyboardType: TextInputType.number),
+                _buildLabeledDropdown(
+                  'Estado civil:',
+                  _estadosCiviles,
+                  value: _selectedEstadoCivil,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedEstadoCivil = value;
+                    });
+                  },
+                ),
                 _buildSectionTitle('Información Adicional'),
                 const SizedBox(height: 16),
-                _buildLabeledField('NSS:', _nssController),
+                _buildLabeledField('RFC:', _rfcController),
                 const SizedBox(height: 16),
                 _buildLabeledField('Teléfono:', _telefonoController, keyboardType: TextInputType.phone),
                 const SizedBox(height: 16),
-                _buildLabeledField('Email:', _emailController, keyboardType: TextInputType.emailAddress),
+                _buildLabeledField('Email:', _correoElectronicoController, keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
                 _buildLabeledField('Dirección:', _direccionController, lines: 2),
                 const SizedBox(height: 16),
@@ -206,6 +252,7 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
       ),
     );
   }
+
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -310,7 +357,6 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
       ],
     );
   }
-
   Widget _buildMultiSelectDropdown(String label, List<String> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +408,7 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
     );
     if (picked != null) {
       setState(() {
-        _fechaContratacionController.text =
+        _fechaCumpleanosController.text =
             "${picked.day}/${picked.month}/${picked.year}";
       });
     }
@@ -383,31 +429,6 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
       setState(() {
         _selectedBeneficios = results;
       });
-    }
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      print({
-        'numero_empleado': _numEmpleadoController.text,
-        'nombre': _nombreController.text,
-        'genero': _selectedGenero,
-        'fecha_contratacion': _fechaContratacionController.text,
-        'puesto': _puestoController.text,
-        'departamento': _selectedDepartamento,
-        'tipo_contrato': _selectedTipoContrato,
-        'salario': _salarioController.text,
-        'nss': _nssController.text,
-        'telefono': _telefonoController.text,
-        'email': _emailController.text,
-        'direccion': _direccionController.text,
-        'beneficios': _selectedBeneficios,
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Empleado registrado exitosamente')),
-      );
-      Navigator.pop(context);
     }
   }
 }
