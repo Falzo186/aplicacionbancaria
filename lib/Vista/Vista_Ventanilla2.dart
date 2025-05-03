@@ -1,4 +1,5 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
+import 'package:aplicacionbancaria/Modelo/Inversion.dart';
 import 'package:aplicacionbancaria/Modelo/Seguro.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +23,8 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
   CuentaCredito? cuentaCredito;
   Prestamo? prestamo;
   Seguro? seguro;
+  Inversion? inversion;
+
   final controlador = ControladorDatoscliente();
 
   @override
@@ -34,6 +37,8 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
     // Buscar la cuenta del cliente (esto siempre debe existir)
     cuentaCliente = await controlador.buscarCuentaCliente(widget.cliente.numeroCuenta);
     print(widget.cliente.tieneCredito);
+    // Si el cliente tiene inversión, buscar la cuenta de inversión
+    inversion = await controlador.buscarInversion(widget.cliente.numeroCuenta);
     // Si el cliente tiene crédito, buscar la cuenta de crédito
     if (widget.cliente.tieneCredito) {
       cuentaCredito = controlador.buscarCuentaCredito(widget.cliente.numeroCuenta);
@@ -167,41 +172,66 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                          if (inversion != null) ...[
                             Text(
-                              'Información de Crédito',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            'Información de Inversión',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                             ),
                             const Divider(),
                             Text(
-                              'Límite de Crédito: \$${cuentaCredito!.limiteCredito.toStringAsFixed(2)}',
-                              style: const TextStyle(fontSize: 16),
+                            'Número de Inversión: ${inversion!.numeroInversion}',
+                            style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                              'Crédito Disponible: \$${(cuentaCredito!.limiteCredito - cuentaCredito!.saldoDeuda).toStringAsFixed(2)}',
-                              style: const TextStyle(fontSize: 16),
+                            'Monto Invertido: \$${inversion!.monto.toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                              'Fecha de Aprobación: ${_formatDate(cuentaCredito!.fechaAprobacion)}',
-                              style: const TextStyle(fontSize: 16),
+                            'Tasa de Interés: ${inversion!.tasaInteres}%',
+                            style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                              'Estado de Crédito: ${cuentaCredito!.estadoCredito}',
-                              style: TextStyle(
+                            'Ganancia Esperada: \$${inversion!.gananciaEsperada.toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                            'Fecha de Inicio: ${_formatDate(inversion!.fechaInicio)}',
+                            style: const TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                            'Fecha de Vencimiento: ${_formatDate(inversion!.fechaVencimiento)}',
+                            style: const TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                            'Estado: ${inversion!.estado}',
+                            style: TextStyle(
                               fontSize: 16,
-                              color: cuentaCredito!.estadoCredito == 'Activo' ? Colors.green : Colors.red,
-                              ),
+                              color: inversion!.estado == 'Activa' ? Colors.green : Colors.red,
+                            ),
+                            ),
+                          ] else ...[
+                            Text(
+                            'Invitación a Invertir',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            ),
+                            const Divider(),
+                            Text(
+                            'Actualmente no tienes inversiones activas.',
+                            style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                              'Saldo Deuda: \$${cuentaCredito!.saldoDeuda.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.red,
-                              ),
+                            'Te invitamos a hablar con uno de nuestros compañeros de escritorio para conocer las opciones de inversión disponibles.',
+                            style: const TextStyle(fontSize: 16),
                             ),
                           ],
+                          ],
+                        
                         ),
                       ),
                     ),
@@ -236,10 +266,22 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                                 style: const TextStyle(fontSize: 16),
                               ),
                               Text(
-                                'Deuda Pendiente: \$${prestamo!.monto.toStringAsFixed(2)}',
+                                'Deuda Pendiente: \$${prestamo!.montoRestante.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.red,
+                                ),
+                              ),
+                              Text(
+                                'Monto Total: \$${prestamo!.monto.toStringAsFixed(2)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              
+                              Text(
+                                'Estado: ${prestamo!.estado}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: prestamo!.estado == 'Pagado' ? Colors.green : Colors.red,
                                 ),
                               ),
                               Text(
@@ -341,131 +383,142 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
 
   Future _mostrarPagoPrestamoDialog(BuildContext context) async {
-  _montoController.text = prestamo?.pagoMinimo?.toStringAsFixed(2) ?? '';
+    _montoController.text = prestamo?.pagoMinimo?.toStringAsFixed(2) ?? '';
 
-  DateTime hoy = DateTime.now();
-  int diasDiferencia = hoy.difference(prestamo!.fechapago).inDays;
-  double interesAtraso = 0.25; // 25% de interés por mes de atraso
-  double interesTotal = 0;
+    DateTime hoy = DateTime.now();
+    int diasDiferencia = hoy.difference(prestamo!.fechapago).inDays;
+    double interesAtraso = 0.25; // 25% de interés por mes de atraso
+    double interesTotal = 0;
 
-  // Si el pago se ha retrasado más de x días, aplicar interés
-  if (diasDiferencia > 2) {
-    int mesesAtraso = (diasDiferencia  / 30).ceil();
-    interesTotal = prestamo!.pagoMinimo! * interesAtraso * mesesAtraso;
-  }
+    // Si el pago se ha retrasado más de x días, aplicar interés
+    if (diasDiferencia > 2) {
+      int mesesAtraso = (diasDiferencia / 30).ceil();
+      interesTotal = prestamo!.pagoMinimo! * interesAtraso * mesesAtraso;
+    }
 
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Pago de Crédito/Préstamo"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("Ingrese el monto a pagar"),
-            if (interesTotal > 0)
-              Text(
-                "Pago atrasado. Se aplicará un interés de \$${interesTotal.toStringAsFixed(2)}",
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Pago de Crédito/Préstamo"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Ingrese el monto a pagar"),
+              if (interesTotal > 0)
+                Text(
+                  "Pago atrasado. Se aplicará un interés de \$${interesTotal.toStringAsFixed(2)}",
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+              if (diasDiferencia <= 0)
+                Text(
+                  "Pago al día. Faltan ${-diasDiferencia} días para el vencimiento.",
+                  style: TextStyle(color: Colors.green),
+                ),
+              TextField(
+                controller: _montoController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
+                decoration: InputDecoration(
+                  hintText: prestamo?.pagoMinimo?.toStringAsFixed(2),
+                  hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                ),
               ),
-            if (diasDiferencia <= 0)
-              Text(
-                "Pago al día. Faltan ${-diasDiferencia} días para el vencimiento.",
-                style: TextStyle(color: Colors.green),
-              ),
-            TextField(
-              controller: _montoController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-              ],
-              decoration: InputDecoration(
-                hintText: prestamo?.pagoMinimo?.toStringAsFixed(2),
-                hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              double monto = double.tryParse(_montoController.text) ?? 0.0;
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                double monto = double.tryParse(_montoController.text) ?? 0.0;
 
-              if (monto >= (prestamo?.pagoMinimo ?? 0.0)) {
-                double totalPagar = monto + interesTotal;
+                if (monto >= (prestamo?.pagoMinimo ?? 0.0)) {
+                  double totalPagar = monto + interesTotal;
 
-                if (prestamo != null && totalPagar <= prestamo!.monto) {
-                  setState(() {
-                    prestamo!.montoRestante -= totalPagar;
-                    prestamo!.pagosRealizados += 1;
-                    prestamo!.fechapago = DateTime(
-                      DateTime.now().year,
-                      DateTime.now().month + 1,
-                      prestamo!.fechapago.day,
+                  if (prestamo != null && totalPagar <= prestamo!.monto) {
+                    setState(() {
+                      prestamo!.montoRestante -= totalPagar;
+                      prestamo!.pagosRealizados += 1;
+
+                      // Calcular la próxima fecha de pago
+                      DateTime nuevaFechaPago = DateTime(
+                        prestamo!.fechapago.year,
+                        prestamo!.fechapago.month + 1,
+                        prestamo!.fechapago.day,
+                      );
+
+                      // Ajustar si cae en sábado o domingo
+                      if (nuevaFechaPago.weekday == DateTime.saturday) {
+                        nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 1)); // Adelantar al viernes
+                      } else if (nuevaFechaPago.weekday == DateTime.sunday) {
+                        nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 2)); // Adelantar al viernes
+                      }
+
+                      prestamo!.fechapago = nuevaFechaPago;
+
+                      controlador.actualizarPrestamo(prestamo!);
+                      cuentaCredito!.saldoDeuda -= prestamo!.montoRestante;
+                      if (cuentaCredito!.saldoDeuda <= 0) {
+                        cuentaCredito!.saldoDeuda = 0;
+                        cuentaCredito!.estadoCredito = 'Activo';
+                      }
+                    });
+
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Pago realizado"),
+                          content: Text(
+                            "Pago de \$${monto.toStringAsFixed(2)} realizado."
+                            "${interesTotal > 0 ? "\nInterés por atraso aplicado: \$${interesTotal.toStringAsFixed(2)}" : ""}",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Aceptar"),
+                            ),
+                          ],
+                        );
+                      },
                     );
-                    controlador.actualizarPrestamo(prestamo!);
-                    cuentaCredito!.saldoDeuda -= prestamo!.montoRestante;
-                    if (cuentaCredito!.saldoDeuda <= 0) {
-                      cuentaCredito!.saldoDeuda = 0;
-                      cuentaCredito!.estadoCredito = 'Activo';
-                    }
-                  });
-
-                  Navigator.pop(context);
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Pago realizado"),
-                        content: Text(
-                          "Pago de \$${monto.toStringAsFixed(2)} realizado."
-                          "${interesTotal > 0 ? "\nInterés por atraso aplicado: \$${interesTotal.toStringAsFixed(2)}" : ""}",
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text("Aceptar"),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Error"),
+                          content: Text("El monto a pagar excede la deuda pendiente."),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Aceptar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 } else {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Error"),
-                        content: Text("El monto a pagar excede la deuda pendiente."),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text("Aceptar"),
-                          ),
-                        ],
-                      );
-                    },
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Ingrese un monto válido.')),
                   );
                 }
-              } else {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Ingrese un monto válido.')),
-                );
-              }
-            },
-            child: Text("Aceptar"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Cancelar"),
-          ),
-        ],
-      );
-    },
-  );
-}
-
+              },
+              child: Text("Aceptar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancelar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _realizarDeposito() {
     showDialog(
@@ -488,12 +541,16 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 double monto = double.tryParse(_montoDeposito.text) ?? 0.0;
                 if (monto > 0 && cuentaCliente != null) {
                   setState(() {
                     cuentaCliente!.saldo += monto;
                   });
+
+                  // Guardar el nuevo saldo en la base de datos
+                  await controlador.actualizarCuentaCliente(cuentaCliente!);
+
                   Navigator.pop(context); // Close the deposit dialog
                   showDialog(
                     context: context,
@@ -534,75 +591,87 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
   }
 
   void _pagarSeguro(BuildContext context) {
-  int diasDiferencia = DateTime.now().difference(seguro!.fechaPago).inDays;
-  double interesAtraso = 0.25; // 25% de interés por atraso
-  double interesTotal = 0;
+    int diasDiferencia = DateTime.now().difference(seguro!.fechaPago).inDays;
+    double interesAtraso = 0.25; // 25% de interés por atraso
+    double interesTotal = 0;
 
-  if (diasDiferencia > 0) { 
-    int mesesAtraso = (diasDiferencia / 30).ceil();
-    interesTotal = seguro!.pagoMensual * interesAtraso * mesesAtraso;
-  }
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Pago de Seguro"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("El monto a pagar es de \$${seguro!.pagoMensual.toStringAsFixed(2)}"),
-            if (interesTotal > 0) // Mostrar si hay interés por mora
-              Text(
-                "Pago atrasado. Se aplicará un interés de \$${interesTotal.toStringAsFixed(2)}",
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                seguro!.pagosRealizados += 1;
-                seguro!.montoFaltante -= (seguro!.pagoMensual + interesTotal);
-                seguro!.fechaPago = DateTime(
-                  seguro!.fechaPago.year,
-                  seguro!.fechaPago.month + 1,
-                  seguro!.fechaPago.day,
-                );
-                controlador.actualizarSeguro(seguro!);
-              });
+    if (diasDiferencia > 0) {
+      int mesesAtraso = (diasDiferencia / 30).ceil();
+      interesTotal = seguro!.pagoMensual * interesAtraso * mesesAtraso;
+    }
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Pago de Seguro"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("El monto a pagar es de \$${seguro!.pagoMensual.toStringAsFixed(2)}"),
+              if (interesTotal > 0) // Mostrar si hay interés por mora
+                Text(
+                  "Pago atrasado. Se aplicará un interés de \$${interesTotal.toStringAsFixed(2)}",
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  seguro!.pagosRealizados += 1;
+                  seguro!.montoFaltante -= (seguro!.pagoMensual + interesTotal);
 
-              Navigator.pop(context);
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text("Pago realizado"),
-                    content: Text(
-                      "Pago de seguro de \$${seguro!.pagoMensual.toStringAsFixed(2)} realizado."
-                      "${interesTotal > 0 ? "\nInterés por atraso aplicado: \$${interesTotal.toStringAsFixed(2)}" : ""}",
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text("Aceptar"),
-                      ),
-                    ],
+                  // Calcular la próxima fecha de pago
+                  DateTime nuevaFechaPago = DateTime(
+                    seguro!.fechaPago.year,
+                    seguro!.fechaPago.month + 1,
+                    seguro!.fechaPago.day,
                   );
-                },
-              );
-            },
-            child: Text("Aceptar"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Cancelar"),
-          ),
-        ],
-      );
-    },
-  );
-}
+
+                  // Ajustar si cae en sábado o domingo
+                  if (nuevaFechaPago.weekday == DateTime.saturday) {
+                    nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 1)); // Mover al viernes
+                  } else if (nuevaFechaPago.weekday == DateTime.sunday) {
+                    nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 2)); // Mover al viernes
+                  }
+
+                  seguro!.fechaPago = nuevaFechaPago;
+
+                  controlador.actualizarSeguro(seguro!);
+                });
+
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text("Pago realizado"),
+                      content: Text(
+                        "Pago de seguro de \$${seguro!.pagoMensual.toStringAsFixed(2)} realizado."
+                        "${interesTotal > 0 ? "\nInterés por atraso aplicado: \$${interesTotal.toStringAsFixed(2)}" : ""}",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text("Aceptar"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Text("Aceptar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancelar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   
 

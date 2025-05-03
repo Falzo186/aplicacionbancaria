@@ -19,6 +19,21 @@ class ControladorInversiones {
 
     return data.map((inversion) => Inversion.fromMap(inversion)).toList();
   }
+  Future<List<Inversion>> obtenerInversionesDisponibles() async {
+    final List<dynamic> data = await supabase
+        .from('inversiones')
+        .select()
+        .eq('estado', 'disponible');
+
+    if (data.isEmpty) {
+      print("No hay inversiones disponibles");
+      return [];
+    } else {
+      print("Inversiones disponibles obtenidas: ${data.length}");
+    }
+
+    return data.map((inversion) => Inversion.fromMap(inversion)).toList();
+  }
 
   Future<Inversion?> obtenerInversion(String numeroInversion) async {
     final Map<String, dynamic>? data = await supabase
@@ -43,6 +58,41 @@ class ControladorInversiones {
       print("Error al agregar la inversión: ${response.error!.message}");
     } else {
       print("Inversión agregada exitosamente");
+    }
+  }
+
+  Future<void> pausarInversion(String idInversion) async {
+    try {
+      await supabase
+          .from('inversiones')
+          .update({'estado': 'pausado'})
+          .eq('numeroinversion', idInversion);
+      print("Inversión con ID $idInversion pausada exitosamente");
+    } catch (e) {
+      print("Error al pausar la inversión con ID $idInversion: $e");
+    }
+  }
+
+  Future<void> activarInversion(String idInversion) async {
+    try {
+      await supabase
+          .from('inversiones')
+          .update({'estado': 'disponible'})
+          .eq('numeroinversion', idInversion);
+      print("Inversión con ID $idInversion activada exitosamente");
+    } catch (e) {
+      print("Error al activar la inversión con ID $idInversion: $e");
+    }
+  }
+  Future<void> borrarInversion(String idInversion) async {
+    try {
+      await supabase
+          .from('inversiones')
+          .delete()
+          .eq('numeroinversion', idInversion);
+      print("Inversión con ID $idInversion borrada exitosamente");
+    } catch (e) {
+      print("Error al borrar la inversión con ID $idInversion: $e");
     }
   }
 

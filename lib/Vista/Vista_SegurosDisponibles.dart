@@ -40,7 +40,7 @@ class _VistaSegurosDisponiblesState extends State<VistaSegurosDisponibles> {
   }
 
   Future<void> _initializeSeguros() async {
-    seguros = await controlador.obtenerSeguros();
+    seguros = await controlador.obtenerSegurosDisponibles();
   }
 
   @override

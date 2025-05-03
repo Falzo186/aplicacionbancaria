@@ -39,22 +39,46 @@ class _VistaInversionesState extends State<VistaInversiones> {
     }
   }
 
-  void _pausarInversion(Inversion inversion) {
-    setState(() {
-      inversion.estado = "Pausada";
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Inversión ${inversion.numeroInversion} pausada")),
-    );
+  Future<void> _pausarInversion(Inversion inversion) async {
+    try {
+      await controlador.pausarInversion(inversion.numeroInversion);
+      setState(() {
+        inversion.estado = "Pausada";
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Inversión ${inversion.numeroInversion} pausada")),
+      );
+    } catch (e) {
+      debugPrint("Error al pausar inversión: $e");
+    }
   }
 
-  void _borrarInversion(Inversion inversion) {
-    setState(() {
-      inversiones.remove(inversion);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Inversión ${inversion.numeroInversion} borrada")),
-    );
+  Future<void> _borrarInversion(Inversion inversion) async {
+    try {
+      await controlador.borrarInversion(inversion.numeroInversion);
+      setState(() {
+        inversiones.remove(inversion);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Inversión ${inversion.numeroInversion} borrada")),
+      );
+    } catch (e) {
+      debugPrint("Error al borrar inversión: $e");
+    }
+  }
+
+  Future<void> _activarInversion(Inversion inversion) async {
+    try {
+      await controlador.activarInversion(inversion.numeroInversion);
+      setState(() {
+        inversion.estado = "Activa";
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Inversión ${inversion.numeroInversion} activada")),
+      );
+    } catch (e) {
+      debugPrint("Error al activar inversión: $e");
+    }
   }
 
   @override
@@ -183,13 +207,16 @@ class _VistaInversionesState extends State<VistaInversiones> {
                     onSelected: (value) {
                       if (value == "Pausar") {
                         _pausarInversion(inversion);
+                      } else if (value == "Activar") {
+                       _activarInversion(inversion);
                       } else if (value == "Borrar") {
-                        _borrarInversion(inversion);
+                       _borrarInversion(inversion);
                       }
                     },
                     itemBuilder:
                         (context) => [
                           PopupMenuItem(value: "Pausar", child: Text("Pausar")),
+                          PopupMenuItem(value: "Activar", child: Text("Activar")),
                           PopupMenuItem(value: "Borrar", child: Text("Borrar")),
                         ],
                   ),

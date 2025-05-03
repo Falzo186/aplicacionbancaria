@@ -27,6 +27,9 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
   final ControladorReporte = ControladorReportes();
   final ControladorEstadisticas = ControladorEstadistica();
 
+  DateTime? fechaInicio; // Fecha de inicio para el filtro
+  DateTime? fechaFin; // Fecha de fin para el filtro
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +70,44 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
         .catchError((error) {
           print("Error al cargar usuarios: $error");
         });
+  }
+
+  List<ReporteSolicitud> _filtrarReportesPorFecha() {
+    if (fechaInicio == null || fechaFin == null) {
+      return reportes;
+    }
+    return reportes.where((reporte) {
+      return reporte.fechaSolicitud.isAfter(fechaInicio!) &&
+          reporte.fechaSolicitud.isBefore(fechaFin!);
+    }).toList();
+  }
+
+  Future<void> _seleccionarFechaInicio(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: fechaInicio ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != fechaInicio) {
+      setState(() {
+        fechaInicio = picked;
+      });
+    }
+  }
+
+  Future<void> _seleccionarFechaFin(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: fechaFin ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != fechaFin) {
+      setState(() {
+        fechaFin = picked;
+      });
+    }
   }
 
   @override
@@ -156,6 +197,28 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                             ),
                           ),
                           const Divider(),
+                          Row(
+                            children: [
+                              TextButton(
+                                onPressed: () => _seleccionarFechaInicio(context),
+                                child: Text(
+                                  fechaInicio == null
+                                      ? "Seleccionar Fecha Inicio"
+                                      : "Inicio: ${_formatearFecha(fechaInicio!)}",
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              TextButton(
+                                onPressed: () => _seleccionarFechaFin(context),
+                                child: Text(
+                                  fechaFin == null
+                                      ? "Seleccionar Fecha Fin"
+                                      : "Fin: ${_formatearFecha(fechaFin!)}",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(),
                           if (estadisticaSeleccionada != null)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 16.0),
@@ -183,7 +246,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(width: 8), 
+                                  const SizedBox(width: 8),
                                   Text(
                                     "Pendientes: ${estadisticaSeleccionada!.SolucionesPendientes}",
                                     style: TextStyle(
@@ -212,9 +275,9 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
                             ),
                           Expanded(
                             child: ListView.builder(
-                              itemCount: reportes.length,
+                              itemCount: _filtrarReportesPorFecha().length,
                               itemBuilder: (context, index) {
-                                final reporte = reportes[index];
+                                final reporte = _filtrarReportesPorFecha()[index];
                                 return Card(
                                   color: colorsv.colorCard,
                                   child: ListTile(
@@ -287,9 +350,7 @@ class _VistaReporteUsuariosState extends State<VistaReporteUsuarios> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VistaFormularioEmpleado(
-                
-              ),
+              builder: (context) => VistaFormularioEmpleado(),
             ),
           ).then((_) {
             _cargarUsuarios(); // Recargar la lista de usuarios después de agregar

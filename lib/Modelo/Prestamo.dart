@@ -25,7 +25,7 @@ class Prestamo {
     required this.fechaInicio,
     required this.fechapago,
     required this.diasPago,
-    this.estado = "Disponible",
+    this.estado = "Activo",
   })  : pagoMinimo = (monto * (1 + tasaInteres)) / meses,
         montoRestante = monto * (1 + tasaInteres);
 

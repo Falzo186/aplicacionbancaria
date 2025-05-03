@@ -1,10 +1,11 @@
+import 'package:aplicacionbancaria/Modelo/Inversion.dart';
 import '../Modelo/Cliente.dart';
 import '../Modelo/CuentaCliente.dart';
 import '../Modelo/CuentaCredito.dart';
 import '../Modelo/Prestamo.dart';
 import '../Modelo/Seguro.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../Modelo/Transferencia.dart';
 
 class ControladorDatoscliente {
   
@@ -27,6 +28,30 @@ Future<Cliente?> buscarCliente(String numeroCuenta) async {
 
 
 
+  Future<Inversion?> buscarInversion(String numeroCuenta) async {
+    final response = await supabase
+        .from('inversiones')
+        .select()
+        .eq('numerocuenta', numeroCuenta)
+        .single();
+
+    if (response == null) {
+      return null;
+    }
+
+    return Inversion.fromMap(response);
+  }
+  
+  Future<void> actualizarCuentaCliente(CuentaCliente cuentaCliente) async {
+    try {
+      await supabase
+          .from('cuentasclientes')
+          .update(cuentaCliente.toMap())
+          .eq('numerocuenta', cuentaCliente.numeroCuenta);
+    } catch (e) {
+      throw Exception('Error al actualizar la cuenta del cliente: $e');
+    }
+  }
 
 
  Future<void> CrearCliente(Cliente cliente) async {
@@ -44,7 +69,20 @@ Future<Cliente?> buscarCliente(String numeroCuenta) async {
       throw Exception('Error al crear la cuenta del cliente: $e');
     }
   }
+Future<DateTime?> obtenerFechaApertura(String numeroCuenta) async {
+  print("Buscando fecha de apertura para la cuenta: $numeroCuenta");
+  final response = await supabase
+      .from('cuentasclientes')
+      .select('fechaapertura')
+      .eq('numerocuenta', numeroCuenta)
+      .single();
 
+  if (response == null || response['fechaapertura'] == null) {
+    return null;
+  }
+
+  return DateTime.parse(response['fechaapertura']);
+}
 
 
 
@@ -131,36 +169,21 @@ Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
     return Seguro.fromMap(response);
   }
 
-  Future<List<Prestamo>> obtenerPrestamos() async {
-    final response = await supabase.from('prestamos').select();
-    
-    if (response.isEmpty) {
-      return [];
-    }
 
-    return response.map((prestamo) => Prestamo.fromMap(prestamo)).toList();
+
+Future<void> actualizarSeguro(Seguro seguro) async {
+  final response = await supabase
+      .from('seguros')
+      .update(seguro.toMap())
+      .eq('numerocuenta', seguro.numeroCuenta)
+      .select();  // <- opcional si quieres devolver los datos actualizados
+
+  if (response.isEmpty) {
+    throw Exception('Error al actualizar el seguro: respuesta vacía del servidor');
   }
+}
 
-  Future<List<Seguro>> obtenerSeguros() async {
-    final response = await supabase.from('seguros').select();
-    
-    if (response.isEmpty) {
-      return [];
-    }
 
-    return response.map((seguro) => Seguro.fromMap(seguro)).toList();
-  }
-
-  Future<void> actualizarSeguro(Seguro seguro) async {
-    final response = await supabase
-        .from('seguros')
-        .update(seguro.toMap())
-        .eq('numeroCuenta', seguro.numeroCuenta);
-
-    if (response.error != null) {
-      throw Exception('Error al actualizar el seguro: ${response.error!.message}');
-    }
-  }
 
   Future<void> actualizarPrestamo(Prestamo prestamo) async {
   try {
@@ -174,9 +197,72 @@ Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
 }
 
 
-  obtenerTransferencias() {
-    
+  Future<List<Transferencia>> obtenerTransferencias() async {
+    return [
+      Transferencia(
+        numeroCuenta: "123456",
+        numeroTransferencia: "T001",
+        numeroCuentaOrigen: "123456",
+        numeroCuentaDestino: "654321",
+        monto: 1000.0,
+        fechaTransferencia: DateTime.now(),
+        tipoTransferencia: "Cuenta a cuenta",
+        estado: "Exitosa",
+        referencia: "Pago de servicios",
+        nombreDestinatario: "Juan Pérez",
+      ),
+      Transferencia(
+        numeroCuenta: "789012",
+        numeroTransferencia: "T002",
+        numeroCuentaOrigen: "789012",
+        numeroCuentaDestino: "210987",
+        monto: 500.0,
+        fechaTransferencia: DateTime.now(),
+        tipoTransferencia: "Ventanilla",
+        estado: "Exitosa",
+        referencia: "Transferencia personal",
+        nombreDestinatario: "María López",
+      ),
+    ];
   }
 
+
+  Future<List<Prestamo>> buscarPrestamosPorCuenta(String numeroCuenta) async {
+    final response = await supabase
+        .from('prestamos')
+        .select()
+        .eq('numerocuenta', numeroCuenta);
+
+    if (response.isEmpty) {
+      return [];
+    }
+
+    return response.map((prestamo) => Prestamo.fromMap(prestamo)).toList();
+  }
+  Future<List<Seguro>> buscarSegurosPorCuenta(String numeroCuenta) async {
+    final response = await supabase
+        .from('seguros')
+        .select()
+        .eq('numerocuenta', numeroCuenta);
+
+    if (response.isEmpty) {
+      return [];
+    }
+
+    return response.map((seguro) => Seguro.fromMap(seguro)).toList();
+  }
+
+  Future<List<Inversion>> buscarInversionesPorCuenta(String numeroCuenta) async {
+    final response = await supabase
+        .from('inversiones')
+        .select()
+        .eq('numerocuenta', numeroCuenta);
+
+    if (response.isEmpty) {
+      return [];
+    }
+
+    return response.map((inversion) => Inversion.fromMap(inversion)).toList();
+  }
 
 }

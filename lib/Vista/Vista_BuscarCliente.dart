@@ -82,7 +82,7 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
         title: Row(
           children: [
             Text(
-              "Ventanilla No. 1",
+              "Buscar Cliente",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,

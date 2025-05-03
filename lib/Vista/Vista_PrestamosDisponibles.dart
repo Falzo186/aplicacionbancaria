@@ -40,7 +40,7 @@ class _VistaPrestamosDisponiblesState extends State<VistaPrestamosDisponibles> {
   }
 
   Future<void> _initializePrestamos() async {
-    prestamos = await controlador.obtenerPrestamos();
+    prestamos = await controlador.obtenerPrestamosDisponibles();
   }
 
   @override

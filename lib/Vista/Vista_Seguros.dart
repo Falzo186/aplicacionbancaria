@@ -11,7 +11,7 @@ import '../Modelo/Seguro.dart';
 VentanaModelo colorsv = VentanaModelo();
 
 class VistaSeguros extends StatefulWidget {
-  const VistaSeguros({super.key, required this.usuario , required this.empleado});
+  const VistaSeguros({super.key, required this.usuario, required this.empleado});
   final Empleado empleado;
 
   final Usuario usuario;
@@ -44,7 +44,8 @@ class _VistaSegurosState extends State<VistaSeguros> {
     });
   }
 
-  void _pausarSeguro(Seguro seguro) {
+  void _pausarSeguro(Seguro seguro) async {
+    await Controlador.pausarSeguro(seguro.numeroPoliza);
     setState(() {
       seguro.estado = "Pausado";
     });
@@ -55,7 +56,20 @@ class _VistaSegurosState extends State<VistaSeguros> {
     );
   }
 
-  void _borrarSeguro(Seguro seguro) {
+  void _activarSeguro(Seguro seguro) async {
+    await Controlador.activarSeguro(seguro.numeroPoliza);
+    setState(() {
+      seguro.estado = "disponible";
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("El seguro ${seguro.numeroPoliza} ha sido activado."),
+      ),
+    );
+  }
+
+  void _borrarSeguro(Seguro seguro) async {
+    await Controlador.borrarSeguro(seguro.numeroPoliza);
     setState(() {
       seguros.remove(seguro);
     });
@@ -153,14 +167,11 @@ class _VistaSegurosState extends State<VistaSeguros> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (context) => VistaSolicitudSeguro(
-                    seguro: seguro,
-                    usuario: widget.usuario,
-                    empleado: widget.empleado,
-
-
-                  ),
+              builder: (context) => VistaSolicitudSeguro(
+                seguro: seguro,
+                usuario: widget.usuario,
+                empleado: widget.empleado,
+              ),
             ),
           );
         },
@@ -226,15 +237,17 @@ class _VistaSegurosState extends State<VistaSeguros> {
                 onSelected: (value) {
                   if (value == 'Pausar') {
                     _pausarSeguro(seguro);
+                  } else if (value == 'Activar') {
+                    _activarSeguro(seguro);
                   } else if (value == 'Borrar') {
                     _borrarSeguro(seguro);
                   }
                 },
-                itemBuilder:
-                    (context) => [
-                      PopupMenuItem(value: 'Pausar', child: Text('Pausar')),
-                      PopupMenuItem(value: 'Borrar', child: Text('Borrar')),
-                    ],
+                itemBuilder: (context) => [
+                  PopupMenuItem(value: 'Pausar', child: Text('Pausar')),
+                  PopupMenuItem(value: 'Activar', child: Text('Activar')),
+                  PopupMenuItem(value: 'Borrar', child: Text('Borrar')),
+                ],
                 icon: Icon(Icons.more_vert, color: colorsv.colorIcon),
               ),
             ),

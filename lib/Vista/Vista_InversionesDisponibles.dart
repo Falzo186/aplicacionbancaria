@@ -41,7 +41,7 @@ class _VistaInversionesDisponiblesState extends State<VistaInversionesDisponible
 
   Future<void> _initializeInversiones() async {
     try {
-      inversiones = await controlador.obtenerInversiones();
+      inversiones = await controlador.obtenerInversionesDisponibles();
       print("Inversiones obtenidas: ${inversiones.length}");
       for (var inversion in inversiones) {
         print("Inversión: ${inversion.numeroInversion}, Monto: ${inversion.monto}, Plazo: ${inversion.tiempoMeses} meses, Tasa de Interés: ${inversion.tasaInteres}%   ${inversion.fechaInicio}      ${inversion.fechaVencimiento}           ${inversion.estado}" );

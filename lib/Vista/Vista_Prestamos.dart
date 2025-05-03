@@ -35,6 +35,27 @@ class _VistaPrestamosState extends State<VistaPrestamos> {
     prestamos = await controlador.obtenerPrestamos();
   }
 
+  Future<void> _pausarPrestamo(String numeroPrestamo) async {
+    await controlador.pausarPrestamo(numeroPrestamo);
+    setState(() {
+      _prestamosFuture = _initializePrestamos();
+    });
+  }
+
+  Future<void> _activarPrestamo(String numeroPrestamo) async {
+    await controlador.activarPrestamo(numeroPrestamo);
+    setState(() {
+      _prestamosFuture = _initializePrestamos();
+    });
+  }
+
+  Future<void> _borrarPrestamo(String numeroPrestamo) async {
+    await controlador.borrarPrestamo(numeroPrestamo);
+    setState(() {
+      _prestamosFuture = _initializePrestamos();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,14 +214,17 @@ class _VistaPrestamosState extends State<VistaPrestamos> {
               child: PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'Pausar') {
-                    // Lógica para pausar
+                    _pausarPrestamo(prestamo.numeroPrestamo);
+                  } else if (value == 'Activar') {
+                    _activarPrestamo(prestamo.numeroPrestamo);
                   } else if (value == 'Borrar') {
-                    // Lógica para borrar
+                    _borrarPrestamo(prestamo.numeroPrestamo);
                   }
                 },
                 itemBuilder:
                     (context) => [
                       PopupMenuItem(value: 'Pausar', child: Text('Pausar')),
+                      PopupMenuItem(value: 'Activar', child: Text('Activar')),
                       PopupMenuItem(value: 'Borrar', child: Text('Borrar')),
                     ],
                 icon: Icon(Icons.more_vert, color: colorsv.colorIcon),
