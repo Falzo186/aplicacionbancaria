@@ -9,7 +9,11 @@ import '../Modelo/Empleado.dart';
 import '../Modelo/Usuario.dart';
 
 class VistaBuscarCliente extends StatefulWidget {
-  VistaBuscarCliente({super.key, required this.usuario,required this.empleado});
+  VistaBuscarCliente({
+    super.key,
+    required this.usuario,
+    required this.empleado,
+  });
   final Usuario usuario;
   final Empleado empleado;
 
@@ -19,6 +23,7 @@ class VistaBuscarCliente extends StatefulWidget {
 }
 
 class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
+  final TextEditingController _searchController = TextEditingController();
   bool _showMenu = false;
   VentanaModelo colorsv = VentanaModelo();
   final ScrollController _scrollController = ScrollController();
@@ -43,14 +48,15 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
   }
 
   void _filterClientes(String query) {
-    final filtered = clientes.where((cliente) {
-      final nombreLower = cliente.nombreCompleto.toLowerCase();
-      final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
-      final searchLower = query.toLowerCase();
+    final filtered =
+        clientes.where((cliente) {
+          final nombreLower = cliente.nombreCompleto.toLowerCase();
+          final numeroCuentaLower = cliente.numeroCuenta.toLowerCase();
+          final searchLower = query.toLowerCase();
 
-      return nombreLower.contains(searchLower) ||
-          numeroCuentaLower.contains(searchLower);
-    }).toList();
+          return nombreLower.contains(searchLower) ||
+              numeroCuentaLower.contains(searchLower);
+        }).toList();
 
     setState(() {
       filteredClientes = filtered;
@@ -69,9 +75,7 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
             style: TextStyle(color: Colors.white, fontSize: 24),
           ),
         ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -95,6 +99,7 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
               width: _showMenu ? 500 : 0,
               curve: Curves.easeInOut,
               child: TextField(
+                controller: _searchController,
                 onChanged: _filterClientes,
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -117,6 +122,10 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
               ),
               onPressed: () {
                 setState(() {
+                  if (_showMenu) {
+                    _searchController.clear();
+                    filteredClientes = clientes;
+                  }
                   _showMenu = !_showMenu;
                 });
               },
@@ -244,22 +253,23 @@ class _VistaBuscarClienteScreenState extends State<VistaBuscarCliente> {
       case 0:
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Datos del Usuario'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Nombre: ${widget.empleado.nombreEmpleado}'),
-                Text('Email: ${widget.empleado.correoElectronico}'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Cerrar'),
+          builder:
+              (context) => AlertDialog(
+                title: Text('Datos del Usuario'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Nombre: ${widget.empleado.nombreEmpleado}'),
+                    Text('Email: ${widget.empleado.correoElectronico}'),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Cerrar'),
+                  ),
+                ],
               ),
-            ],
-          ),
         );
         break;
       case 1:

@@ -8,32 +8,30 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../Modelo/Transferencia.dart';
 
 class ControladorDatoscliente {
-  
-
   final SupabaseClient supabase = Supabase.instance.client;
 
-Future<Cliente?> buscarCliente(String numeroCuenta) async {
-  final response = await supabase
-    .from('clientes')
-    .select()
-    .eq('numerocuenta', numeroCuenta)
-    .single();
+  Future<Cliente?> buscarCliente(String numeroCuenta) async {
+    final response =
+        await supabase
+            .from('clientes')
+            .select()
+            .eq('numerocuenta', numeroCuenta)
+            .single();
 
-  if (response == null) {
-    return null;
+    if (response == null) {
+      return null;
+    }
+
+    return Cliente.fromMap(response);
   }
-
-  return Cliente.fromMap(response);
-  }
-
-
 
   Future<Inversion?> buscarInversion(String numeroCuenta) async {
-    final response = await supabase
-        .from('inversiones')
-        .select()
-        .eq('numerocuenta', numeroCuenta)
-        .single();
+    final response =
+        await supabase
+            .from('inversiones')
+            .select()
+            .eq('numerocuenta', numeroCuenta)
+            .single();
 
     if (response == null) {
       return null;
@@ -41,7 +39,7 @@ Future<Cliente?> buscarCliente(String numeroCuenta) async {
 
     return Inversion.fromMap(response);
   }
-  
+
   Future<void> actualizarCuentaCliente(CuentaCliente cuentaCliente) async {
     try {
       await supabase
@@ -53,8 +51,7 @@ Future<Cliente?> buscarCliente(String numeroCuenta) async {
     }
   }
 
-
- Future<void> CrearCliente(Cliente cliente) async {
+  Future<void> CrearCliente(Cliente cliente) async {
     try {
       await supabase.from('clientes').upsert(cliente.toMap());
     } catch (e) {
@@ -69,67 +66,68 @@ Future<Cliente?> buscarCliente(String numeroCuenta) async {
       throw Exception('Error al crear la cuenta del cliente: $e');
     }
   }
-Future<DateTime?> obtenerFechaApertura(String numeroCuenta) async {
-  print("Buscando fecha de apertura para la cuenta: $numeroCuenta");
-  final response = await supabase
-      .from('cuentasclientes')
-      .select('fechaapertura')
-      .eq('numerocuenta', numeroCuenta)
-      .single();
 
-  if (response == null || response['fechaapertura'] == null) {
-    return null;
+  Future<DateTime?> obtenerFechaApertura(String numeroCuenta) async {
+    print("Buscando fecha de apertura para la cuenta: $numeroCuenta");
+    final response =
+        await supabase
+            .from('cuentasclientes')
+            .select('fechaapertura')
+            .eq('numerocuenta', numeroCuenta)
+            .single();
+
+    if (response == null || response['fechaapertura'] == null) {
+      return null;
+    }
+
+    return DateTime.parse(response['fechaapertura']);
   }
 
-  return DateTime.parse(response['fechaapertura']);
-}
+  Future<List<Cliente>> obtenerClientes() async {
+    final response = await supabase.from('clientes').select();
 
+    if (response.isEmpty) {
+      print("No hay clientes");
+      return [];
+    }
 
+    List<Cliente> clientes = [];
 
- Future<List<Cliente>> obtenerClientes() async {
-  final response = await supabase.from('clientes').select();
+    for (var clienteData in response) {
+      try {
+        // Verificar si los datos tienen la estructura correcta
+        print("Datos recibidos: $clienteData");
 
-  if (response.isEmpty) {
-    print("No hay clientes");
-    return [];
+        Cliente cliente = Cliente.fromMap(clienteData);
+        clientes.add(cliente);
+      } catch (e) {
+        print("Error al convertir cliente: $e");
+      }
+    }
+
+    print("Clientes obtenidos: ${clientes.length}");
+    return clientes;
   }
 
-  List<Cliente> clientes = [];
+  Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
+    final response =
+        await supabase
+            .from('cuentasclientes')
+            .select()
+            .eq('numerocuenta', numeroCuenta)
+            .limit(1)
+            .maybeSingle();
 
-  for (var clienteData in response) {
+    if (response == null) {
+      return null;
+    }
+
     try {
-      // Verificar si los datos tienen la estructura correcta
-      print("Datos recibidos: $clienteData");
-
-      Cliente cliente = Cliente.fromMap(clienteData);
-      clientes.add(cliente);
+      return CuentaCliente.fromMap(response);
     } catch (e) {
-      print("Error al convertir cliente: $e");
+      rethrow;
     }
   }
-
-  print("Clientes obtenidos: ${clientes.length}");
-  return clientes;
-}
-
-
-
-  
-
-Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
-  final response = await supabase
-      .from('cuentasclientes')
-      .select()
-      .eq('numerocuenta', numeroCuenta)
-      .single();
-
-  if (response == null) {
-    return null;
-  }
-
-  return CuentaCliente.fromMap(response);
-}
-
 
   CuentaCredito? buscarCuentaCredito(String numeroCuenta) {
     return CuentaCredito(
@@ -142,11 +140,12 @@ Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
   }
 
   Future<Prestamo?> buscarPrestamo(String numeroCuenta) async {
-    final response = await supabase
-        .from('prestamos')
-        .select()
-        .eq('numerocuenta', numeroCuenta)
-        .single();
+    final response =
+        await supabase
+            .from('prestamos')
+            .select()
+            .eq('numerocuenta', numeroCuenta)
+            .single();
 
     if (response == null) {
       return null;
@@ -154,13 +153,14 @@ Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
 
     return Prestamo.fromMap(response);
   }
-  
+
   Future<Seguro?> buscarSeguro(String numeroCuenta) async {
-    final response = await supabase
-        .from('seguros')
-        .select()
-        .eq('numerocuenta', numeroCuenta)
-        .single();
+    final response =
+        await supabase
+            .from('seguros')
+            .select()
+            .eq('numerocuenta', numeroCuenta)
+            .single();
 
     if (response == null) {
       return null;
@@ -169,33 +169,31 @@ Future<CuentaCliente?> buscarCuentaCliente(String numeroCuenta) async {
     return Seguro.fromMap(response);
   }
 
+  Future<void> actualizarSeguro(Seguro seguro) async {
+    final response =
+        await supabase
+            .from('seguros')
+            .update(seguro.toMap())
+            .eq('numerocuenta', seguro.numeroCuenta)
+            .select(); // <- opcional si quieres devolver los datos actualizados
 
-
-Future<void> actualizarSeguro(Seguro seguro) async {
-  final response = await supabase
-      .from('seguros')
-      .update(seguro.toMap())
-      .eq('numerocuenta', seguro.numeroCuenta)
-      .select();  // <- opcional si quieres devolver los datos actualizados
-
-  if (response.isEmpty) {
-    throw Exception('Error al actualizar el seguro: respuesta vacía del servidor');
+    if (response.isEmpty) {
+      throw Exception(
+        'Error al actualizar el seguro: respuesta vacía del servidor',
+      );
+    }
   }
-}
-
-
 
   Future<void> actualizarPrestamo(Prestamo prestamo) async {
-  try {
-    await supabase
-        .from('prestamos')
-        .update(prestamo.toMap())
-        .eq('numerocuenta', prestamo.numeroCuenta);
-  } catch (e) {
-    throw Exception('Error al actualizar el préstamo: $e');
+    try {
+      await supabase
+          .from('prestamos')
+          .update(prestamo.toMap())
+          .eq('numerocuenta', prestamo.numeroCuenta);
+    } catch (e) {
+      throw Exception('Error al actualizar el préstamo: $e');
+    }
   }
-}
-
 
   Future<List<Transferencia>> obtenerTransferencias() async {
     return [
@@ -226,7 +224,6 @@ Future<void> actualizarSeguro(Seguro seguro) async {
     ];
   }
 
-
   Future<List<Prestamo>> buscarPrestamosPorCuenta(String numeroCuenta) async {
     final response = await supabase
         .from('prestamos')
@@ -239,6 +236,7 @@ Future<void> actualizarSeguro(Seguro seguro) async {
 
     return response.map((prestamo) => Prestamo.fromMap(prestamo)).toList();
   }
+
   Future<List<Seguro>> buscarSegurosPorCuenta(String numeroCuenta) async {
     final response = await supabase
         .from('seguros')
@@ -252,7 +250,9 @@ Future<void> actualizarSeguro(Seguro seguro) async {
     return response.map((seguro) => Seguro.fromMap(seguro)).toList();
   }
 
-  Future<List<Inversion>> buscarInversionesPorCuenta(String numeroCuenta) async {
+  Future<List<Inversion>> buscarInversionesPorCuenta(
+    String numeroCuenta,
+  ) async {
     final response = await supabase
         .from('inversiones')
         .select()
@@ -264,5 +264,4 @@ Future<void> actualizarSeguro(Seguro seguro) async {
 
     return response.map((inversion) => Inversion.fromMap(inversion)).toList();
   }
-
 }

@@ -14,7 +14,12 @@ import 'Vista_SegurosDisponibles.dart';
 
 class EscritorioView extends StatefulWidget {
   final Usuario usuario;
-  EscritorioView({super.key, required this.usuario, required bool mostrarMenu,required this.empleado});
+  EscritorioView({
+    super.key,
+    required this.usuario,
+    required bool mostrarMenu,
+    required this.empleado,
+  });
   final Empleado empleado;
 
   @override
@@ -23,18 +28,32 @@ class EscritorioView extends StatefulWidget {
 
 class _EscritorioViewState extends State<EscritorioView> {
   VentanaModelo colorsv = VentanaModelo();
-  BottomPerson _buildButton(String text, VoidCallback onPressed) {
-    return BottomPerson(
-      text: text,
-      onPressed: onPressed,
-      backgroundColor: Colors.amber.shade700,
-      userHeight: 75,
-      borderRadius: 15.0,
-      textStyle: GoogleFonts.poppins(
-        color: colorsv.colorTextoLogin,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
+
+  Widget _buildButton(String text, VoidCallback onPressed) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber.shade700,
+              minimumSize: Size(double.infinity, 75),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 5,
+            ),
+            onPressed: onPressed,
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          )
+          .animate()
+          .fade(duration: 500.ms)
+          .scale(begin: Offset(0.9, 0.9), end: Offset(1.0, 1.0)),
     );
   }
 
@@ -210,7 +229,11 @@ class _EscritorioViewState extends State<EscritorioView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaBuscarCliente(usuario: widget.usuario, empleado: widget.empleado,),
+        builder:
+            (context) => VistaBuscarCliente(
+              usuario: widget.usuario,
+              empleado: widget.empleado,
+            ),
       ),
     );
   }
@@ -220,7 +243,10 @@ class _EscritorioViewState extends State<EscritorioView> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => VistaInversionesDisponibles(usuario: widget.usuario, empleado: widget.empleado),
+            (context) => VistaInversionesDisponibles(
+              usuario: widget.usuario,
+              empleado: widget.empleado,
+            ),
       ),
     );
   }
@@ -230,7 +256,10 @@ class _EscritorioViewState extends State<EscritorioView> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => VistaPrestamosDisponibles(usuario: widget.usuario , empleado: widget.empleado),
+            (context) => VistaPrestamosDisponibles(
+              usuario: widget.usuario,
+              empleado: widget.empleado,
+            ),
       ),
     );
   }
@@ -239,7 +268,11 @@ class _EscritorioViewState extends State<EscritorioView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaSegurosDisponibles(usuario: widget.usuario , empleado: widget.empleado),
+        builder:
+            (context) => VistaSegurosDisponibles(
+              usuario: widget.usuario,
+              empleado: widget.empleado,
+            ),
       ),
     );
   }

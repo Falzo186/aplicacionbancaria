@@ -6,19 +6,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
   final Widget? title;
   final Widget? leading; // Hacemos que leading sea opcional
+  final IconThemeData? iconTheme; // Agregamos iconTheme como opcional
 
   const CustomAppBar({
     Key? key,
+
     this.backgroundColor = Colors.blue,
     this.actions,
     this.height = kToolbarHeight,
     this.title,
     this.leading, // Lo agregamos como parámetro opcional
+    this.iconTheme, // Agregamos iconTheme como parámetro opcional
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      iconTheme: iconTheme, // Asignamos el iconTheme
       backgroundColor: backgroundColor,
       actions: actions,
       title: title,

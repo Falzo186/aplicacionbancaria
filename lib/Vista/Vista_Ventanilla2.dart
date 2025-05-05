@@ -1,6 +1,9 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_DatosCliente.dart';
+import 'package:aplicacionbancaria/Modelo/Appbar_perso.dart';
 import 'package:aplicacionbancaria/Modelo/Inversion.dart';
 import 'package:aplicacionbancaria/Modelo/Seguro.dart';
+import 'package:aplicacionbancaria/Modelo/Ventanas.dart';
+import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +22,7 @@ class VistaVentanilla2 extends StatefulWidget {
 }
 
 class _VistaVentanillaState extends State<VistaVentanilla2> {
+  VentanaModelo colorsv = VentanaModelo();
   CuentaCliente? cuentaCliente;
   CuentaCredito? cuentaCredito;
   Prestamo? prestamo;
@@ -35,18 +39,22 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
   Future<void> _cargarDatosCliente() async {
     // Buscar la cuenta del cliente (esto siempre debe existir)
-    cuentaCliente = await controlador.buscarCuentaCliente(widget.cliente.numeroCuenta);
+    cuentaCliente = await controlador.buscarCuentaCliente(
+      widget.cliente.numeroCuenta,
+    );
     print(widget.cliente.tieneCredito);
     // Si el cliente tiene inversión, buscar la cuenta de inversión
     inversion = await controlador.buscarInversion(widget.cliente.numeroCuenta);
     // Si el cliente tiene crédito, buscar la cuenta de crédito
     if (widget.cliente.tieneCredito) {
-      cuentaCredito = controlador.buscarCuentaCredito(widget.cliente.numeroCuenta);
+      cuentaCredito = controlador.buscarCuentaCredito(
+        widget.cliente.numeroCuenta,
+      );
     }
     if (widget.cliente.tienePrestamo) {
       prestamo = await controlador.buscarPrestamo(widget.cliente.numeroCuenta);
     }
-    if(widget.cliente.tieneSeguro){
+    if (widget.cliente.tieneSeguro) {
       seguro = await controlador.buscarSeguro(widget.cliente.numeroCuenta);
     }
 
@@ -66,25 +74,36 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
     final String formattedDate = _formatDate(widget.cliente.fechaNacimiento);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: Text(
-          'Información bancaria',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+          'Información del Cliente',
+          style: TextStyle(
+            color: Colors.white, // Cambia el color aquí
           ),
         ),
-        backgroundColor: const Color(0xFF472F2F),
+        backgroundColor: colorsv.colorAppbar,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white, // Cambia el color aquí
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('lib/Recursos/logo.png'), // Ruta de la imagen del logo
+              image: AssetImage(
+                'lib/Recursos/logo.png',
+              ), // Ruta de la imagen del logo
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                Colors.white.withOpacity(0.10), // Ajusta la opacidad según sea necesario
+                Colors.white.withOpacity(
+                  0.10,
+                ), // Ajusta la opacidad según sea necesario
                 BlendMode.dstATop,
               ),
               scale: 2.0, // Reduce el tamaño del logo en un 25%
@@ -96,72 +115,10 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Cliente: ${widget.cliente.nombreCompleto}',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Número de Cuenta: ${widget.cliente.numeroCuenta}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Teléfono: ${widget.cliente.telefono}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Correo: ${widget.cliente.correoElectronico}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Dirección: ${widget.cliente.direccionCompleta}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Fecha de Nacimiento: $formattedDate',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Género: ${widget.cliente.genero}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Tipo de Cuenta: ${cuentaCliente?.tipoCuenta ?? 'N/A'}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Saldo: \$${cuentaCliente?.saldo.toStringAsFixed(2) ?? 'N/A'}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: _realizarDeposito,
-                            child: const Text('Realizar Depósito'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  if (cuentaCredito != null)
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
@@ -172,205 +129,285 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          if (inversion != null) ...[
                             Text(
-                            'Información de Inversión',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            ),
-                            const Divider(),
-                            Text(
-                            'Número de Inversión: ${inversion!.numeroInversion}',
-                            style: const TextStyle(fontSize: 16),
+                              'Cliente: ${widget.cliente.nombreCompleto}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(
-                            'Monto Invertido: \$${inversion!.monto.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 16),
+                              'Número de Cuenta: ${widget.cliente.numeroCuenta}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(
-                            'Tasa de Interés: ${inversion!.tasaInteres}%',
-                            style: const TextStyle(fontSize: 16),
+                              'Teléfono: ${widget.cliente.telefono}',
+                              style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                            'Ganancia Esperada: \$${inversion!.gananciaEsperada.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 16),
+                              'Correo: ${widget.cliente.correoElectronico}',
+                              style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                            'Fecha de Inicio: ${_formatDate(inversion!.fechaInicio)}',
-                            style: const TextStyle(fontSize: 16),
+                              'Dirección: ${widget.cliente.direccionCompleta}',
+                              style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                            'Fecha de Vencimiento: ${_formatDate(inversion!.fechaVencimiento)}',
-                            style: const TextStyle(fontSize: 16),
+                              'Fecha de Nacimiento: $formattedDate',
+                              style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                            'Estado: ${inversion!.estado}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: inversion!.estado == 'Activa' ? Colors.green : Colors.red,
-                            ),
-                            ),
-                          ] else ...[
-                            Text(
-                            'Invitación a Invertir',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            ),
-                            const Divider(),
-                            Text(
-                            'Actualmente no tienes inversiones activas.',
-                            style: const TextStyle(fontSize: 16),
+                              'Género: ${widget.cliente.genero}',
+                              style: const TextStyle(fontSize: 16),
                             ),
                             Text(
-                            'Te invitamos a hablar con uno de nuestros compañeros de escritorio para conocer las opciones de inversión disponibles.',
-                            style: const TextStyle(fontSize: 16),
+                              'Tipo de Cuenta: ${cuentaCliente?.tipoCuenta ?? 'N/A'}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Saldo: \$${cuentaCliente?.saldo.toStringAsFixed(2) ?? 'N/A'}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: _realizarDeposito,
+                                  child: const Text('Realizar Depósito'),
+                                ),
+                              ],
                             ),
                           ],
-                          ],
-                        
                         ),
                       ),
                     ),
-                ],
-              ),
-              if (prestamo != null || seguro != null) ...[
-                const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (prestamo != null)
+                    SizedBox(width: 15),
+                    if (cuentaCredito != null)
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(10),
                           ),
+                          padding: const EdgeInsets.all(10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Información de Préstamo',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                              if (inversion != null) ...[
+                                Text(
+                                  'Información de Inversión',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              const Divider(),
-                              Text(
-                                'Número de Préstamo: ${prestamo!.numeroPrestamo}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Deuda Pendiente: \$${prestamo!.montoRestante.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.red,
+                                const Divider(),
+                                Text(
+                                  'Número de Inversión: ${inversion!.numeroInversion}',
+                                  style: const TextStyle(fontSize: 16),
                                 ),
-                              ),
-                              Text(
-                                'Monto Total: \$${prestamo!.monto.toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              
-                              Text(
-                                'Estado: ${prestamo!.estado}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: prestamo!.estado == 'Pagado' ? Colors.green : Colors.red,
+                                Text(
+                                  'Monto Invertido: \$${inversion!.monto.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 16),
                                 ),
-                              ),
-                              Text(
-                                'Meses Restantes: ${prestamo!.meses - prestamo!.pagosRealizados}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Tasa de Interés: ${prestamo!.tasaInteres}%',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Pago Mínimo: \$${prestamo!.pagoMinimo?.toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Fecha de Pago: ${_formatDate(prestamo!.fechapago)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () => _mostrarPagoPrestamoDialog(context),
-                                child: const Text('Pagar Crédito/Préstamo'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    const SizedBox(width: 15),
-                    if (seguro != null)
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Información de Seguro',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                Text(
+                                  'Tasa de Interés: ${inversion!.tasaInteres}%',
+                                  style: const TextStyle(fontSize: 16),
                                 ),
-                              ),
-                              const Divider(),
-                              Text(
-                                'Número de Póliza: ${seguro!.numeroPoliza}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Tipo de Seguro: ${seguro!.tipoSeguro}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Fecha de Vencimiento: ${_formatDate(seguro!.fechaVencimiento)},Estado: ${seguro!.estado}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Meses Totales: ${seguro!.meses} ,Pagos Realizados: ${seguro!.pagosRealizados}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Monto de Cobertura: \$${seguro!.montoCobertura.toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Monto Faltante: \$${seguro!.montoFaltante.toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Fecha de Pago: ${_formatDate(seguro!.fechaPago)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                'Costo Mensual: \$${seguro!.pagoMensual.toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () => _pagarSeguro(context),
-                                child: const Text('Pagar Seguro'),
-                              ),
+                                Text(
+                                  'Ganancia Esperada: \$${inversion!.gananciaEsperada.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Fecha de Inicio: ${_formatDate(inversion!.fechaInicio)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Fecha de Vencimiento: ${_formatDate(inversion!.fechaVencimiento)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Estado: ${inversion!.estado}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color:
+                                        inversion!.estado == 'Activa'
+                                            ? Colors.green
+                                            : Colors.red,
+                                  ),
+                                ),
+                              ] else ...[
+                                Text(
+                                  'Invitación a Invertir',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Divider(),
+                                Text(
+                                  'Actualmente no tienes inversiones activas.',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Te invitamos a hablar con uno de nuestros compañeros de escritorio para conocer las opciones de inversión disponibles.',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ],
                           ),
                         ),
                       ),
                   ],
+                ),
+              ),
+              if (prestamo != null || seguro != null) ...[
+                const SizedBox(height: 20),
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (prestamo != null)
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Información de Préstamo',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Divider(),
+                                Text(
+                                  'Número de Préstamo: ${prestamo!.numeroPrestamo}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Deuda Pendiente: \$${prestamo!.montoRestante.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                Text(
+                                  'Monto Total: \$${prestamo!.monto.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+
+                                Text(
+                                  'Estado: ${prestamo!.estado}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color:
+                                        prestamo!.estado == 'Pagado'
+                                            ? Colors.green
+                                            : Colors.red,
+                                  ),
+                                ),
+                                Text(
+                                  'Meses Restantes: ${prestamo!.meses - prestamo!.pagosRealizados}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Tasa de Interés: ${prestamo!.tasaInteres}%',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Pago Mínimo: \$${prestamo!.pagoMinimo?.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Fecha de Pago: ${_formatDate(prestamo!.fechapago)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                const Spacer(),
+                                Align(
+                                  child: ElevatedButton(
+                                    onPressed:
+                                        () =>
+                                            _mostrarPagoPrestamoDialog(context),
+                                    child: const Text('Pagar Crédito/Préstamo'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      const SizedBox(width: 15),
+                      if (seguro != null)
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Información de Seguro',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Divider(),
+                                Text(
+                                  'Número de Póliza: ${seguro!.numeroPoliza}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Tipo de Seguro: ${seguro!.tipoSeguro}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Fecha de Vencimiento: ${_formatDate(seguro!.fechaVencimiento)},Estado: ${seguro!.estado}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Meses Totales: ${seguro!.meses} ,Pagos Realizados: ${seguro!.pagosRealizados}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Monto de Cobertura: \$${seguro!.montoCobertura.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Monto Faltante: \$${seguro!.montoFaltante.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Fecha de Pago: ${_formatDate(seguro!.fechaPago)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Costo Mensual: \$${seguro!.pagoMensual.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () => _pagarSeguro(context),
+                                  child: const Text('Pagar Seguro'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ],
@@ -379,8 +416,6 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
       ),
     );
   }
-
-
 
   Future _mostrarPagoPrestamoDialog(BuildContext context) async {
     _montoController.text = prestamo?.pagoMinimo?.toStringAsFixed(2) ?? '';
@@ -408,7 +443,10 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
               if (interesTotal > 0)
                 Text(
                   "Pago atrasado. Se aplicará un interés de \$${interesTotal.toStringAsFixed(2)}",
-                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               if (diasDiferencia <= 0)
                 Text(
@@ -450,9 +488,13 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
                       // Ajustar si cae en sábado o domingo
                       if (nuevaFechaPago.weekday == DateTime.saturday) {
-                        nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 1)); // Adelantar al viernes
+                        nuevaFechaPago = nuevaFechaPago.subtract(
+                          const Duration(days: 1),
+                        ); // Adelantar al viernes
                       } else if (nuevaFechaPago.weekday == DateTime.sunday) {
-                        nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 2)); // Adelantar al viernes
+                        nuevaFechaPago = nuevaFechaPago.subtract(
+                          const Duration(days: 2),
+                        ); // Adelantar al viernes
                       }
 
                       prestamo!.fechapago = nuevaFechaPago;
@@ -490,7 +532,9 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                       builder: (context) {
                         return AlertDialog(
                           title: Text("Error"),
-                          content: Text("El monto a pagar excede la deuda pendiente."),
+                          content: Text(
+                            "El monto a pagar excede la deuda pendiente.",
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
@@ -563,7 +607,9 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(context); // Close the confirmation dialog
+                              Navigator.pop(
+                                context,
+                              ); // Close the confirmation dialog
                             },
                             child: Text("Aceptar"),
                           ),
@@ -607,11 +653,16 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("El monto a pagar es de \$${seguro!.pagoMensual.toStringAsFixed(2)}"),
+              Text(
+                "El monto a pagar es de \$${seguro!.pagoMensual.toStringAsFixed(2)}",
+              ),
               if (interesTotal > 0) // Mostrar si hay interés por mora
                 Text(
                   "Pago atrasado. Se aplicará un interés de \$${interesTotal.toStringAsFixed(2)}",
-                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
             ],
           ),
@@ -631,9 +682,13 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
                   // Ajustar si cae en sábado o domingo
                   if (nuevaFechaPago.weekday == DateTime.saturday) {
-                    nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 1)); // Mover al viernes
+                    nuevaFechaPago = nuevaFechaPago.subtract(
+                      const Duration(days: 1),
+                    ); // Mover al viernes
                   } else if (nuevaFechaPago.weekday == DateTime.sunday) {
-                    nuevaFechaPago = nuevaFechaPago.subtract(const Duration(days: 2)); // Mover al viernes
+                    nuevaFechaPago = nuevaFechaPago.subtract(
+                      const Duration(days: 2),
+                    ); // Mover al viernes
                   }
 
                   seguro!.fechaPago = nuevaFechaPago;
@@ -672,7 +727,4 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
       },
     );
   }
-
-  
-
 }

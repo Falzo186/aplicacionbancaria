@@ -14,7 +14,12 @@ class VistaVentanilla extends StatefulWidget {
   final Empleado empleado;
   //final CustomAppBar appBar;
   //VistaVentanilla({super.key, required this.usuario, required this.appBar})
-  VistaVentanilla({Key? key, required this.usuario, required bool mostrarMenu,required this.empleado}) : super(key: key);
+  VistaVentanilla({
+    Key? key,
+    required this.usuario,
+    required bool mostrarMenu,
+    required this.empleado,
+  }) : super(key: key);
 
   @override
   _VentanillaScreenState createState() => _VentanillaScreenState();
@@ -29,6 +34,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
   final controladorCliente = ControladorDatoscliente();
   List<Cliente> clientes = [];
   List<Cliente> filteredClientes = [];
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -67,6 +73,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
     return Scaffold(
       backgroundColor: colorsv.colorBackground,
       appBar: CustomAppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: colorsv.colorAppbar,
         title: Row(
           children: [
@@ -75,6 +82,7 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
               width: _showMenu ? 500 : 0,
               curve: Curves.easeInOut,
               child: TextField(
+                controller: _searchController,
                 onChanged: _filterClientes,
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -97,6 +105,10 @@ class _VentanillaScreenState extends State<VistaVentanilla> {
               ),
               onPressed: () {
                 setState(() {
+                  if (_showMenu) {
+                    _searchController.clear(); // Clear the search field
+                    _filterClientes(''); // Clear the search filter properly
+                  }
                   _showMenu = !_showMenu;
                 });
               },

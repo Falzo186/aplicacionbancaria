@@ -142,10 +142,10 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
       appBar: CustomAppBar(
         title: Text(
           'Formulario de Cliente',
-          style: GoogleFonts.poppins(
-            color: colorsv.colorTexto2,
+          style: TextStyle(
+            color: Colors.white,
             fontSize: 24,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: colorsv.colorAppbar,
@@ -345,16 +345,6 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                     children: [
                       Expanded(
                         child: _buildLabeledField(
-                          'Dirección de la Empresa',
-                          textControllerDirEmpresa,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildLabeledField(
                           'Ingresos Mensuales',
                           textControllerIngresos,
                         ),
@@ -364,6 +354,8 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                         child: _buildLabeledDropdown(
                           'Fuente de Ingresos',
                           _fuentesIngresos,
+                          value: _selectedFuenteIngresos,
+                          hint: 'Selecciona un tipo de Ingreso',
                           onChanged: (value) {
                             setState(() {
                               _selectedFuenteIngresos = value;
@@ -373,17 +365,31 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
+                        child: _buildLabeledField(
+                          'Dirección de la Empresa',
+                          textControllerDirEmpresa,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: 200,
                         child: cancelar('Cancelar', () {
                           Navigator.pop(context);
                         }),
                       ),
-                      Expanded(flex: 2, child: SizedBox()),
-                      Expanded(child: guardar('Guardar', onPressed)),
+                      SizedBox(
+                        width: 200,
+                        child: guardar('Guardar', onPressed),
+                      ),
                     ],
                   ),
                 ],
