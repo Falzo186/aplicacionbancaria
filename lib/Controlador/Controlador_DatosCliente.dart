@@ -33,9 +33,11 @@ class ControladorDatoscliente {
         .maybeSingle();
 
     if (response == null) {
+      print("Inversión no encontrada para la cuenta: $numeroCuenta");
       return null;
     }
 
+    print("Inversión encontrada para la cuenta: $numeroCuenta");
     return Inversion.fromMap(response);
   }
 
@@ -49,6 +51,54 @@ class ControladorDatoscliente {
       throw Exception('Error al actualizar la cuenta del cliente: $e');
     }
   }
+
+Future<void> guardarTransferencia(Transferencia transferencia) async {
+  try {
+    await supabase.from('transferencias').insert({
+      'numerocuenta': transferencia.numeroCuenta,
+      'numerotransferencia': transferencia.numeroTransferencia,
+      'numerocuentaorigen': transferencia.numeroCuentaOrigen,
+      'numerocuentadestino': transferencia.numeroCuentaDestino,
+      'monto': transferencia.monto,
+      'fechatransferencia': transferencia.fechaTransferencia.toIso8601String(),
+      'tipotransferencia': transferencia.tipoTransferencia,
+      'estado': transferencia.estado,
+      'referencia': transferencia.referencia,
+      'nombredestinatario': transferencia.nombreDestinatario,
+    });
+  } catch (e) {
+    throw Exception('Error al guardar la transferencia: $e');
+  }
+}
+
+
+Future<List<Transferencia>> obtenerTransferenciasPorCuenta(String numeroCuenta) async {
+  final response = await supabase
+      .from('transferencias')
+      .select()
+      .eq('numerocuenta', numeroCuenta);
+
+  if (response.isEmpty) {
+    return [];
+  }
+
+  return response.map((transferencia) {
+    return Transferencia(
+      numeroCuenta: transferencia['numerocuenta'],
+      numeroTransferencia: transferencia['numerotransferencia'],
+      numeroCuentaOrigen: transferencia['numerocuentaorigen'],
+      numeroCuentaDestino: transferencia['numerocuentadestino'],
+      monto: (transferencia['monto'] as num).toDouble(),
+      fechaTransferencia: DateTime.parse(transferencia['fechatransferencia']),
+      tipoTransferencia: transferencia['tipotransferencia'],
+      estado: transferencia['estado'],
+      referencia: transferencia['referencia'],
+      nombreDestinatario: transferencia['nombredestinatario'],
+    );
+  }).toList();
+}
+
+
 
   Future<void> CrearCliente(Cliente cliente) async {
     try {
@@ -194,34 +244,6 @@ class ControladorDatoscliente {
     }
   }
 
-  Future<List<Transferencia>> obtenerTransferencias() async {
-    return [
-      Transferencia(
-        numeroCuenta: "123456",
-        numeroTransferencia: "T001",
-        numeroCuentaOrigen: "123456",
-        numeroCuentaDestino: "654321",
-        monto: 1000.0,
-        fechaTransferencia: DateTime.now(),
-        tipoTransferencia: "Cuenta a cuenta",
-        estado: "Exitosa",
-        referencia: "Pago de servicios",
-        nombreDestinatario: "Juan Pérez",
-      ),
-      Transferencia(
-        numeroCuenta: "789012",
-        numeroTransferencia: "T002",
-        numeroCuentaOrigen: "789012",
-        numeroCuentaDestino: "210987",
-        monto: 500.0,
-        fechaTransferencia: DateTime.now(),
-        tipoTransferencia: "Ventanilla",
-        estado: "Exitosa",
-        referencia: "Transferencia personal",
-        nombreDestinatario: "María López",
-      ),
-    ];
-  }
 
   Future<List<Prestamo>> buscarPrestamosPorCuenta(String numeroCuenta) async {
     final response = await supabase

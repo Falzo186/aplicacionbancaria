@@ -49,7 +49,7 @@ class _VistaDatosClienteState extends State<VistaDatosCliente> {
       inversiones = await controlador.buscarInversionesPorCuenta(
         widget.cliente.numeroCuenta,
       );
-      transferencias = await controlador.obtenerTransferencias();
+      transferencias = await controlador.obtenerTransferenciasPorCuenta(widget.cliente.numeroCuenta);
 
       fechaApertura =
           (await controlador.obtenerFechaApertura(
@@ -105,7 +105,7 @@ class _VistaDatosClienteState extends State<VistaDatosCliente> {
             transferencias
                 .where(
                   (transferencia) =>
-                      transferencia.numeroCuentaOrigen ==
+                      transferencia.numeroCuenta ==
                       widget.cliente.numeroCuenta,
                 )
                 .toList();

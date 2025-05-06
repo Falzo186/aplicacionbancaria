@@ -196,6 +196,10 @@ class _VistaReporteSegurosState extends State<VistaReporteSeguros> {
                                       setState(() {
                                         reporteSeleccionado!.estado = "Aprobada";
                                         controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Aprobada");
+                                        // Actualizar estadística
+                                        
+                                        controlador.realizarSeguro(seguroSeleccionado!.numeroPoliza, clienteSeleccionado!.numeroCuenta);
+                                        controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Aprobada");
                                         _actualizarEstadistica(reporteSeleccionado!.usuarioId, "Aprobada");
                                       });
                                       ScaffoldMessenger.of(context).showSnackBar(

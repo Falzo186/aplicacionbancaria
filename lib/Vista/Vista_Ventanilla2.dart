@@ -11,6 +11,7 @@ import '../Modelo/Cliente.dart';
 import '../Modelo/CuentaCliente.dart';
 import '../Modelo/CuentaCredito.dart';
 import '../Modelo/Prestamo.dart';
+import '../Modelo/Transferencia.dart';
 
 class VistaVentanilla2 extends StatefulWidget {
   final Cliente cliente;
@@ -39,6 +40,10 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
 
   Future<void> _cargarDatosCliente() async {
     // Buscar la cuenta del cliente (esto siempre debe existir)
+    print("tiene credito: ${widget.cliente.tieneCredito}");
+    print("tiene prestamo: ${widget.cliente.tienePrestamo}");
+    print("tiene seguro: ${widget.cliente.tieneSeguro}");
+
     cuentaCliente = await controlador.buscarCuentaCliente(
       widget.cliente.numeroCuenta,
     );
@@ -101,8 +106,8 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
               ), // Ruta de la imagen del logo
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                Colors.white.withOpacity(
-                  0.10,
+                Colors.white.withAlpha(
+                  (0.10 * 255).toInt(),
                 ), // Ajusta la opacidad según sea necesario
                 BlendMode.dstATop,
               ),
@@ -122,7 +127,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withAlpha((0.8 * 255).toInt()),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         padding: const EdgeInsets.all(10),
@@ -185,83 +190,75 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 15),
-                    if (cuentaCredito != null)
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (inversion != null) ...[
-                                Text(
-                                  'Información de Inversión',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              inversion != null
+                                  ? 'Información de Inversión'
+                                  : 'Invitación a Invertir',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Divider(),
+                            if (inversion != null) ...[
+                              Text(
+                                'Número de Inversión: ${inversion!.numeroInversion}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Monto Invertido: \$${inversion!.monto.toStringAsFixed(2)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Tasa de Interés: ${inversion!.tasaInteres}%',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Ganancia Esperada: \$${inversion!.gananciaEsperada.toStringAsFixed(2)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Fecha de Inicio: ${_formatDate(inversion!.fechaInicio)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Fecha de Vencimiento: ${_formatDate(inversion!.fechaVencimiento)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Estado: ${inversion!.estado}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: inversion!.estado == 'Activa'
+                                      ? Colors.green
+                                      : Colors.red,
                                 ),
-                                const Divider(),
-                                Text(
-                                  'Número de Inversión: ${inversion!.numeroInversion}',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  'Monto Invertido: \$${inversion!.monto.toStringAsFixed(2)}',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  'Tasa de Interés: ${inversion!.tasaInteres}%',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  'Ganancia Esperada: \$${inversion!.gananciaEsperada.toStringAsFixed(2)}',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  'Fecha de Inicio: ${_formatDate(inversion!.fechaInicio)}',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  'Fecha de Vencimiento: ${_formatDate(inversion!.fechaVencimiento)}',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  'Estado: ${inversion!.estado}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color:
-                                        inversion!.estado == 'Activa'
-                                            ? Colors.green
-                                            : Colors.red,
-                                  ),
-                                ),
-                              ] else ...[
-                                Text(
-                                  'Invitación a Invertir',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Divider(),
-                                Text(
-                                  'Actualmente no tienes inversiones activas.',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  'Te invitamos a hablar con uno de nuestros compañeros de escritorio para conocer las opciones de inversión disponibles.',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ],
+                              ),
+                            ] else ...[
+                              Text(
+                                'Actualmente no tienes inversiones activas.',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                'Te invitamos a hablar con uno de nuestros compañeros de escritorio para conocer las opciones de inversión disponibles.',
+                                style: const TextStyle(fontSize: 16),
+                              ),
                             ],
-                          ),
+                          ],
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -305,15 +302,13 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                                   'Monto Total: \$${prestamo!.monto.toStringAsFixed(2)}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
-
                                 Text(
                                   'Estado: ${prestamo!.estado}',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color:
-                                        prestamo!.estado == 'Pagado'
-                                            ? Colors.green
-                                            : Colors.red,
+                                    color: prestamo!.estado == 'Pagado'
+                                        ? Colors.green
+                                        : Colors.red,
                                   ),
                                 ),
                                 Text(
@@ -325,7 +320,7 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                                   style: const TextStyle(fontSize: 16),
                                 ),
                                 Text(
-                                  'Pago Mínimo: \$${prestamo!.pagoMinimo?.toStringAsFixed(2)}',
+                                  'Pago Mínimo: \$${prestamo!.pagoMinimo.toStringAsFixed(2)}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                                 Text(
@@ -335,9 +330,8 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                                 const Spacer(),
                                 Align(
                                   child: ElevatedButton(
-                                    onPressed:
-                                        () =>
-                                            _mostrarPagoPrestamoDialog(context),
+                                    onPressed: () =>
+                                        _mostrarPagoPrestamoDialog(context),
                                     child: const Text('Pagar Crédito/Préstamo'),
                                   ),
                                 ),
@@ -374,11 +368,11 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                                   style: const TextStyle(fontSize: 16),
                                 ),
                                 Text(
-                                  'Fecha de Vencimiento: ${_formatDate(seguro!.fechaVencimiento)},Estado: ${seguro!.estado}',
+                                  'Fecha de Vencimiento: ${_formatDate(seguro!.fechaVencimiento)}, Estado: ${seguro!.estado}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                                 Text(
-                                  'Meses Totales: ${seguro!.meses} ,Pagos Realizados: ${seguro!.pagosRealizados}',
+                                  'Meses Totales: ${seguro!.meses}, Pagos Realizados: ${seguro!.pagosRealizados}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                                 Text(
@@ -592,8 +586,25 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
                     cuentaCliente!.saldo += monto;
                   });
 
-                  // Guardar el nuevo saldo en la base de datos
+                  // Crear una transferencia de tipo "Depósito"
+                  Transferencia transferencia = Transferencia(
+                    numeroCuenta: cuentaCliente!.numeroCuenta,
+                    numeroTransferencia: DateTime.now()
+                        .millisecondsSinceEpoch
+                        .toString(), // Generar un ID único
+                    numeroCuentaOrigen: "Banco",
+                    numeroCuentaDestino: cuentaCliente!.numeroCuenta,
+                    monto: monto,
+                    fechaTransferencia: DateTime.now(),
+                    tipoTransferencia: "Depósito",
+                    estado: "Exitosa",
+                    referencia: "Depósito realizado en ventanilla",
+                    nombreDestinatario: widget.cliente.nombreCompleto,
+                  );
+
+                  // Guardar el nuevo saldo y la transferencia en la base de datos
                   await controlador.actualizarCuentaCliente(cuentaCliente!);
+                  await controlador.guardarTransferencia(transferencia);
 
                   Navigator.pop(context); // Close the deposit dialog
                   showDialog(
@@ -635,6 +646,9 @@ class _VistaVentanillaState extends State<VistaVentanilla2> {
       },
     );
   }
+
+
+
 
   void _pagarSeguro(BuildContext context) {
     int diasDiferencia = DateTime.now().difference(seguro!.fechaPago).inDays;

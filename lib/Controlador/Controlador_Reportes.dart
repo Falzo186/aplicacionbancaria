@@ -144,6 +144,7 @@ class ControladorReportes {
         // Actualizar el estado de la inversión
         await supabase.from('inversiones').update({
           'estado': 'Activo',
+          'numerocuenta': numeroCuenta,
         }).eq('numeroinversion', numeroInversion);
 
         print('Inversión realizada con éxito.');
@@ -221,6 +222,41 @@ class ControladorReportes {
   }
 
   
+  Future<void> realizarSeguro(String numeroSeguro,String numerocuenta) async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      final response = await supabase
+          .from('seguros')
+          .update({'estado': 'Activo', 'numerocuenta': numerocuenta})
+          .eq('numeropoliza', numeroSeguro);
+
+      if (response == null || response.isEmpty) {
+        throw Exception('No se encontró el seguro con el número $numeroSeguro.');
+      }
+        await supabase.from('clientes').update({
+            'tieneseguro': true,
+          }).eq('numerocuenta', numerocuenta);
+
+      print('Seguro actualizado con éxito.');
+    } catch (e) {
+      print('Error al actualizar el seguro: $e');
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   Future<void> actualizarEstadoReporte(String numeroReporte, String nuevoEstado) async {
     final supabase = Supabase.instance.client;
 
