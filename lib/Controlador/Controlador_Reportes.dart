@@ -102,7 +102,7 @@ class ControladorReportes {
       return [];
     }
   }
-  
+  // cambiooo
   Future<void> realizarInversion(String numeroCuenta, String numeroInversion) async {
     final supabase = Supabase.instance.client;
 
@@ -118,7 +118,6 @@ class ControladorReportes {
         throw Exception('No se encontró la inversión con el número $numeroInversion');
       }
 
-      
       final montoInversion = inversionData['monto'] as double;
 
       // Obtener la cuenta del cliente
@@ -141,10 +140,11 @@ class ControladorReportes {
           'saldo': saldoActual - montoInversion,
         }).eq('numerocuenta', numeroCuenta);
 
-        // Actualizar el estado de la inversión
+        // Actualizar el estado de la inversión y la fecha de inicio
         await supabase.from('inversiones').update({
           'estado': 'Activo',
           'numerocuenta': numeroCuenta,
+          'fechainicio': DateTime.now().toIso8601String(),
         }).eq('numeroinversion', numeroInversion);
 
         print('Inversión realizada con éxito.');
@@ -155,6 +155,8 @@ class ControladorReportes {
       print('Error al realizar la inversión: $e');
     }
   }
+
+
 
 
 
@@ -200,10 +202,27 @@ class ControladorReportes {
           }).eq('numerocuenta', numeroCuenta);
 
           try {
+            // Calcular la fecha de inicio y la próxima fecha de pago
+            DateTime fechaInicio = DateTime.now();
+            DateTime proximaFechaPago = DateTime(
+              fechaInicio.year,
+              fechaInicio.month + 1,
+              fechaInicio.day,
+            );
+
+            // Ajustar si la próxima fecha de pago cae en sábado o domingo
+            if (proximaFechaPago.weekday == DateTime.saturday) {
+              proximaFechaPago = proximaFechaPago.subtract(Duration(days: 1)); // Mover al viernes
+            } else if (proximaFechaPago.weekday == DateTime.sunday) {
+              proximaFechaPago = proximaFechaPago.subtract(Duration(days: 2)); // Mover al viernes
+            }
+
             // Actualizar el estado del préstamo
             await supabase.from('prestamos').update({
               'estado': 'Activo',
               'numerocuenta': numeroCuenta,
+              'fechainicio': fechaInicio.toIso8601String(),
+              'fechapago': proximaFechaPago.toIso8601String(),
             }).eq('numeroprestamo', numeroPrestamo);
 
             print('Préstamo realizado con éxito.');
@@ -222,21 +241,39 @@ class ControladorReportes {
   }
 
   
-  Future<void> realizarSeguro(String numeroSeguro,String numerocuenta) async {
+  Future<void> realizarSeguro(String numeroSeguro, String numeroCuenta) async {
     final supabase = Supabase.instance.client;
 
     try {
-      final response = await supabase
-          .from('seguros')
-          .update({'estado': 'Activo', 'numerocuenta': numerocuenta})
-          .eq('numeropoliza', numeroSeguro);
+      // Calcular fechas
+      DateTime fechaInicio = DateTime.now();
+      DateTime fechaVencimiento = DateTime(fechaInicio.year + 1, fechaInicio.month, fechaInicio.day);
+      DateTime fechaPago = DateTime(fechaInicio.year, fechaInicio.month + 1, fechaInicio.day);
+
+      // Ajustar fecha de pago si cae en sábado o domingo
+      if (fechaPago.weekday == DateTime.saturday) {
+        fechaPago = fechaPago.subtract(Duration(days: 1)); // Mover al viernes
+      } else if (fechaPago.weekday == DateTime.sunday) {
+        fechaPago = fechaPago.subtract(Duration(days: 2)); // Mover al viernes
+      }
+
+      // Actualizar el seguro
+      final response = await supabase.from('seguros').update({
+        'estado': 'Activo',
+        'numerocuenta': numeroCuenta,
+        'fechainicio': fechaInicio.toIso8601String(),
+        'fechavencimiento': fechaVencimiento.toIso8601String(),
+        'fechapago': fechaPago.toIso8601String(),
+      }).eq('numeropoliza', numeroSeguro);
 
       if (response == null || response.isEmpty) {
         throw Exception('No se encontró el seguro con el número $numeroSeguro.');
       }
-        await supabase.from('clientes').update({
-            'tieneseguro': true,
-          }).eq('numerocuenta', numerocuenta);
+
+      // Actualizar el cliente
+      await supabase.from('clientes').update({
+        'tieneseguro': true,
+      }).eq('numerocuenta', numeroCuenta);
 
       print('Seguro actualizado con éxito.');
     } catch (e) {
