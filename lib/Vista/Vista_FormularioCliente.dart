@@ -568,6 +568,7 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
 
       print(datosCliente);
       controlador.CrearCliente(datosCliente);
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cliente guardado exitosamente')),
       );
@@ -581,4 +582,6 @@ class _VistaFormularioClienteState extends State<VistaFormularioCliente> {
     );
     return regex.hasMatch(value.toString().toUpperCase());
   }
+
+  // Ejemplo de RFC válido: ABCD880101XXX
 }

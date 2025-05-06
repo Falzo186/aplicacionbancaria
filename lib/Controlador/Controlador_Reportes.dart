@@ -154,6 +154,72 @@ class ControladorReportes {
       print('Error al realizar la inversión: $e');
     }
   }
+
+
+
+  Future<void> realizarPrestamo(String numeroCuenta, String numeroPrestamo) async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      // Obtener el préstamo por su número
+      final prestamoData = await supabase
+          .from('prestamos')
+          .select()
+          .eq('numeroprestamo', numeroPrestamo)
+          .single();
+
+      if (prestamoData == null) {
+        throw Exception('No se encontró el préstamo con el número $numeroPrestamo');
+      }
+
+      final montoPrestamo = prestamoData['monto'] as double;
+
+      try {
+        // Obtener la cuenta del cliente
+        final cuentaData = await supabase
+            .from('cuentasclientes')
+            .select()
+            .eq('numerocuenta', numeroCuenta)
+            .single();
+
+        if (cuentaData == null) {
+          throw Exception('No se encontró la cuenta con el número $numeroCuenta');
+        }
+
+        final saldoActual = cuentaData['saldo'] as double;
+
+        try {
+          // Actualizar la cuenta del cliente
+          await supabase.from('cuentasclientes').update({
+            'saldo': saldoActual + montoPrestamo,
+          }).eq('numerocuenta', numeroCuenta);
+
+          await supabase.from('clientes').update({
+            'tieneprestamo': true,
+          }).eq('numerocuenta', numeroCuenta);
+
+          try {
+            // Actualizar el estado del préstamo
+            await supabase.from('prestamos').update({
+              'estado': 'Activo',
+              'numerocuenta': numeroCuenta,
+            }).eq('numeroprestamo', numeroPrestamo);
+
+            print('Préstamo realizado con éxito.');
+          } catch (e) {
+            print('Error al actualizar el estado del préstamo: $e');
+          }
+        } catch (e) {
+          print('Error al actualizar la cuenta del cliente: $e');
+        }
+      } catch (e) {
+        print('Error al obtener la cuenta del cliente: $e');
+      }
+    } catch (e) {
+      print('Error al obtener el préstamo: $e');
+    }
+  }
+
   
   Future<void> actualizarEstadoReporte(String numeroReporte, String nuevoEstado) async {
     final supabase = Supabase.instance.client;
@@ -162,7 +228,7 @@ class ControladorReportes {
       final response = await supabase
           .from('reportessolicitudes')
           .update({'estado': nuevoEstado})
-          .eq('numeroreporte', numeroReporte);
+          .eq('idsolicitud', numeroReporte);
 
       if (response == null || response.isEmpty) {
         throw Exception('No se encontró el reporte con el número $numeroReporte.');

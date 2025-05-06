@@ -1,6 +1,7 @@
 import 'package:aplicacionbancaria/Controlador/Controlador_Login.dart';
 import 'package:aplicacionbancaria/Modelo/Usuario.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../Modelo/Empleado.dart';
 
@@ -29,7 +30,7 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
   List<String> _selectedBeneficios = [];
 
   final List<String> _departamentos = [
-    'Administración',
+    'Administracion',
     'Ventanilla',
     'Escritorio'
   ];
@@ -66,13 +67,14 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
       final empleado = Empleado(
         id: _idEmpleadoController.text,
         nombreEmpleado: _nombreEmpleadoController.text,
+        fechaCumpleanos: DateFormat('dd/MM/yyyy').parse(_fechaCumpleanosController.text),
         sexo: _selectedGenero ?? '',
-        fechaCumpleanos: DateTime.parse(_fechaCumpleanosController.text),
+        
         rfc: _rfcController.text,
         direccion: _direccionController.text,
         numeroTelefono: _telefonoController.text,
         estadoCivil: _selectedEstadoCivil ?? '',
-        puestoTrabajo: _nombreUsuarioController.text,
+        puestoTrabajo: _selectedDepartamento ?? '',
         correoElectronico: _correoElectronicoController.text,
         numeroIdentificacionOficial: _contrasenaController.text,
       );
@@ -84,9 +86,15 @@ class _VistaFormularioEmpleadoState extends State<VistaFormularioEmpleado> {
         departamento: _selectedDepartamento ?? '',
         idempleado: _idEmpleadoController.text,
       );
+      if (_selectedDepartamento == 'Escritorio') {
+         
+         controlador.inicializarEstadistica(_idEmpleadoController.text);
+      
+       
+      }
+        controlador.altaEmpleado(empleado);
 
-      controlador.altaEmpleado(empleado);
-      controlador.altaUsuario(usuario as Usuario);
+        controlador.altaUsuario(usuario);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Empleado y usuario registrados exitosamente')),

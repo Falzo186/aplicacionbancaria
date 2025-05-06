@@ -40,14 +40,8 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
     _cargarReportes();
   }
 
-  void _cargarReportes() {
-    controlador.obtenerReportesPrestamoPendientes().then((data) {
-      setState(() {
-        reportes = data as List<ReporteSolicitud>;
-      });
-    }).catchError((error) {
-      debugPrint("Error al cargar reportes: $error");
-    });
+  Future<void> _cargarReportes() async {
+    reportes = await controlador.obtenerReportesPrestamoPendientes();
   }
 
   Future<void> seleccionarReporte(ReporteSolicitud reporte) async {
@@ -203,6 +197,7 @@ class _VistaReportePrestamosState extends State<VistaReportePrestamos> {
                                           reporteSeleccionado!.estado = "Aprobada";
                                           controlador.actualizarEstadoReporte(reporteSeleccionado!.idSolicitud, "Aprobada");
                                           _actualizarEstadistica(reporteSeleccionado!.usuarioId,"Aprobada");
+                                          controlador.realizarPrestamo(clienteSeleccionado?.numeroCuenta ?? '', prestamoSeleccionado?.numeroPrestamo ?? '');
                                         });
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text("Solicitud aprobada")),

@@ -161,6 +161,7 @@ class ControladorLogin {
       final response = await supabase.from('usuarios').insert({
         'idusuario': usuario.idUsuario,
         'nombreusuario': usuario.nombreUsuario,
+        'departamento': usuario.departamento,
         'contrasena': usuario.contrasena,
         'idempleado': usuario.idempleado,
       });
@@ -175,6 +176,26 @@ class ControladorLogin {
     }
   }
 
+
+  Future<void> inicializarEstadistica(String id) async {
+    try {
+      final response = await supabase.from('estadisticas').insert({
+        'id': id,
+        'numerosolicitudes': 0,
+        'solucionesaprobadas': 0,
+        'solucionesrechazadas': 0,
+        'solucionespendientes': 0,
+      });
+
+      if (response == null) {
+        print('Error al insertar la estadística.');
+      } else {
+        print('Estadística inicializada correctamente.');
+      }
+    } catch (e) {
+      print('Error al inicializar la estadística: ${e.toString()}');
+    }
+  }
 
 
  // no toquen mas este metodo es de prueba

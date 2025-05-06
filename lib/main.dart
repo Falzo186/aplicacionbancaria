@@ -5,7 +5,7 @@ import 'package:aplicacionbancaria/Vista/Vista_Login.dart';
 import 'package:window_size/window_size.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-//se modifico bd por supabase  AAA
+//se modifico bd por supabase  AAAaaaa
 final String title = 'Cooperativa Bancaria';
 
 void main() async {

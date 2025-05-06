@@ -26,12 +26,11 @@ class ControladorDatoscliente {
   }
 
   Future<Inversion?> buscarInversion(String numeroCuenta) async {
-    final response =
-        await supabase
-            .from('inversiones')
-            .select()
-            .eq('numerocuenta', numeroCuenta)
-            .single();
+    final response = await supabase
+        .from('inversiones')
+        .select()
+        .eq('numerocuenta', numeroCuenta)
+        .maybeSingle();
 
     if (response == null) {
       return null;

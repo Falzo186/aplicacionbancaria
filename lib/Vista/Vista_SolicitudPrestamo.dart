@@ -104,10 +104,10 @@ class _VistaSolicitudPrestamoState extends State<VistaSolicitudPrestamo> {
       idSolicitud: Random().nextInt(100000).toString(),
       usuarioId: widget.usuario.idempleado,
       usuarioNombre: widget.empleado.nombreEmpleado,
-      tipoSolicitud: "Credito",
+      tipoSolicitud: "Prestamo",
       clienteId: selectedCliente!.numeroCuenta,
       clienteNombre: selectedCliente!.nombreCompleto,
-      idsolicitado: "N/A",
+      idsolicitado: widget.prestamo.numeroPrestamo,
       estado: "Pendiente",
       fechaSolicitud: DateTime.now(),
     );
